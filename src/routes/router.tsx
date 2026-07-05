@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
             element: <MyPage />,
           },
           {
-            path: "my/point",
+            path: "mypage/point",
             element: <PointPage />,
           },
         ],

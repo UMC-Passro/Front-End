@@ -50,7 +50,7 @@ export default function MyPage() {
   }, [navigate]);
 
   const handleViewPoints = useCallback(() => {
-    navigate("/pointpage");
+    navigate("/mypage/point");
   }, [navigate]);
 
   const handleViewHistory = useCallback(() => {
