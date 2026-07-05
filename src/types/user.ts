@@ -1,8 +1,38 @@
-/**
- * TODO: 사용자 관련 타입을 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 사용자 프로필, 학교 인증, 발송자/배송자 역할 타입을 정의합니다.
- * - 평점, 포인트, 기본 통학 경로 같은 마이페이지 데이터를 포함할 수 있습니다.
- * - 인증 API가 생기면 응답 타입과 맞춰 조정합니다.
- */
+export type UserRole = "sender" | "carrier";
+
+export type SchoolVerificationStatus = "verified" | "pending" | "rejected" | "none";
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  schoolName: string;
+  department?: string;
+  avatarUrl?: string;
+  role: UserRole;
+  verificationStatus: SchoolVerificationStatus;
+  rating: number;
+  reviewCount: number;
+  pointBalance: number;
+}
+
+export interface CommuteRouteSummary {
+  id: string;
+  name: string;
+  origin: string;
+  destination: string;
+  timeRange: string;
+}
+
+export interface ProfileStats {
+  deliveryRequests: number;
+  completedDeliveries: number;
+  savedRoutes: number;
+  acceptanceRate?: number;
+}
+
+export interface ProfilePageData {
+  profile: UserProfile;
+  primaryRoute?: CommuteRouteSummary;
+  stats: ProfileStats;
+}

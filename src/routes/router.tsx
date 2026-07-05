@@ -1,36 +1,41 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 import LoginPage from "../pages/LoginPage";
+import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
 
 export const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <App />,
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/login" replace />,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
+      },
+      {
+        path: "signup",
+        element: <SignupPage />,
+      },
+      {
+        element: <ProtectedRoute />,
         children: [
-            {
-                index: true,
-                element: <Navigate to="/login" replace />,
-            },
-            {
-                path: "login",
-                element: <LoginPage />,
-            },
-            {
-                path: "signup",
-                element: <SignupPage />,
-            },
+          {
+            path: "mypage",
+            element: <MyPage />,
+          },
+          {
+            path: "my/point",
+            element: <PointPage />,
+          },
         ],
-    },
-    {
-        path: "/my",
-        element: <App />,
-        children: [
-            {
-                path: "point",
-                element: <PointPage />,
-            },
-        ],
-    },
+      },
+    ],
+  },
 ]);
