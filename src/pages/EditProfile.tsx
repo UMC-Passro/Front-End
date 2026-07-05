@@ -1,4 +1,4 @@
-export default function MyPage() {
+export default function EditProfile() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
             {/* 전체 카드 상자 */}
