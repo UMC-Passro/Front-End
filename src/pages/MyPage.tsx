@@ -1,8 +1,76 @@
-/**
- * TODO: 마이페이지를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 사용자 프로필, 등록한 통학 경로, 포인트, 배송 히스토리를 요약합니다.
- * - 경로 수정, 포인트 내역, 리뷰 내역 화면으로 이동할 수 있게 구성합니다.
- * - 사용자 타입과 인증 상태에 따라 노출 정보를 조정합니다.
- */
+import { useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import ProfilePage from "../components/profile/ProfilePage";
+import type { ProfilePageData } from "../types/user";
+import { getCurrentUser, logout } from "../utils/auth";
+
+export default function MyPage() {
+  const navigate = useNavigate();
+  const currentUser = getCurrentUser()!;
+
+  const profileData = useMemo<ProfilePageData>(
+    () => {
+      const isCarrier = currentUser.role === "carrier";
+
+      return {
+        profile: {
+          id: currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email,
+          schoolName: "",
+          department: "",
+          role: currentUser.role,
+          verificationStatus: "verified",
+          rating: 0,
+          reviewCount: 0,
+          pointBalance: 0,
+        },
+      
+        stats: {
+          deliveryRequests: 0,
+          completedDeliveries: 0,
+          savedRoutes: 0,
+          acceptanceRate: isCarrier? 0:  undefined,
+        },
+      };
+    },
+    [currentUser],
+  );
+
+  const handleEditProfile = useCallback(() => {
+    navigate("/profile/edit");
+  }, [navigate]);
+
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
+  const handleManageRoutes = useCallback(() => {
+    navigate("/routes");
+  }, [navigate]);
+
+  const handleViewPoints = useCallback(() => {
+    navigate("/mypage/point");
+  }, [navigate]);
+
+  const handleViewHistory = useCallback(() => {
+    navigate("/history");
+  }, [navigate]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate("/login", { replace: true });
+  }, [navigate]);
+
+  return (
+    <ProfilePage
+      data={profileData}
+      onBack={handleBack}
+      onEditProfile={handleEditProfile}
+      onManageRoutes={handleManageRoutes}
+      onViewPoints={handleViewPoints}
+      onViewHistory={handleViewHistory}
+      onLogout={handleLogout}
+    />
+  );
+}
