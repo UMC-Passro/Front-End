@@ -10,9 +10,10 @@
 
 | 이름 | 역할 | 담당 업무 |
 |---|---|---|
-| 이름 | Frontend | UI 구현, 페이지 라우팅, API 연동 |
-| 이름 | Backend | API 개발, DB 설계, 인증 처리 |
-| 이름 | Backend | 서버 배포, 데이터 관리 |
+| 플랫/박찬서 | Frontend | UI 구현, 페이지 라우팅, API 연동 |
+| 쥬/황은주 | Frontend | UI 구현 |
+| 하루/유수현 | Frontend | UI 구현, 페이지 라우팅, API 연동 |
+| 유뎅/최유정 | Frontend | UI 구현, 페이지 라우팅 |
 
 ## 3. 기술 스택
 
