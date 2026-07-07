@@ -17,7 +17,7 @@ export default function LoginPage() {
         event.preventDefault();
 
         if (!email.trim() || !password.trim()) {
-            setErrorMessage("이메일과 비밀번호를 입력해 주세요.");
+            setErrorMessage("아이디와 비밀번호를 입력해 주세요.");
             return;
         }
 
@@ -26,28 +26,31 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-            <div className="w-full max-w-md bg-gray-300 border border-black py-16 px-8 flex flex-col items-center gap-6">
-                <h1 className="text-7xl text-gray-500 font-bold mb-10">
-                    Passro
-                </h1>
+        <div className="min-h-screen flex items-center justify-center bg-gray-300 px-2">
+            <div className="h-[874px] w-[402px] bg-white border border-black py-16 px-8 flex flex-col items-center justify-center gap-6">
+                <img 
+                    src="/Logo.png" 
+                    alt="Logo" 
+                    width={250}
+                    height={250}
+                />
 
-                <form className="w-full flex flex-col gap-5" onSubmit={handleSubmit}>
+                <form className="w-full flex flex-col gap-2" onSubmit={handleSubmit}>
                     <input 
                         type="email"
-                        placeholder="이메일"
+                        placeholder="아이디를 입력해주세요"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
-                        className="w-full border border-gray-400 rounded-md px-4 py-3 outline-none"
-                        aria-label="이메일"
+                        className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
+                        aria-label="아이디"
                         autoComplete="email"
                     />
                     <input 
                         type="password"
-                        placeholder="비밀번호"
+                        placeholder="비밀번호를 입력해주세요"
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
-                        className="w-full border border-gray-400 rounded-md px-4 py-3 outline-none mb-3"
+                        className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
                         aria-label="비밀번호"
                         autoComplete="current-password"
                     />
@@ -56,14 +59,20 @@ export default function LoginPage() {
                             {errorMessage}
                         </p>
                     ) : null}
-                    <div className="flex items-center justify-center gap-3 text-sm text-gray-600">
+                    
+                    <button type="submit" className="w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold">
+                        로그인
+                    </button>
+                </form>
+
+                <div className="flex items-center justify-center gap-3 text-sm text-gray-600">
                         <Link 
-                            to="/signup"
-                            className="hover:text-gray-900 hover:underline"                        
+                            to="/find-pwd" 
+                            className="hover:text-gray-900 hover:underline"
                         >
-                            회원가입
+                            아이디 찾기
                         </Link>
-                        
+
                         <span className="h-3 w-px bg-gray-400" />
 
                         <Link 
@@ -72,11 +81,16 @@ export default function LoginPage() {
                         >
                             비밀번호 찾기
                         </Link>
-                    </div>
-                    <button type="submit" className="w-full bg-gray-700 text-white rounded-lg py-3 font-semibold">
-                        로그인
-                    </button>
-                </form>
+                        
+                        <span className="h-3 w-px bg-gray-400" />
+
+                        <Link 
+                            to="/signup"
+                            className="font-semibold hover:text-gray-900 hover:underline"                        
+                        >
+                            회원가입
+                        </Link>
+                </div>
             </div>
         </div>
     );
