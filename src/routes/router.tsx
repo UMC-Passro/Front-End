@@ -6,41 +6,44 @@ import LoginPage from "../pages/LoginPage";
 import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
+import { HistoryStatsPage } from "../pages/HistoryStatsPage";
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        index: true,
-        element: <Navigate to="/login" replace />,
-      },
-      {
-        path: "login",
-        element: <LoginPage />,
-      },
-      {
-        path: "signup",
-        element: <SignupPage />,
-      },
-      {
+    {
+        path: "/",
+        element: <App />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to="/login" replace />,
+            },
+            {
+                path: "login",
+                element: <LoginPage />,
+            },
+            {
+                path: "signup",
+                element: <SignupPage />,
+            },
+        ],
+    },
+    {
+        path: "/mypage",
         element: <ProtectedRoute />,
         children: [
-          {
-            path: "mypage",
-            element: <MyPage />,
-          },
-          {
-            path: "mypage/point",
-            element: <PointPage />,
-          },
-          {
-            path: "delivery/request",
-            element: <DeliveryRequestPage />,
-          },
+            { index: true, element: <MyPage /> },
+            {
+                path: "point",
+                element: <PointPage />,
+            },
+            {
+                path: "history",
+                element: <HistoryStatsPage />,
+            },
+            {
+                path: "delivery/request",
+                element: <DeliveryRequestPage />,
+            },
         ],
-      },
-    ],
-  },
+    },
 ]);
