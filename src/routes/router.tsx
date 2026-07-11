@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import DeliveryConsentPage from "../pages/DeliveryConsentPage";
 import DeliveryRequestPage from "../pages/DeliveryRequestPage";
 import LoginPage from "../pages/LoginPage";
 import MyPage from "../pages/MyPage";
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
             {
                 path: "delivery/request",
                 element: <DeliveryRequestPage />,
+            },
+            {
+                path: "delivery/consent",
+                element: <DeliveryConsentPage />,
             },
         ],
     },
