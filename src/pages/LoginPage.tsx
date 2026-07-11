@@ -11,7 +11,7 @@ export default function LoginPage() {
 
     const from = location.state && typeof location.state === "object" && "from" in location.state
         ? (location.state.from as { pathname?: string }).pathname
-        : "/mypage";
+        : "/user-state-choice";
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -22,26 +22,27 @@ export default function LoginPage() {
         }
 
         login(email);
-        navigate(from || "/mypage", { replace: true });
+        navigate(from || "/user-state-choice", { replace: true });
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-300 px-2">
             <div className="h-[874px] w-[402px] bg-white border border-black py-16 px-8 flex flex-col items-center justify-center gap-6">
-                <img 
+                <img
+                    className="absolute top-[300px]" 
                     src="/Logo.png" 
                     alt="Logo" 
                     width={250}
                     height={250}
                 />
 
-                <form className="w-full flex flex-col gap-2" onSubmit={handleSubmit}>
+                <form className="w-full flex flex-col gap-2 mt-[260px]" onSubmit={handleSubmit}>
                     <input 
                         type="email"
                         placeholder="아이디를 입력해주세요"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
-                        className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
+                        className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
                         aria-label="아이디"
                         autoComplete="email"
                     />
@@ -50,7 +51,7 @@ export default function LoginPage() {
                         placeholder="비밀번호를 입력해주세요"
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
-                        className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
+                        className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
                         aria-label="비밀번호"
                         autoComplete="current-password"
                     />
@@ -60,7 +61,7 @@ export default function LoginPage() {
                         </p>
                     ) : null}
                     
-                    <button type="submit" className="w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold">
+                    <button type="submit" className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold">
                         로그인
                     </button>
                 </form>
