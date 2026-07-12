@@ -19,7 +19,7 @@ function DeliveryConsentSheet({ onConfirm }: DeliveryConsentSheetProps) {
 
   return (
     <BottomSheet
-      title="[필수] 배송 요청전 확인 및 동의"
+      title="[필수] 배송 요청 전 확인 및 동의"
       footer={
         <button
           type="button"
