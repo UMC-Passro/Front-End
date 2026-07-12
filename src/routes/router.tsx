@@ -7,6 +7,7 @@ import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
 import { HistoryStatsPage } from "../pages/HistoryStatsPage";
+import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
 
 export const router = createBrowserRouter([
     {
@@ -40,8 +41,18 @@ export const router = createBrowserRouter([
                 path: "history",
                 element: <HistoryStatsPage />,
             },
+        ],
+    },
+    {
+        path: "/delivery",
+        element: <ProtectedRoute />,
+        children: [
             {
-                path: "delivery/request",
+                path: "matching",
+                element: <DeliveryMatchingPage />,
+            },
+            {
+                path: "request",
                 element: <DeliveryRequestPage />,
             },
         ],

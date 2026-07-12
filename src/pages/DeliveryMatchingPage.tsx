@@ -1,8 +1,20 @@
-/**
- * TODO: 경로 유사도 기반 배송자 매칭 페이지를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 배송 요청과 유사한 통학 경로를 가진 배송자 후보 목록을 보여줍니다.
- * - 경로 유사도, 예상 소요 시간, 배송자 평점 등을 비교할 수 있게 구성합니다.
- * - 매칭 요청 버튼을 통해 matchingApi.ts와 연결합니다.
- */
+import ChevronIcon from "../assets/icons/ChevronIcon";
+import { DeliveryRoute } from "../components/delivery/DeliveryRoute";
+
+export default function DeliveryMatchingPage() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-300 px-2">
+            <div className="h-[874px] w-[402px] bg-white border border-black py-16 px-8">
+                <div className="flex relative items-center justify-center text-gray-500">
+                    <div className="absolute left-0">
+                        <ChevronIcon />
+                    </div>
+                    <div className="font-bold text-xl text-gray-900">
+                        매칭 요청
+                    </div>
+                </div>
+                <DeliveryRoute departure="안양역" destination="정왕역" />
+            </div>
+        </div>
+    );
+}
