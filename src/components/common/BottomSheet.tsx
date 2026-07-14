@@ -5,16 +5,18 @@ interface BottomSheetProps {
   titleAlign?: "center" | "left";
   children: ReactNode;
   footer?: ReactNode;
+  onClose?: () => void;
 }
 
-export default function BottomSheet({ title, titleAlign = "center", children, footer }: BottomSheetProps) {
+export default function BottomSheet({ title, titleAlign = "center", children, footer, onClose }: BottomSheetProps) {
   return (
-    <div className="absolute inset-0 z-20 bg-black/20">
+    <div className="absolute inset-0 z-20 bg-black/20" onClick={onClose}>
       <div
         className="absolute inset-x-0 bottom-0 rounded-t-[30px] bg-white px-5 pb-8 pt-3"
         role="dialog"
         aria-modal="true"
         aria-labelledby="bottom-sheet-title"
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="mx-auto h-1 w-[55px] rounded-full bg-[#DADCE6]" aria-hidden="true" />
         <h2
