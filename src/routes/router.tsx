@@ -8,6 +8,7 @@ import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
 import { HistoryStatsPage } from "../pages/HistoryStatsPage";
 import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
+import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
 
 export const router = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
             {
                 path: "request",
                 element: <DeliveryRequestPage />,
+            },
+            {
+                path: "tracking",
+                element: <DeliveryTrackingPage />,
             },
         ],
     },

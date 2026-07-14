@@ -1,4 +1,4 @@
-import { SizeInfo } from "../common/SizeInfo";
+import { SizeInfo } from "./SizeInfo";
 
 interface DeliveryInfoProps {
     itemName: string;
