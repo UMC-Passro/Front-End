@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 
 interface BottomSheetProps {
   title: string;
+  titleAlign?: "center" | "left";
   children: ReactNode;
   footer?: ReactNode;
 }
 
-export default function BottomSheet({ title, children, footer }: BottomSheetProps) {
+export default function BottomSheet({ title, titleAlign = "center", children, footer }: BottomSheetProps) {
   return (
     <div className="absolute inset-0 z-20 bg-black/20">
       <div
@@ -16,7 +17,12 @@ export default function BottomSheet({ title, children, footer }: BottomSheetProp
         aria-labelledby="bottom-sheet-title"
       >
         <div className="mx-auto h-1 w-[55px] rounded-full bg-[#DADCE6]" aria-hidden="true" />
-        <h2 id="bottom-sheet-title" className="mt-10 text-center text-[18px] font-bold leading-[22px] text-[#1D1E23]">
+        <h2
+          id="bottom-sheet-title"
+          className={`mt-10 text-[18px] font-bold leading-[22px] text-[#1D1E23] ${
+            titleAlign === "center" ? "text-center" : "text-left"
+          }`}
+        >
           {title}
         </h2>
         <div className="mt-6">{children}</div>
