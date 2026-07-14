@@ -12,14 +12,16 @@ const CONSENT_ITEMS = [
 
 interface DeliveryConsentSheetProps {
   onConfirm?: () => void;
+  onClose?: () => void;
 }
 
-function DeliveryConsentSheet({ onConfirm }: DeliveryConsentSheetProps) {
+function DeliveryConsentSheet({ onConfirm, onClose }: DeliveryConsentSheetProps) {
   const [agreed, setAgreed] = useState(false);
 
   return (
     <BottomSheet
       title="[필수] 배송 요청 전 확인 및 동의"
+      onClose={onClose}
       footer={
         <button
           type="button"
