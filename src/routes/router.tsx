@@ -7,6 +7,8 @@ import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
 import { HistoryStatsPage } from "../pages/HistoryStatsPage";
+import UserStateChoice from "../pages/UserStateChoice";
+import HomePage from "../pages/HomePage";
 
 export const router = createBrowserRouter([
     {
@@ -22,8 +24,16 @@ export const router = createBrowserRouter([
                 element: <LoginPage />,
             },
             {
+                path: "user-state-choice",
+                element: <UserStateChoice />
+            },
+            {
                 path: "signup",
                 element: <SignupPage />,
+            },
+            {
+                path: "home",
+                element: <HomePage />
             },
         ],
     },

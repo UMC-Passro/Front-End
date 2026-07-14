@@ -54,7 +54,7 @@ export default function MyPage() {
   }, [navigate]);
 
   const handleViewHistory = useCallback(() => {
-    navigate("/history");
+    navigate("/mypage/history");
   }, [navigate]);
 
   const handleLogout = useCallback(() => {
