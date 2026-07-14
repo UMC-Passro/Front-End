@@ -4,6 +4,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import DeliveryConsentPage from "../pages/DeliveryConsentPage";
 import DeliveryPaymentPage from "../pages/DeliveryPaymentPage";
 import DeliveryRequestPage from "../pages/DeliveryRequestPage";
+import DeliveryStatusPage from "../pages/DeliveryStatusPage";
 import LoginPage from "../pages/LoginPage";
 import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
             {
                 path: "delivery/payment",
                 element: <DeliveryPaymentPage />,
+            },
+            {
+                path: "delivery/status",
+                element: <DeliveryStatusPage />,
             },
         ],
     },
