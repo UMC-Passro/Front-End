@@ -2,6 +2,12 @@ import { type FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../utils/auth";
 
+type LoginLocationState = {
+    from?: {
+        pathname?: string;
+    };
+};
+
 export default function LoginPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -9,12 +15,8 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const from =
-        location.state &&
-        typeof location.state === "object" &&
-        "from" in location.state
-            ? (location.state.from as { pathname?: string }).pathname
-            : "/mypage";
+    const state = location.state as LoginLocationState | null;
+    const from = state?.from?.pathname ?? "/user-state-choice";
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -25,11 +27,11 @@ export default function LoginPage() {
         }
 
         login(email);
-        navigate(from || "/mypage", { replace: true });
+        navigate(from, { replace: true });
     };
 
     return (
-        <div className="page-container flex flex-col items-center justify-center gap-6">
+        <div className="page-container flex flex-col items-center justify-center gap-6 bg-white px-8 py-16">
             <img src="/Logo.png" alt="Logo" width={250} height={250} />
 
             <form
@@ -38,22 +40,23 @@ export default function LoginPage() {
             >
                 <input
                     type="email"
-                    placeholder="아이디를 입력해주세요"
+                    placeholder="아이디를 입력해 주세요"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="아이디"
                     autoComplete="email"
                 />
                 <input
                     type="password"
-                    placeholder="비밀번호를 입력해주세요"
+                    placeholder="비밀번호를 입력해 주세요"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="비밀번호"
                     autoComplete="current-password"
                 />
+
                 {errorMessage ? (
                     <p
                         className="-mt-3 text-sm font-semibold text-red-700"
@@ -65,7 +68,7 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
-                    className="w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold"
                 >
                     로그인
                 </button>
