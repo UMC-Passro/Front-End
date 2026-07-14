@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChevronIcon from "../assets/icons/ChevronIcon";
 import BasicSignupForm from "../components/signup/BasicSignupForm";
 import DetailSignupForm from "../components/signup/DetailSignupForm";
 import type {
@@ -17,6 +18,7 @@ const initialSignupFormData: SignupFormData = {
     passwordCheck: "",
     name: "",
     phone: "",
+    birthDate: "",
     gender: "NONE",
     address: "",
 };
@@ -51,9 +53,30 @@ export default function SignupPage() {
         navigate("/login");
     };
 
+    const handleBack = () => {
+        if (step === "basic") {
+            navigate(-1);
+            return;
+        }
+
+        setStep("basic");
+    };
+
     return (
-        <div className="page-container flex flex-col items-center gap-6">
-            <h1 className="text-7xl text-gray-500 font-bold mb-10">Passro</h1>
+        <div className="page-container relative flex flex-col overflow-hidden bg-white px-5 pb-2.5 pt-2.5">
+            <header className="relative mb-[38px] flex h-8 items-center justify-center">
+                <button
+                    type="button"
+                    onClick={handleBack}
+                    className="absolute left-0 flex h-8 w-8 items-center justify-center text-[#8E91A1]"
+                    aria-label="이전 페이지로 이동"
+                >
+                    <ChevronIcon />
+                </button>
+                <h1 className="text-[25px] font-extrabold leading-8 text-[#202126]">
+                    {step === "basic" ? "회원가입" : "상세정보"}
+                </h1>
+            </header>
 
             {step === "basic" ? (
                 <BasicSignupForm
@@ -66,7 +89,6 @@ export default function SignupPage() {
                     formData={formData}
                     updateField={updateField}
                     onSubmit={handleFinalSubmit}
-                    onPrev={() => setStep("basic")}
                 />
             )}
         </div>

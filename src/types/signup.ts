@@ -10,6 +10,7 @@ export type SignupFormData = {
   passwordCheck: string;
   name: string;
   phone: string;
+  birthDate: string;
   gender: SignupGender;
   address: string;
 };
