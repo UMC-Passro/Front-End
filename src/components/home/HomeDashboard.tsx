@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { HomeContent } from "../../types/home";
 import type { UserRole } from "../../types/user";
 import DeliveryConsentSheet from "../delivery/DeliveryConsentSheet";
@@ -14,6 +15,7 @@ type HomeDashboardProps = {
 };
 
 export function HomeDashboard({ role, content }: HomeDashboardProps) {
+  const navigate = useNavigate();
   const [isConsentOpen, setIsConsentOpen] = useState(false);
   const isSender = role === "sender";
 
@@ -59,7 +61,10 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
         {isConsentOpen ? (
           <DeliveryConsentSheet
             onClose={() => setIsConsentOpen(false)}
-            onConfirm={() => setIsConsentOpen(false)}
+            onConfirm={() => {
+              setIsConsentOpen(false);
+              navigate("/delivery/request");
+            }}
           />
         ) : null}
       </section>

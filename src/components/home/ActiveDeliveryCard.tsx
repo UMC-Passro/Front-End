@@ -11,7 +11,7 @@ export function ActiveDeliveryCard({ delivery }: ActiveDeliveryCardProps) {
   return (
     <button
       type="button"
-      onClick={() => navigate("/mypage/delivery/status")}
+      onClick={() => navigate("/delivery/status")}
       className="mt-3 flex min-h-[73px] w-full items-center justify-between gap-3 rounded-lg bg-[#DFDFFF] px-4 py-4 text-left transition-colors hover:bg-[#D5D5FF] min-[390px]:mt-4 min-[390px]:min-h-[126px] min-[390px]:rounded-xl min-[390px]:px-7 min-[390px]:py-7"
       aria-label={`${delivery.title} 전달 추적 보기`}
     >
