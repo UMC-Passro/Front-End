@@ -1,8 +1,12 @@
-/**
- * TODO: 배송 물품 사진 업로드 컴포넌트를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 이미지 선택, 미리보기, 삭제 기능을 제공합니다.
- * - 파일 크기와 확장자 검증을 utils/validators.ts와 연결합니다.
- * - 실제 업로드 방식은 백엔드 API 확정 후 연결합니다.
- */
+import { CameraIcon } from "../../assets/icons/CameraIcon";
+
+export const DeliveryImageUploader = () => {
+    return (
+        <div className="flex w-16 h-16 px-5 py-3 mt-3 bg-gray-50 rounded-lg">
+            <div className="flex flex-col items-center text-gray-200 gap-0.5">
+                <CameraIcon />
+                <span className="text-gray-300 text-[10px]">0/3</span>
+            </div>
+        </div>
+    );
+};

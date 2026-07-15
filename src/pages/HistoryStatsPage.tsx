@@ -1,8 +1,18 @@
-/**
- * TODO: 배송 히스토리 통계 페이지를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 월별 배송 건수, 누적 포인트, 자주 이용한 경로를 요약합니다.
- * - Could have 범위의 기능이므로 MVP 이후 확장 화면으로 관리합니다.
- * - 차트나 필터가 필요하면 별도 컴포넌트로 분리합니다.
- */
+import ChevronIcon from "../assets/icons/ChevronIcon";
+import { DeliveryFilterButton } from "../components/delivery/history/DeliveryFilterButton";
+import { DeliveryList } from "../components/delivery/history/DeliveryList";
+
+export function HistoryStatsPage() {
+    return (
+        <div className="page-container">
+            <div className="flex relative items-center justify-center text-gray-500">
+                <div className="absolute left-0">
+                    <ChevronIcon />
+                </div>
+                <div className="font-bold text-xl text-gray-900">배송 내역</div>
+            </div>
+            <DeliveryFilterButton />
+            <DeliveryList />
+        </div>
+    );
+}

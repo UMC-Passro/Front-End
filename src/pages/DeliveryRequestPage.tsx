@@ -1,8 +1,13 @@
-/**
- * TODO: 택배 요청 등록 페이지를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 출발지, 도착지, 물품 크기, 사진 업로드 입력 UI를 배치합니다.
- * - 배송 요청 등록 API와 연결하고 등록 완료 후 매칭 화면으로 이동합니다.
- * - 입력값 검증은 utils/validators.ts와 함께 관리합니다.
- */
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import DeliveryRequestForm from "../components/delivery/DeliveryRequestForm";
+
+export default function DeliveryRequestPage() {
+  const navigate = useNavigate();
+
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
+  return <DeliveryRequestForm onBack={handleBack} />;
+}
