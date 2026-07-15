@@ -12,13 +12,15 @@ const TOTAL_VALUE = "3,200 P";
 
 interface DeliveryPaymentSheetProps {
   onConfirm?: () => void;
+  onClose?: () => void;
 }
 
-function DeliveryPaymentSheet({ onConfirm }: DeliveryPaymentSheetProps) {
+function DeliveryPaymentSheet({ onConfirm, onClose }: DeliveryPaymentSheetProps) {
   return (
     <BottomSheet
       title="정산 금액"
       titleAlign="left"
+      onClose={onClose}
       footer={
         <button
           type="button"

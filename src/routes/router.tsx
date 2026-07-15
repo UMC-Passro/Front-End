@@ -1,8 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-import DeliveryConsentPage from "../pages/DeliveryConsentPage";
-import DeliveryPaymentPage from "../pages/DeliveryPaymentPage";
 import DeliveryRequestPage from "../pages/DeliveryRequestPage";
 import DeliveryStatusPage from "../pages/DeliveryStatusPage";
 import LoginPage from "../pages/LoginPage";
@@ -72,14 +70,6 @@ export const router = createBrowserRouter([
             {
                 path: "tracking",
                 element: <DeliveryTrackingPage />,
-            },
-            {
-                path: "consent",
-                element: <DeliveryConsentPage />,
-            },
-            {
-                path: "payment",
-                element: <DeliveryPaymentPage />,
             },
             {
                 path: "status",

@@ -26,7 +26,8 @@ function DeliveryConsentSheet({ onConfirm, onClose }: DeliveryConsentSheetProps)
         <button
           type="button"
           onClick={onConfirm}
-          className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-[#373840] text-[16px] font-bold leading-[22px] text-white transition hover:bg-[#20212a] focus:outline-none focus:ring-2 focus:ring-[#373840] focus:ring-offset-2"
+          disabled={!agreed}
+          className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-[#373840] text-[16px] font-bold leading-[22px] text-white transition hover:bg-[#20212a] focus:outline-none focus:ring-2 focus:ring-[#373840] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#D8DAE6] disabled:text-[#8E91A1] disabled:hover:bg-[#D8DAE6]"
         >
           배송 등록하기
         </button>
