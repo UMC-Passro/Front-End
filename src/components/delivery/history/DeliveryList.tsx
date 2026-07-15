@@ -61,7 +61,7 @@ export const DeliveryList = () => {
                     <div
                         className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold text-white ${
                             delivery.status === "배송중"
-                                ? "bg-[#5A60F9]"
+                                ? "bg-purple-600"
                                 : "bg-gray-300"
                         }`}
                     >
