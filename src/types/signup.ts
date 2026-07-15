@@ -2,6 +2,21 @@ export type SignupStep = "basic" | "detail";
 
 export type SignupGender = "M" | "W" | "NONE";
 
+export type SignupNicknameCheckStatus = "idle" | "available" | "duplicate";
+
+export type SignupDateValue = {
+  year: number;
+  month: number;
+  day: number;
+};
+
+export type SignupDetailValidationMessages = {
+  name: string;
+  phone: string;
+  birthDate: string;
+  address: string;
+};
+
 export type SignupFormData = {
   nickname: string;
   email: string;

@@ -32,7 +32,13 @@ export default function LoginPage() {
 
     return (
         <div className="page-container flex flex-col items-center justify-center gap-6 bg-white px-8 py-16">
-            <img src="/Logo.png" alt="Logo" width={250} height={250} />
+            <img
+                className="h-[clamp(200px,29dvh,250px)] w-[clamp(200px,29dvh,250px)] shrink-0 object-contain"
+                src="/Logo.png"
+                alt="Logo"
+                width={250}
+                height={250}
+            />
 
             <form
                 className="w-full flex flex-col gap-2"
@@ -68,7 +74,7 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-[#6E73F5] text-white rounded-lg py-3 font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-purple-600 text-white rounded-lg py-3 font-semibold"
                 >
                     로그인
                 </button>
