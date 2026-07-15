@@ -1,8 +1,3 @@
-/**
- * TODO: 배송 요청과 배송 상태 관련 타입을 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 배송 요청, 물품 크기, 배송 상태, 사진 정보 타입을 정의합니다.
- * - API 응답과 화면 컴포넌트 props에서 공통으로 사용할 타입을 둡니다.
- * - 상태값은 utils/deliveryStatus.ts와 일관되게 관리합니다.
- */
+export type DeliveryRole = "SENDER" | "CARRIER";
+
+export type DeliveryStatus = "WAITING_PICKUP" | "DELIVERING" | "COMPLETED";
