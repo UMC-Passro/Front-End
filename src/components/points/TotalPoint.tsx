@@ -7,7 +7,7 @@ export const TotalPoint = () => {
                 </div>
                 <div className="font-bold text-2xl text-white">7,000p</div>
             </div>
-            <div className="flex items-center justify-center w-full px-2.5 py-2 rounded-lg bg-purple-100 text-[#4146D0] font-semibold">
+            <div className="flex items-center justify-center w-full px-2.5 py-2 rounded-lg bg-purple-100 text-purple-700 font-semibold">
                 + 충전하기
             </div>
         </div>
