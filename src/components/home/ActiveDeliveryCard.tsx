@@ -23,7 +23,7 @@ export function ActiveDeliveryCard({ delivery }: ActiveDeliveryCardProps) {
           {delivery.route}
         </p>
       </div>
-      <span className="rounded-lg bg-[#6663F6] px-3 py-2 text-[10px] font-extrabold text-white shadow-sm min-[390px]:px-4 min-[390px]:py-3 min-[390px]:text-sm">
+      <span className="rounded-lg bg-purple-600 px-3 py-2 text-[10px] font-extrabold text-white shadow-sm min-[390px]:px-4 min-[390px]:py-3 min-[390px]:text-sm">
         {delivery.status}
       </span>
     </button>

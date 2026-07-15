@@ -2,8 +2,10 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ChevronIcon from "../assets/icons/ChevronIcon";
-import BasicSignupForm from "../components/signup/BasicSignupForm";
-import DetailSignupForm from "../components/signup/DetailSignupForm";
+import {
+    BasicSignupForm,
+    DetailSignupForm,
+} from "../components/signup";
 import type {
     SignupFieldUpdater,
     SignupFormData,

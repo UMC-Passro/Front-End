@@ -49,7 +49,7 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
             <button
               type="button"
               onClick={() => setIsConsentOpen(true)}
-              className="mt-auto h-9 w-full rounded-lg bg-[#7470F4] text-[11px] font-extrabold text-white shadow-sm transition-colors hover:bg-[#6561EE] min-[390px]:h-12 min-[390px]:text-base"
+              className="mt-auto h-9 w-full rounded-lg bg-purple-600 text-[11px] font-extrabold text-white shadow-sm transition-colors hover:bg-purple-500 min-[390px]:h-12 min-[390px]:text-base"
             >
               {content.actionLabel}
             </button>

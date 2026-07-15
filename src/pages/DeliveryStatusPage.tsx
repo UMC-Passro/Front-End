@@ -98,7 +98,7 @@ export default function DeliveryStatusPage() {
 
       <button
         type="button"
-        className="mt-auto h-[44px] w-full rounded-[8px] bg-[#E1E3EC] text-[13px] font-extrabold leading-[18px] text-[#202126] transition-colors hover:bg-[#D8DAE6]"
+        className="font-bold mt-auto h-[44px] w-full rounded-[8px] bg-[#E1E3EC] font-extrabold leading-[18px] text-[#202126] transition-colors hover:bg-[#D8DAE6]"
       >
         완료 확인
       </button>
