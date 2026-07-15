@@ -27,3 +27,9 @@ body {
         padding: 50px 20px;
     }
 }
+
+@layer base {
+    body {
+        font-family: "Pretendard", sans-serif;
+    }
+}

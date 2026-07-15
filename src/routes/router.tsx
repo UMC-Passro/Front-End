@@ -12,6 +12,8 @@ import PointPage from "../pages/PointPage";
 import { HistoryStatsPage } from "../pages/HistoryStatsPage";
 import UserStateChoice from "../pages/UserStateChoice";
 import HomePage from "../pages/HomePage";
+import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
+import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
 
 export const router = createBrowserRouter([
     {
@@ -28,7 +30,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "user-state-choice",
-                element: <UserStateChoice />
+                element: <UserStateChoice />,
             },
             {
                 path: "signup",
@@ -36,7 +38,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "home",
-                element: <HomePage />
+                element: <HomePage />,
             },
         ],
     },
@@ -53,20 +55,34 @@ export const router = createBrowserRouter([
                 path: "history",
                 element: <HistoryStatsPage />,
             },
+        ],
+    },
+    {
+        path: "/delivery",
+        element: <ProtectedRoute />,
+        children: [
             {
-                path: "delivery/request",
+                path: "matching",
+                element: <DeliveryMatchingPage />,
+            },
+            {
+                path: "request",
                 element: <DeliveryRequestPage />,
             },
             {
-                path: "delivery/consent",
+                path: "tracking",
+                element: <DeliveryTrackingPage />,
+            },
+            {
+                path: "consent",
                 element: <DeliveryConsentPage />,
             },
             {
-                path: "delivery/payment",
+                path: "payment",
                 element: <DeliveryPaymentPage />,
             },
             {
-                path: "delivery/status",
+                path: "status",
                 element: <DeliveryStatusPage />,
             },
         ],
