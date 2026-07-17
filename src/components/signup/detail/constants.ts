@@ -1,3 +1,2 @@
 export const DETAIL_FIELD_CLASS =
-  "h-[58px] w-full rounded-[10px] bg-[#F8F9FD] px-[18px] text-left text-[16px] font-medium leading-[22px] text-[#373840] outline-none placeholder:text-[#9EA2B3]";
-
+    "w-full rounded-lg bg-gray-50 px-5 py-4 text-gray-800 outline-none placeholder:text-gray-500";

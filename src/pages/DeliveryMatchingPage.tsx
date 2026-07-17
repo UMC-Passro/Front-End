@@ -8,6 +8,9 @@ export default function DeliveryMatchingPage() {
     const handleAccept = () => {
         navigate("/delivery/tracking");
     };
+    const handleReject = () => {
+        navigate(-1);
+    };
 
     return (
         <div className="page-container">
@@ -25,7 +28,10 @@ export default function DeliveryMatchingPage() {
                 settlementPoint="3,200P"
             />
             <div className="fixed bottom-10 left-1/2 flex w-full max-w-[402px] -translate-x-1/2 gap-3.5 px-5">
-                <button className="flex flex-1 items-center justify-center bg-gray-100 text-gray-600 font-bold rounded-lg px-2.5 py-3.5">
+                <button
+                    onClick={handleReject}
+                    className="flex flex-1 items-center justify-center bg-gray-100 text-gray-600 font-bold rounded-lg px-2.5 py-3.5"
+                >
                     거절하기
                 </button>
                 <button
