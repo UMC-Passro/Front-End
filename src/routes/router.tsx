@@ -13,6 +13,7 @@ import HomePage from "../pages/HomePage";
 import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
 import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
 import EditProfile from "../pages/EditProfile";
+import ChatPage from "../pages/ChatPage";
 
 export const router = createBrowserRouter([
     {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
             {
                 path: "status",
                 element: <DeliveryStatusPage />,
+            },
+            {
+                path: "chat",
+                element: <ChatPage />,
             },
         ],
     },
