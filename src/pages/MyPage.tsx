@@ -35,7 +35,7 @@ export default function MyPage() {
     }, [currentUser]);
 
     const handleEditProfile = useCallback(() => {
-        navigate("/profile/edit");
+        navigate("/mypage/edit");
     }, [navigate]);
 
     const handleBack = useCallback(() => {
