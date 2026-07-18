@@ -1,5 +1,5 @@
 export const BASIC_FIELD_CLASS =
-  "h-[58px] w-full rounded-[10px] bg-[#F8F9FD] px-[22px] text-[16px] font-medium leading-[22px] text-[#373840] outline-none placeholder:text-[#9EA2B3]";
+    "w-full rounded-lg bg-gray-50 px-5 py-4 text-[15px] text-gray-800 outline-none placeholder:text-gray-500";
 
 export const BASIC_ACTION_BUTTON_CLASS =
-  "h-[58px] rounded-[10px] bg-[#D8DAE6] px-3 text-[16px] font-semibold leading-[22px] text-[#4E505A] transition-colors hover:bg-[#E4E6F0]";
+    "rounded-lg bg-gray-200 px-3 py-4 text-[15px] text-gray-700 transition-colors hover:bg-[#E4E6F0]";

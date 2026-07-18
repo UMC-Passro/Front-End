@@ -12,6 +12,7 @@ import UserStateChoice from "../pages/UserStateChoice";
 import HomePage from "../pages/HomePage";
 import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
 import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
+import EditProfile from "../pages/EditProfile";
 
 export const router = createBrowserRouter([
     {
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
             { index: true, element: <MyPage /> },
+            { path: "edit", element: <EditProfile /> },
             {
                 path: "point",
                 element: <PointPage />,

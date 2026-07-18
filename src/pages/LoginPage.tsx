@@ -31,7 +31,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="page-container flex flex-col items-center justify-center gap-6 bg-white px-8 py-16">
+        <div className="page-container flex flex-col items-center justify-center gap-6">
             <img
                 className="h-[clamp(200px,29dvh,250px)] w-[clamp(200px,29dvh,250px)] shrink-0 object-contain"
                 src="/Logo.png"
@@ -41,7 +41,7 @@ export default function LoginPage() {
             />
 
             <form
-                className="w-full flex flex-col gap-2"
+                className="w-full flex flex-col gap-2.5"
                 onSubmit={handleSubmit}
             >
                 <input
@@ -49,7 +49,7 @@ export default function LoginPage() {
                     placeholder="아이디를 입력해 주세요"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="아이디"
                     autoComplete="email"
                 />
@@ -58,7 +58,7 @@ export default function LoginPage() {
                     placeholder="비밀번호를 입력해 주세요"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-100 rounded-md px-4 py-4 outline-none mb-3 placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none mb-5 placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="비밀번호"
                     autoComplete="current-password"
                 />
@@ -74,13 +74,13 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-purple-600 text-white rounded-lg py-3 font-semibold"
+                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-purple-500 text-white rounded-lg py-4 font-bold"
                 >
                     로그인
                 </button>
             </form>
 
-            <div className="flex items-center justify-center gap-3 text-sm text-gray-600">
+            <div className="flex items-center justify-center gap-3 mt-4 text-sm text-gray-600">
                 <Link
                     to="/find-pwd"
                     className="hover:text-gray-900 hover:underline"
@@ -88,7 +88,7 @@ export default function LoginPage() {
                     아이디 찾기
                 </Link>
 
-                <span className="h-3 w-px bg-gray-400" />
+                <span className="h-3 w-px bg-gray-200" />
 
                 <Link
                     to="/find-pwd"
@@ -97,7 +97,7 @@ export default function LoginPage() {
                     비밀번호 찾기
                 </Link>
 
-                <span className="h-3 w-px bg-gray-400" />
+                <span className="h-3 w-px bg-gray-200" />
 
                 <Link
                     to="/signup"

@@ -1,31 +1,44 @@
 import { useNavigate } from "react-router-dom";
 import type { ActiveDelivery } from "../../types/home";
+import { UserRole } from "../../types/user";
 
 type ActiveDeliveryCardProps = {
-  delivery: ActiveDelivery;
+    delivery: ActiveDelivery;
+    role: UserRole;
 };
 
-export function ActiveDeliveryCard({ delivery }: ActiveDeliveryCardProps) {
-  const navigate = useNavigate();
+export function ActiveDeliveryCard({
+    delivery,
+    role,
+}: ActiveDeliveryCardProps) {
+    const navigate = useNavigate();
+    const handleButton = () => {
+        if (role == "sender") {
+            navigate("/delivery/status");
+            return;
+        } else {
+            navigate("/delivery/matching");
+        }
+    };
 
-  return (
-    <button
-      type="button"
-      onClick={() => navigate("/delivery/status")}
-      className="mt-3 flex min-h-[73px] w-full items-center justify-between gap-3 rounded-lg bg-[#DFDFFF] px-4 py-4 text-left transition-colors hover:bg-[#D5D5FF] min-[390px]:mt-4 min-[390px]:min-h-[126px] min-[390px]:rounded-xl min-[390px]:px-7 min-[390px]:py-7"
-      aria-label={`${delivery.title} 전달 추적 보기`}
-    >
-      <div className="min-w-0">
-        <h3 className="truncate text-[13px] font-extrabold text-black min-[390px]:text-xl">
-          {delivery.title}
-        </h3>
-        <p className="mt-2 text-[11px] font-semibold text-[#8488FF] min-[390px]:text-base">
-          {delivery.route}
-        </p>
-      </div>
-      <span className="rounded-lg bg-purple-600 px-3 py-2 text-[10px] font-extrabold text-white shadow-sm min-[390px]:px-4 min-[390px]:py-3 min-[390px]:text-sm">
-        {delivery.status}
-      </span>
-    </button>
-  );
+    return (
+        <button
+            type="button"
+            onClick={handleButton}
+            className="mt-3 flex w-full items-center justify-between gap-3 rounded-lg bg-purple-100 px-5 py-4 text-left transition-colors hover:bg-purple-200"
+            aria-label={`${delivery.title} 전달 추적 보기`}
+        >
+            <div className="min-w-0">
+                <h3 className="truncate font-bold text-black">
+                    {delivery.title}
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-purple-400">
+                    {delivery.route}
+                </p>
+            </div>
+            <span className="rounded-lg bg-purple-600 px-3 py-2 text-xs font-bold text-white shadow-sm">
+                {delivery.status}
+            </span>
+        </button>
+    );
 }

@@ -1,18 +1,22 @@
 export const CameraIcon = () => {
     return (
         <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
+            width="22"
+            height="19"
+            viewBox="0 0 22 19"
             fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            aria-hidden="true"
         >
-            <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
-            <circle cx="12" cy="13" r="3" />
+            <rect
+                x="0.5"
+                y="3.5"
+                width="21"
+                height="15"
+                rx="2.5"
+                fill="#DADCE6"
+            />
+            <rect x="6" y="0.5" width="10" height="4" rx="1.5" fill="#DADCE6" />
+            <circle cx="11" cy="11" r="4.5" fill="white" />
         </svg>
     );
 };

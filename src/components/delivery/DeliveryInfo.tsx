@@ -44,7 +44,10 @@ export const DeliveryInfo = ({
                                 </span>
                                 <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-gray-500 text-white text-xs font-bold cursor-pointer">
                                     ?
-                                    <SizeInfo />
+                                    <SizeInfo
+                                        boxTranslate="-24%"
+                                        arrowLeft="24%"
+                                    />
                                 </div>
                             </div>
                             <span className="font-bold text-gray-600">

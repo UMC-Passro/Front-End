@@ -1,8 +1,19 @@
-export const SizeInfo = () => {
+interface SizeInfoProps {
+    arrowLeft?: string;
+    boxTranslate?: string;
+}
+export const SizeInfo = ({
+    boxTranslate = "-24%",
+    arrowLeft = "21%",
+}: SizeInfoProps) => {
     return (
-        <div className="pointer-events-none fixed left-1/2 top-[54.8%] z-50 w-max hidden -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_10px_rgba(0,0,0,0.15)] group-hover:block">
+        <div
+            className="pointer-events-none absolute left-1/2 top-9 z-50 w-max hidden drop-shadow-[0_0_10px_rgba(0,0,0,0.15)] group-hover:block"
+            style={{ transform: `translateX(${boxTranslate})` }}
+        >
             <svg
-                className="absolute -top-5 left-[21%] text-white"
+                className="absolute -top-5 -translate-x-1/2 text-white"
+                style={{ left: arrowLeft }}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"

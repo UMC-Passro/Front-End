@@ -29,7 +29,9 @@ export default function DeliveryTrackingPage() {
         <div className="page-container relative">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
-                    <ChevronIcon />
+                    <button onClick={() => navigate("/delivery/matching")}>
+                        <ChevronIcon />
+                    </button>
                 </div>
                 <div className="font-bold text-xl text-gray-900">배송 추적</div>
             </div>
@@ -37,7 +39,7 @@ export default function DeliveryTrackingPage() {
 
             {status === "WAITING_PICKUP" && (
                 <div className="mt-12">
-                    <span className="text-gray-900 font-bold">
+                    <span className="flex text-gray-900 font-bold mb-3">
                         물품인수 사진 등록
                     </span>
                     <DeliveryImageUploader />
