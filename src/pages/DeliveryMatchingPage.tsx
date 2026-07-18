@@ -16,7 +16,9 @@ export default function DeliveryMatchingPage() {
         <div className="page-container">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
-                    <ChevronIcon />
+                    <button onClick={() => navigate(-1)}>
+                        <ChevronIcon />
+                    </button>
                 </div>
                 <div className="font-bold text-xl text-gray-900">매칭 요청</div>
             </div>

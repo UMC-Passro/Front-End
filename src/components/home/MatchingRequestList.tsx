@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { MatchingRequest } from "../../types/home";
 
 type MatchingRequestListProps = {
@@ -5,12 +6,15 @@ type MatchingRequestListProps = {
 };
 
 export function MatchingRequestList({ requests }: MatchingRequestListProps) {
+    const navigate = useNavigate();
+
     return (
         <div className="mt-3.5 flex flex-col gap-2.5">
             {requests.map((request) => (
                 <article
                     key={request.id}
-                    className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 px-5 py-3"
+                    onClick={() => navigate("/delivery/matching")}
+                    className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 px-5 py-3 hover:bg-gray-100 cursor-pointer"
                 >
                     <div className="min-w-0">
                         <h3 className="truncate text-sm font-bold text-gray-800">

@@ -272,7 +272,7 @@ function ProfilePageContent({
                     프로필 활동 요약
                 </h2>
                 <dl
-                    className="flex w-full items-center justify-between rounded-xl px-10 py-5"
+                    className="flex w-full items-center justify-between rounded-xl py-5 divide-x divide-gray-300"
                     style={{
                         background:
                             "linear-gradient(92.52deg, #4541EB -3.06%, #636DFF 110.78%)",
@@ -281,14 +281,8 @@ function ProfilePageContent({
                     {statItems.map((item, index) => (
                         <div
                             key={item.label}
-                            className="flex items-center justify-center gap-6"
+                            className="flex flex-1 items-center justify-center"
                         >
-                            {index > 0 ? (
-                                <span
-                                    className="h-12 w-px rounded-full bg-gray-300"
-                                    aria-hidden="true"
-                                />
-                            ) : null}
                             <StatItem
                                 label={item.label}
                                 value={item.value}

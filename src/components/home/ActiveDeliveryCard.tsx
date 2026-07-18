@@ -17,7 +17,7 @@ export function ActiveDeliveryCard({
             navigate("/delivery/status");
             return;
         } else {
-            navigate("/delivery/matching");
+            navigate("/delivery/tracking");
         }
     };
 
