@@ -29,7 +29,7 @@ export default function DeliveryTrackingPage() {
         <div className="page-container relative">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
-                    <button onClick={() => navigate("/delivery/matching")}>
+                    <button onClick={() => navigate(-1)}>
                         <ChevronIcon />
                     </button>
                 </div>
