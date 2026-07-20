@@ -1,18 +1,29 @@
-export const PointFilterButton = () => {
+import { POINT_FILTER, PointFilterLabel } from "../../types/point";
+
+interface PointFilterButtonProps {
+    selected: PointFilterLabel;
+    onSelect: (label: PointFilterLabel) => void;
+}
+
+export const PointFilterButton = ({
+    selected,
+    onSelect,
+}: PointFilterButtonProps) => {
+    const labels: PointFilterLabel[] = Object.values(POINT_FILTER).map(
+        (c) => c.label,
+    );
+
     return (
         <div className="flex gap-2 mt-8">
-            <button className="flex px-3 py-2 bg-gray-900 rounded-md text-white text-xs font-semibold">
-                전체
-            </button>
-            <button className="flex px-3 py-2 border border-gray-200 rounded-md text-gray-800 text-xs font-semibold">
-                적립
-            </button>
-            <button className="flex px-3 py-2 border border-gray-200 rounded-md text-gray-800 text-xs font-semibold">
-                사용
-            </button>
-            <button className="flex px-3 py-2 border border-gray-200 rounded-md text-gray-800 text-xs font-semibold">
-                소멸
-            </button>
+            {labels.map((label) => (
+                <button
+                    key={label}
+                    onClick={() => onSelect(label)}
+                    className={`flex px-3 py-2 rounded-md text-xs font-semibold ${selected === label ? "bg-gray-900 text-white" : "border border-gray-200 text-gray-800"}`}
+                >
+                    {label}
+                </button>
+            ))}
         </div>
     );
 };
