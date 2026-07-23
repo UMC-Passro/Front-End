@@ -43,15 +43,15 @@ export const router = createBrowserRouter([
                 element: <HistoryStatsPage />,
             },
             {
-                path: "delivery/request",
+                path: "request",
                 element: <DeliveryRequestPage />,
             },
             {
-                path: "delivery/consent",
+                path: "consent",
                 element: <DeliveryConsentPage />,
             },
             {
-                path: "delivery/payment",
+                path: "payment",
                 element: <DeliveryPaymentPage />,
             },
         ],

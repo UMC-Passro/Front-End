@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 
 interface DeliveryRequestFormProps {
   isLoading?: boolean;
@@ -199,8 +200,10 @@ function ErrorDeliveryRequestForm({ message, onRetry }: { message: string; onRet
 }
 
 function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
   return (
-    <div className="mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white">
+    <div className="relative mx-auto flex h-screen w-full max-w-[402px] flex-col overflow-hidden bg-white">
       <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
         <button
           type="button"
@@ -265,11 +268,14 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
       <div className="shrink-0 px-5 py-[14px]">
         <button
           type="button"
+          onClick={() => setIsPaymentOpen(true)}
           className="flex h-[50px] w-full items-center justify-center gap-[10px] rounded-[10px] bg-[#6E73F5] text-[16px] font-bold leading-[22px] text-white transition hover:bg-[#5b60ec] focus:outline-none focus:ring-2 focus:ring-[#6E73F5] focus:ring-offset-2"
         >
           매칭 요청
         </button>
       </div>
+
+      {isPaymentOpen ? <DeliveryPaymentSheet onConfirm={() => setIsPaymentOpen(false)} /> : null}
     </div>
   );
 }
