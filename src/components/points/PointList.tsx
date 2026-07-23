@@ -8,7 +8,7 @@ export const PointList = () => {
                         26.06.26
                     </div>
                 </div>
-                <div className="font-bold text-[#5A60F9]">+ 3,000p</div>
+                <div className="font-bold text-purple-600">+ 3,000p</div>
             </div>
             <div className="flex justify-between px-5 py-4 rounded-lg bg-gray-50">
                 <div className="flex flex-col gap-1">
@@ -17,7 +17,7 @@ export const PointList = () => {
                         26.06.20
                     </div>
                 </div>
-                <div className="font-bold text-[#5A60F9]">+ 1,000p</div>
+                <div className="font-bold text-purple-600">+ 1,000p</div>
             </div>
             <div className="flex justify-between px-5 py-4 rounded-lg bg-gray-50">
                 <div className="flex flex-col gap-1">
@@ -26,7 +26,7 @@ export const PointList = () => {
                         26.04.06
                     </div>
                 </div>
-                <div className="font-bold text-[#5A60F9]">+ 2,000p</div>
+                <div className="font-bold text-purple-600">+ 2,000p</div>
             </div>
             <div className="flex justify-between px-5 py-4 rounded-lg bg-gray-50">
                 <div className="flex flex-col gap-1">
@@ -35,7 +35,7 @@ export const PointList = () => {
                         26.04.01
                     </div>
                 </div>
-                <div className="font-bold text-[#5A60F9]">+ 1,000p</div>
+                <div className="font-bold text-purple-600">+ 1,000p</div>
             </div>
         </div>
     );
