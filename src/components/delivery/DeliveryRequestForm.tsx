@@ -6,10 +6,19 @@ import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
 
 interface DeliveryRequestFormProps {
-    isLoading?: boolean;
-    error?: string | null;
-    onRetry?: () => void;
-    onBack?: () => void;
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+  onBack?: () => void;
+}
+
+
+function BackIcon() {
+  return (
+    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true">
+      <path d="M7 1L1 7L7 13" stroke="#8E91A1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 function ChevronDownIcon() {
@@ -47,7 +56,73 @@ function SelectField({ placeholder }: { placeholder: string }) {
         </button>
     );
 }
+function SizeGuideBridge() {
+  return (
+    <span className="relative inline-flex group">
+      <button
+        type="button"
+        aria-label="물품 크기 안내"
+        className="flex h-4 w-4 items-center justify-center rounded-full bg-[#8E91A1] text-[10px] font-bold leading-none text-white"
+      >
+        ?
+      </button>
 
+      <div className="invisible absolute left-0 top-6 z-30 w-max rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <table className="text-[13px]">
+          <thead>
+            <tr className="text-color-black">
+              <th className="pr-6 text-left font-semibold">사이즈</th>
+              <th className="pr-6 text-center font-semibold">크기(가로+세로+높이)</th>
+              <th className="text-center font-semibold">무게</th>
+            </tr>
+          </thead>
+          <tbody className="text-[#8E91A1]">
+            <tr><td className="flex pr-6 pt-2 justify-center">S</td><td className="text-center pr-6 pt-2">~40 미만</td><td className="text-center pt-2">500g 미만</td></tr>
+            <tr><td className="flex justify-center pr-6 pt-2">M</td><td className="text-center pr-6 pt-2">40 ~ 70</td><td className="text-center items-center pt-2">500g ~ 1.5kg 미만</td></tr>
+            <tr><td className="flex justify-center pr-6 pt-2">L</td><td className="text-center pr-6 pt-2">70 ~ 100</td><td className="text-center pt-2">1.5kg ~ 3kg 미만</td></tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </span>
+  )
+}
+
+function SizeSelectField() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const options = ["S", "M", "L"];
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
+      >
+        <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
+          {selected ?? "물품 크기를 선택해주세요"}
+        </span>
+        <ChevronDownIcon />
+      </button>
+
+      {isOpen ? (
+        <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
+          {options.map((option) => (
+            <button key={option} type="button"
+            onClick={() => {
+              setSelected(option);
+              setIsOpen(false);
+            }}
+            className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
+              {option}
+            </button>
+          ))}
+          </div>
+      ) : null}
+      </div>
+  );
+}
 function TextField({ placeholder }: { placeholder: string }) {
     const [value, setValue] = useState("");
 
@@ -142,15 +217,56 @@ function ErrorDeliveryRequestForm({
 }
 
 function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
-    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  return (
+    <div className="mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white">
+      <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
+        <button
+          type="button"
+          className="absolute left-5 flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          onClick={onBack}
+          aria-label="이전 페이지로 이동"
+        >
+          <BackIcon />
+        </button>
+        <h1 className="text-[21px] font-bold leading-[22px] text-[#1D1E23]">배송 요청</h1>
+      </header>
 
-    return (
-        <div className="page-container relative">
-            <div
-                className={`flex flex-col transition duration-200 ${
-                    isPaymentOpen ? "pointer-events-none blur-sm" : ""
-                }`}
-                aria-hidden={isPaymentOpen}
+      <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-[10px]">
+            <FieldLabel>출발지</FieldLabel>
+            <SelectField placeholder="출발지를 선택해주세요" />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <FieldLabel>도착지</FieldLabel>
+            <SelectField placeholder="도착지를 선택해주세요" />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <FieldLabel>물품명</FieldLabel>
+            <TextField placeholder="물품명을 입력해주세요" />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <FieldLabel>물품가액</FieldLabel>
+            <PriceField />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <div className="flex items-center gap-1">
+              <FieldLabel>물품 크기</FieldLabel>
+              <SizeGuideBridge />
+            </div>
+            <SizeSelectField />
+          </div>
+
+          <div className="flex flex-col gap-[10px]">
+            <FieldLabel>사진 등록</FieldLabel>
+            <button
+              type="button"
+              className="flex h-[60px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-[10px] bg-[#F8F9FD]"
+              aria-label="사진 등록"
             >
                 <header className="flex relative items-center justify-center text-gray-500">
                     <button
