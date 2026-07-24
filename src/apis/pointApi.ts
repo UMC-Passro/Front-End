@@ -1,8 +1,24 @@
+export type PointTransactionType = "SAVING" | "USE" | "EXPIRE";
+
+export interface PointTransaction {
+    id: number;
+    name: string;
+    amount: number;
+    type: PointTransactionType;
+    createdAt: string;
+}
+
+export interface PointSummary {
+    balance: number;
+    transactions: PointTransaction[];
+}
+
 /**
- * TODO: 포인트 및 정산 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 포인트 잔액 조회, 정산 내역 조회, 자동 정산 결과 조회 API를 관리합니다.
- * - 추후 현금 출금 신청 API를 확장할 수 있게 분리합니다.
- * - 포인트 타입은 types/point.ts와 맞춥니다.
+ * 포인트 잔액 및 거래 내역 API가 확정되면 이 계약을 구현합니다.
  */
+export interface PointApiContract {
+    getSummary(): Promise<PointSummary>;
+    getTransactions(
+        type?: PointTransactionType,
+    ): Promise<PointTransaction[]>;
+}
