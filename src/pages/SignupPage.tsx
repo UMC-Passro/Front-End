@@ -1,76 +1,95 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BasicSignupForm from "../components/signup/BasicSignupForm";
-import DetailSignupForm from "../components/signup/DetailSignupForm";
+import ChevronIcon from "../assets/icons/ChevronIcon";
+import { BasicSignupForm, DetailSignupForm } from "../components/signup";
 import type {
-  SignupFieldUpdater,
-  SignupFormData,
-  SignupStep,
+    SignupFieldUpdater,
+    SignupFormData,
+    SignupStep,
 } from "../types/signup";
 
 const initialSignupFormData: SignupFormData = {
-  nickname: "",
-  email: "",
-  emailCode: "",
-  password: "",
-  passwordCheck: "",
-  name: "",
-  phone: "",
-  gender: "NONE",
-  address: "",
+    nickname: "",
+    email: "",
+    emailCode: "",
+    password: "",
+    passwordCheck: "",
+    name: "",
+    phone: "",
+    birthDate: "",
+    gender: "NONE",
+    address: "",
 };
 
 export default function SignupPage() {
-  const navigate = useNavigate();
-  const [step, setStep] = useState<SignupStep>("basic");
-  const [formData, setFormData] = useState<SignupFormData>(
-    initialSignupFormData,
-  );
+    const navigate = useNavigate();
+    const [step, setStep] = useState<SignupStep>("basic");
+    const [formData, setFormData] = useState<SignupFormData>(
+        initialSignupFormData,
+    );
 
-  const updateField: SignupFieldUpdater = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+    const updateField: SignupFieldUpdater = (key, value) => {
+        setFormData((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
 
-  const handleBasicSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handleBasicSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    // TODO: 닉네임 중복 확인, 이메일 인증 확인, 비밀번호 일치 검증을 연결합니다.
-    setStep("detail");
-  };
+        // TODO: 닉네임 중복 확인, 이메일 인증 확인, 비밀번호 일치 검증을 연결합니다.
+        setStep("detail");
+    };
 
-  const handleFinalSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handleFinalSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    // TODO: 최종 회원가입 API 요청을 연결합니다.
-    console.log("회원가입 데이터", formData);
+        // TODO: 최종 회원가입 API 요청을 연결합니다.
+        console.log("회원가입 데이터", formData);
 
-    navigate("/login");
-  };
+        navigate("/login");
+    };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-gray-300 border border-black py-16 px-8 flex flex-col items-center gap-6">
-        <h1 className="text-7xl text-gray-500 font-bold mb-10">Passro</h1>
+    const handleBack = () => {
+        if (step === "basic") {
+            navigate(-1);
+            return;
+        }
 
-        {step === "basic" ? (
-          <BasicSignupForm
-            formData={formData}
-            updateField={updateField}
-            onSubmit={handleBasicSubmit}
-          />
-        ) : (
-          <DetailSignupForm
-            formData={formData}
-            updateField={updateField}
-            onSubmit={handleFinalSubmit}
-            onPrev={() => setStep("basic")}
-          />
-        )}
-      </div>
-    </div>
-  );
+        setStep("basic");
+    };
+
+    return (
+        <div className="page-container relative flex flex-col overflow-hidden">
+            <header className="relative mb-[38px] flex items-center justify-center">
+                <button
+                    type="button"
+                    onClick={handleBack}
+                    className="absolute left-0 flex items-center justify-center text-gray-500"
+                    aria-label="이전 페이지로 이동"
+                >
+                    <ChevronIcon />
+                </button>
+                <h1 className="text-xl font-bold text-gray-900">
+                    {step === "basic" ? "회원가입" : "상세정보"}
+                </h1>
+            </header>
+
+            {step === "basic" ? (
+                <BasicSignupForm
+                    formData={formData}
+                    updateField={updateField}
+                    onSubmit={handleBasicSubmit}
+                />
+            ) : (
+                <DetailSignupForm
+                    formData={formData}
+                    updateField={updateField}
+                    onSubmit={handleFinalSubmit}
+                />
+            )}
+        </div>
+    );
 }

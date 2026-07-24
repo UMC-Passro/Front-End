@@ -1,13 +1,13 @@
-import type { UserProfile, UserRole } from "../types/user";
+import type { UserRole } from "../types/user";
 
 const AUTH_USER_KEY = "passro.authUser";
+const SELECTED_USER_ROLE_KEY = "passro.selectedUserRole";
 
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
   role: UserRole;
-
 }
 
 function createUserId(email: string) {
@@ -26,6 +26,10 @@ function getRoleFromEmail(email: string): UserRole {
     : "sender";
 }
 
+function isUserRole(value: string | null): value is UserRole {
+  return value === "sender" || value === "carrier";
+}
+
 export function login(email: string): AuthUser {
   const normalizedEmail = email.trim().toLowerCase();
   const authUser: AuthUser = {
@@ -41,6 +45,7 @@ export function login(email: string): AuthUser {
 
 export function logout() {
   localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem(SELECTED_USER_ROLE_KEY);
 }
 
 export function getCurrentUser(): AuthUser | null {
@@ -60,4 +65,26 @@ export function getCurrentUser(): AuthUser | null {
 
 export function isAuthenticated() {
   return getCurrentUser() !== null;
+}
+
+export function getSelectedUserRole(): UserRole | null {
+  const storedRole = localStorage.getItem(SELECTED_USER_ROLE_KEY);
+  return isUserRole(storedRole) ? storedRole : null;
+}
+
+export function setCurrentUserRole(role: UserRole) {
+  localStorage.setItem(SELECTED_USER_ROLE_KEY, role);
+
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    return null;
+  }
+
+  const updatedUser: AuthUser = {
+    ...currentUser,
+    role,
+  };
+
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+  return updatedUser;
 }

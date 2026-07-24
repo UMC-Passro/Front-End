@@ -1,14 +1,19 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-import DeliveryConsentPage from "../pages/DeliveryConsentPage";
-import DeliveryPaymentPage from "../pages/DeliveryPaymentPage";
 import DeliveryRequestPage from "../pages/DeliveryRequestPage";
+import DeliveryStatusPage from "../pages/DeliveryStatusPage";
 import LoginPage from "../pages/LoginPage";
 import MyPage from "../pages/MyPage";
 import SignupPage from "../pages/SignupPage";
 import PointPage from "../pages/PointPage";
 import { HistoryStatsPage } from "../pages/HistoryStatsPage";
+import UserStateChoice from "../pages/UserStateChoice";
+import HomePage from "../pages/HomePage";
+import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
+import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
+import EditProfile from "../pages/EditProfile";
+import ChatPage from "../pages/ChatPage";
 
 export const router = createBrowserRouter([
     {
@@ -24,8 +29,16 @@ export const router = createBrowserRouter([
                 element: <LoginPage />,
             },
             {
+                path: "user-state-choice",
+                element: <UserStateChoice />,
+            },
+            {
                 path: "signup",
                 element: <SignupPage />,
+            },
+            {
+                path: "home",
+                element: <HomePage />,
             },
         ],
     },
@@ -34,6 +47,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
             { index: true, element: <MyPage /> },
+            { path: "edit", element: <EditProfile /> },
             {
                 path: "point",
                 element: <PointPage />,
@@ -42,17 +56,31 @@ export const router = createBrowserRouter([
                 path: "history",
                 element: <HistoryStatsPage />,
             },
+        ],
+    },
+    {
+        path: "/delivery",
+        element: <ProtectedRoute />,
+        children: [
             {
-                path: "delivery/request",
+                path: "matching",
+                element: <DeliveryMatchingPage />,
+            },
+            {
+                path: "request",
                 element: <DeliveryRequestPage />,
             },
             {
-                path: "delivery/consent",
-                element: <DeliveryConsentPage />,
+                path: "tracking",
+                element: <DeliveryTrackingPage />,
             },
             {
-                path: "delivery/payment",
-                element: <DeliveryPaymentPage />,
+                path: "status",
+                element: <DeliveryStatusPage />,
+            },
+            {
+                path: "chat",
+                element: <ChatPage />,
             },
         ],
     },
