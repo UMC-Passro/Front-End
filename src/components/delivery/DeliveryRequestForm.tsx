@@ -1,9 +1,6 @@
 import { memo, useState } from "react";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
-import ChevronIcon from "../../assets/icons/ChevronIcon";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
-import { SizeInfo } from "./SizeInfo";
-import { DeliveryImageUploader } from "./DeliveryImageUploader";
 
 interface DeliveryRequestFormProps {
   isLoading?: boolean;
@@ -217,72 +214,31 @@ function ErrorDeliveryRequestForm({
 }
 
 function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
-  return (
-    <div className="mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white">
-      <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
-        <button
-          type="button"
-          className="absolute left-5 flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
-          onClick={onBack}
-          aria-label="이전 페이지로 이동"
-        >
-          <BackIcon />
-        </button>
-        <h1 className="text-[21px] font-bold leading-[22px] text-[#1D1E23]">배송 요청</h1>
-      </header>
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
-      <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-[10px]">
-            <FieldLabel>출발지</FieldLabel>
-            <SelectField placeholder="출발지를 선택해주세요" />
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <FieldLabel>도착지</FieldLabel>
-            <SelectField placeholder="도착지를 선택해주세요" />
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <FieldLabel>물품명</FieldLabel>
-            <TextField placeholder="물품명을 입력해주세요" />
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <FieldLabel>물품가액</FieldLabel>
-            <PriceField />
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <div className="flex items-center gap-1">
-              <FieldLabel>물품 크기</FieldLabel>
-              <SizeGuideBridge />
-            </div>
-            <SizeSelectField />
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <FieldLabel>사진 등록</FieldLabel>
-            <button
-              type="button"
-              className="flex h-[60px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-[10px] bg-[#F8F9FD]"
-              aria-label="사진 등록"
+    return (
+        <div className="relative mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white">
+            <div
+                className={`flex min-h-0 flex-1 flex-col transition duration-200 ${
+                    isPaymentOpen ? "pointer-events-none blur-sm" : ""
+                }`}
+                aria-hidden={isPaymentOpen}
             >
-                <header className="flex relative items-center justify-center text-gray-500">
+                <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
                     <button
                         type="button"
-                        className="absolute left-0 flex items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                        className="absolute left-5 flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
                         onClick={onBack}
                         aria-label="이전 페이지로 이동"
                     >
-                        <ChevronIcon />
+                        <BackIcon />
                     </button>
-                    <h1 className="font-bold text-xl text-gray-900">
+                    <h1 className="text-[21px] font-bold leading-[22px] text-[#1D1E23]">
                         배송 요청
                     </h1>
                 </header>
 
-                <div className="flex-1 mt-3">
+                <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
@@ -307,20 +263,23 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                         <div className="flex flex-col gap-[10px]">
                             <div className="flex items-center gap-1">
                                 <FieldLabel>물품 크기</FieldLabel>
-                                <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-gray-500 text-white text-xs font-bold cursor-pointer">
-                                    ?
-                                    <SizeInfo
-                                        boxTranslate="-18%"
-                                        arrowLeft="18%"
-                                    />
-                                </div>
+                                <SizeGuideBridge />
                             </div>
-                            <SelectField placeholder="물품 크기를 선택해주세요" />
+                            <SizeSelectField />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>사진 등록</FieldLabel>
-                            <DeliveryImageUploader />
+                            <button
+                                type="button"
+                                className="flex h-[60px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-[10px] bg-[#F8F9FD]"
+                                aria-label="사진 등록"
+                            >
+                                <CameraIcon />
+                                <span className="text-[10px] font-medium leading-3 text-gray-300">
+                                    0/3
+                                </span>
+                            </button>
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
@@ -330,11 +289,11 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     </div>
                 </div>
 
-                <div className="shrink-0">
+                <div className="shrink-0 px-5 py-[14px]">
                     <button
                         type="button"
                         onClick={() => setIsPaymentOpen(true)}
-                        className="flex w-full mt-9 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-[#6E73F5] focus:ring-offset-2"
+                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                     >
                         매칭 요청
                     </button>
