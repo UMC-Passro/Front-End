@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
+import PageHeader from "../common/PageHeader";
 
 interface DeliveryRequestFormProps {
   isLoading?: boolean;
@@ -10,14 +11,6 @@ interface DeliveryRequestFormProps {
   onBack?: () => void;
 }
 
-
-function BackIcon() {
-  return (
-    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true">
-      <path d="M7 1L1 7L7 13" stroke="#8E91A1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function ChevronDownIcon() {
     return (
@@ -260,19 +253,11 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                 }`}
                 aria-hidden={isOverlayOpen}
             >
-                <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
-                    <button
-                        type="button"
-                        className="absolute left-5 flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                        onClick={onBack}
-                        aria-label="이전 페이지로 이동"
-                    >
-                        <BackIcon />
-                    </button>
-                    <h1 className="text-[21px] font-bold leading-[22px] text-[#1D1E23]">
-                        배송 요청
-                    </h1>
-                </header>
+                <PageHeader
+                    title="배송 요청"
+                    onBack={onBack}
+                    className="mx-4 mt-3 shrink-0"
+                />
 
                 <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
                     <div className="flex flex-col gap-5">

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import ChevronIcon from "../assets/icons/ChevronIcon";
+import PageHeader from "../components/common/PageHeader";
 import { DeliveryFilterButton } from "../components/delivery/history/DeliveryFilterButton";
 import { DeliveryList } from "../components/delivery/history/DeliveryList";
 import { useState } from "react";
@@ -67,14 +67,7 @@ export function HistoryStatsPage() {
 
     return (
         <div className="page-container">
-            <div className="flex relative items-center justify-center text-gray-500">
-                <div className="absolute left-0">
-                    <button onClick={() => navigate("/mypage")}>
-                        <ChevronIcon />
-                    </button>
-                </div>
-                <div className="font-bold text-xl text-gray-900">배송 내역</div>
-            </div>
+            <PageHeader title="배송 내역" onBack={() => navigate("/mypage")} />
             <DeliveryFilterButton selected={selected} onSelect={setSelected} />
             <DeliveryList items={filteredItems} />
         </div>

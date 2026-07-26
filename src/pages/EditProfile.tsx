@@ -1,8 +1,15 @@
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/common/PageHeader";
+
 export default function EditProfile() {
+    const navigate = useNavigate();
+
     return (
-        <div className="flex min-h-full items-center justify-center bg-gray-100 px-4">
+        <div className="page-container flex min-h-full flex-col">
+            <PageHeader title="프로필 설정" onBack={() => navigate(-1)} />
+
             {/* 전체 카드 상자 */}
-            <div className="w-full max-w-md bg-gray-300 border border-black py-12 px-8 flex flex-col gap-8 rounded-lg shadow-md">
+            <div className="mt-8 w-full max-w-md bg-gray-300 border border-black py-12 px-8 flex flex-col gap-8 rounded-lg shadow-md">
                 
                 {/* 상단 프로필 영역 (사진 + 텍스트 가로 배치) */}
                 <div className="flex items-center gap-6 w-full pb-4 border-b border-gray-400">

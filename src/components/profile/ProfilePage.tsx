@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type { ProfilePageData, UserRole } from "../../types/user";
-import ChevronIcon from "../../assets/icons/ChevronIcon";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../common/PageHeader";
 
 interface ProfilePageProps {
     data?: ProfilePageData;
@@ -221,17 +221,7 @@ function ProfilePageContent({
 
     return (
         <main className="page-container">
-            <header className="relative flex items-center justify-center text-gray-500">
-                <button
-                    type="button"
-                    className="absolute left-0 flex items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                    onClick={onBack}
-                    aria-label="이전 페이지로 이동"
-                >
-                    <ChevronIcon />
-                </button>
-                <h1 className="font-bold text-xl text-gray-900">마이페이지</h1>
-            </header>
+            <PageHeader title="마이페이지" onBack={onBack} />
 
             <section
                 className="flex flex-col items-center gap-6 pt-8 pb-6"
