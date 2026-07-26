@@ -1,8 +1,25 @@
+export interface CommuteRoute {
+    id: number;
+    name: string;
+    origin: string;
+    destination: string;
+    days: string[];
+    startTime: string;
+    endTime: string;
+    favorite: boolean;
+}
+
+export type SaveCommuteRouteRequest = Omit<CommuteRoute, "id">;
+
 /**
- * TODO: 통학 경로 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 통학 경로 등록, 수정, 삭제, 즐겨찾기 경로 조회 API를 관리합니다.
- * - 경로 기반 매칭에 필요한 좌표/주소/시간대 데이터를 다룹니다.
- * - 경로 타입은 types/route.ts와 맞춥니다.
+ * 통학 경로 CRUD 명세가 확정되면 이 계약을 구현합니다.
  */
+export interface RouteApiContract {
+    getRoutes(): Promise<CommuteRoute[]>;
+    createRoute(request: SaveCommuteRouteRequest): Promise<CommuteRoute>;
+    updateRoute(
+        routeId: number,
+        request: SaveCommuteRouteRequest,
+    ): Promise<CommuteRoute>;
+    deleteRoute(routeId: number): Promise<void>;
+}

@@ -20,7 +20,7 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
     const [isRole, setIsRole] = useState(role);
 
     return (
-        <section className="page-container relative">
+        <section className="page-container relative flex flex-col">
             <div
                 className={`flex flex-col h-full transition duration-200 ${
                     isConsentOpen ? "pointer-events-none blur-sm" : ""

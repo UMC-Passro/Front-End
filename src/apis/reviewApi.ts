@@ -1,8 +1,29 @@
-/**
- * TODO: 리뷰와 평점 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 리뷰 작성, 리뷰 조회, 배송자 평점 조회 API를 관리합니다.
- * - 배송 완료 이후에만 리뷰를 작성할 수 있도록 상태 조건을 고려합니다.
- * - 리뷰 타입은 types/review.ts와 맞춥니다.
- */
+import { apiRequest } from "./client";
+import { API_ENDPOINTS } from "./endpoints";
+
+export interface CreateReviewRequest {
+    deliveryId: number;
+    rating: number;
+    content?: string;
+}
+
+export interface ReviewAverage {
+    averageRating: number;
+}
+
+export const reviewApi = {
+    create(request: CreateReviewRequest) {
+        return apiRequest<string>({
+            method: "POST",
+            url: API_ENDPOINTS.review.root,
+            data: request,
+        });
+    },
+
+    getAverage(userId: number) {
+        return apiRequest<ReviewAverage>({
+            method: "GET",
+            url: API_ENDPOINTS.review.average(userId),
+        });
+    },
+};

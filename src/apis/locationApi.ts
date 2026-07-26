@@ -1,8 +1,17 @@
+export interface LiveLocation {
+    latitude: number;
+    longitude: number;
+    recordedAt: string;
+}
+
 /**
- * TODO: 실시간 위치 공유 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 현재 위치 전송, 위치 조회, 위치 공유 상태 변경 API를 관리합니다.
- * - 위치 데이터 갱신 주기와 권한 예외 처리를 고려합니다.
- * - 위치 타입은 types/location.ts와 맞춥니다.
+ * 위치 전송 주기와 REST/Socket 명세가 확정되면 이 계약을 구현합니다.
  */
+export interface LocationApiContract {
+    sendLocation(
+        deliveryId: number,
+        location: Omit<LiveLocation, "recordedAt">,
+    ): Promise<void>;
+    getLocation(deliveryId: number): Promise<LiveLocation>;
+    setSharing(deliveryId: number, enabled: boolean): Promise<void>;
+}

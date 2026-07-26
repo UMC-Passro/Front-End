@@ -1,8 +1,23 @@
+export interface ChatMessage {
+    id: number;
+    roomId: number;
+    senderId: number;
+    content: string;
+    createdAt: string;
+    read: boolean;
+}
+
+export interface SendMessageRequest {
+    content: string;
+}
+
 /**
- * TODO: 인앱 채팅 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 채팅방 목록, 메시지 조회, 메시지 전송 API를 관리합니다.
- * - 실시간 통신을 도입할 경우 REST API와 소켓 로직을 구분합니다.
- * - 메시지 타입은 types/chat.ts와 맞춥니다.
+ * 채팅 REST/Socket 명세가 확정되면 이 계약을 구현합니다.
  */
+export interface ChatApiContract {
+    getMessages(roomId: number): Promise<ChatMessage[]>;
+    sendMessage(
+        roomId: number,
+        request: SendMessageRequest,
+    ): Promise<ChatMessage>;
+}

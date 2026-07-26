@@ -15,7 +15,7 @@ export default function DeliveryStatusPage() {
     const [status, setStatus] = useState<DeliveryStatus>("DELIVERING");
 
     return (
-        <div className="page-container relative">
+        <div className="page-container relative flex flex-col">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
                     <button onClick={() => navigate(-1)}>

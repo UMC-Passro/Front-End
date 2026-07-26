@@ -13,7 +13,7 @@ export default function DeliveryMatchingPage() {
     };
 
     return (
-        <div className="page-container">
+        <div className="page-container flex flex-col">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
                     <button onClick={() => navigate(-1)}>
