@@ -87,11 +87,11 @@ export default function StationSelectModal({
 
     return (
         <div
-            className="station-modal-backdrop-in fixed inset-0 z-[70] mx-auto flex w-full max-w-[402px] items-end bg-black/40"
+            className="bottom-sheet-backdrop-in fixed inset-0 z-[70] mx-auto flex w-full max-w-[402px] items-end bg-black/40"
             onClick={onClose}
         >
             <section
-                className="station-modal-panel-in flex max-h-[82dvh] w-full flex-col rounded-t-[30px] bg-white px-5 pb-6 pt-3 shadow-2xl"
+                className="bottom-sheet-panel-in flex max-h-[82dvh] w-full flex-col rounded-t-[30px] bg-white px-5 pb-6 pt-3 shadow-2xl"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="station-modal-title"
