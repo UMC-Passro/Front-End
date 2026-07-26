@@ -54,7 +54,7 @@ function MoveIcon() {
 function LoadingProfilePage() {
     return (
         <section
-            className="mx-auto flex min-h-screen w-full max-w-[402px] flex-col bg-white"
+            className="mx-auto flex min-h-full w-full max-w-[402px] flex-col bg-white"
             aria-busy="true"
             aria-labelledby="profile-loading-title"
         >
@@ -93,7 +93,7 @@ function ErrorProfilePage({
     onRetry?: () => void;
 }) {
     return (
-        <section className="mx-auto flex min-h-screen w-full max-w-[402px] items-center bg-white px-5 py-6">
+        <section className="mx-auto flex min-h-full w-full max-w-[402px] items-center bg-white px-5 py-6">
             <div
                 className="w-full rounded-lg border border-rose-200 bg-rose-50 p-5 text-rose-900"
                 role="alert"

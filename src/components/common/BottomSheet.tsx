@@ -16,9 +16,12 @@ export default function BottomSheet({
     onClose,
 }: BottomSheetProps) {
     return (
-        <div className="absolute inset-0 z-20 bg-black/20" onClick={onClose}>
+        <div
+            className="fixed inset-0 z-[60] mx-auto w-full max-w-[402px] bg-black/20"
+            onClick={onClose}
+        >
             <div
-                className="absolute inset-x-0 bottom-0 rounded-t-[30px] bg-white px-5 pb-8 pt-3"
+                className="absolute inset-x-0 bottom-0 max-h-[90dvh] overflow-y-auto rounded-t-[30px] bg-white px-5 pb-8 pt-3"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="bottom-sheet-title"

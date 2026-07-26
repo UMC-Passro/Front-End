@@ -64,8 +64,8 @@ function SizeGuideBridge() {
         ?
       </button>
 
-      <div className="invisible absolute left-0 top-6 z-30 w-max rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-        <table className="text-[13px]">
+      <div className="invisible absolute left-0 top-6 z-30 w-[300px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <table className="w-full table-fixed text-[13px]">
           <thead>
             <tr className="text-color-black">
               <th className="pr-6 text-left font-semibold">사이즈</th>
@@ -155,7 +155,7 @@ function PriceField() {
 function LoadingDeliveryRequestForm() {
     return (
         <section
-            className="mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white"
+            className="mx-auto flex h-full w-full max-w-[402px] flex-col bg-white"
             aria-busy="true"
             aria-labelledby="delivery-request-loading-title"
         >
@@ -165,7 +165,7 @@ function LoadingDeliveryRequestForm() {
             <div className="flex h-14 shrink-0 items-center justify-center px-5">
                 <div className="h-5 w-16 animate-pulse rounded bg-slate-200" />
             </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
+            <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
                 <div className="flex flex-col gap-5">
                     {Array.from({ length: 6 }, (_, index) => (
                         <div key={index} className="flex flex-col gap-[10px]">
@@ -190,7 +190,7 @@ function ErrorDeliveryRequestForm({
     onRetry?: () => void;
 }) {
     return (
-        <section className="mx-auto flex h-screen w-full max-w-[402px] items-center bg-white px-5 py-6">
+        <section className="mx-auto flex h-full w-full max-w-[402px] items-center bg-white px-5 py-6">
             <div
                 className="w-full rounded-lg border border-rose-200 bg-rose-50 p-5 text-rose-900"
                 role="alert"
@@ -217,7 +217,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
     return (
-        <div className="relative mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white">
+        <div className="relative mx-auto flex h-full w-full max-w-[402px] flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-200 ${
                     isPaymentOpen ? "pointer-events-none blur-sm" : ""
@@ -238,7 +238,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     </h1>
                 </header>
 
-                <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
+                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>

@@ -1,6 +1,6 @@
 export default function EditProfile() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="flex min-h-full items-center justify-center bg-gray-100 px-4">
             {/* 전체 카드 상자 */}
             <div className="w-full max-w-md bg-gray-300 border border-black py-12 px-8 flex flex-col gap-8 rounded-lg shadow-md">
                 

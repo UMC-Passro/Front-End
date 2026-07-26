@@ -51,7 +51,7 @@ export default function DeliveryTrackingPage() {
             </div>
             <button
                 onClick={handleButtonClick}
-                className="absolute bottom-10 left-5 right-5 py-3.5 rounded-lg items-center justify-center text-gray-900 font-semibold bg-gray-100"
+                className="mt-10 flex w-full items-center justify-center rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900"
             >
                 {buttonText}
             </button>
