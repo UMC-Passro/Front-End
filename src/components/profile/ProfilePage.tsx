@@ -145,7 +145,7 @@ function MenuRow({ label, onClick }: { label: string; onClick?: () => void }) {
             className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-[15px] text-left transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
             onClick={onClick}
         >
-            <span className="text-gray-700">{label}</span>
+            <span className="text-gray-700 font-medium ">{label}</span>
             <MoveIcon />
         </button>
     );
