@@ -19,7 +19,7 @@ export const PointFilterButton = ({
                 <button
                     key={label}
                     onClick={() => onSelect(label)}
-                    className={`flex px-3 py-2 rounded-md text-xs font-semibold ${selected === label ? "bg-gray-900 text-white" : "border border-gray-200 text-gray-800"}`}
+                    className={`flex items-center px-3 py-2 rounded-md text-xs font-semibold ${selected === label ? "bg-gray-900 text-white" : "border border-gray-200 text-gray-800"}`}
                 >
                     {label}
                 </button>
