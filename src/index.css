@@ -37,6 +37,42 @@ body {
     .scrollbar-hidden::-webkit-scrollbar {
         display: none;
     }
+
+    .station-modal-backdrop-in {
+        animation: station-modal-fade-in 180ms ease-out both;
+    }
+
+    .station-modal-panel-in {
+        animation: station-modal-slide-in 240ms
+            cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+
+@keyframes station-modal-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes station-modal-slide-in {
+    from {
+        opacity: 0.85;
+        transform: translateY(28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .station-modal-backdrop-in,
+    .station-modal-panel-in {
+        animation: none;
+    }
 }
 
 @layer base {
