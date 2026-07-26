@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
+import StationSelectModal, { type Station } from "./StationSelectModal";
 
 interface DeliveryRequestFormProps {
   isLoading?: boolean;
@@ -42,13 +43,29 @@ function FieldLabel({ children }: { children: string }) {
     return <p className="text-sm font-semibold text-gray-700">{children}</p>;
 }
 
-function SelectField({ placeholder }: { placeholder: string }) {
+function SelectField({
+    placeholder,
+    value,
+    onClick,
+}: {
+    placeholder: string;
+    value?: string;
+    onClick: () => void;
+}) {
     return (
         <button
             type="button"
+            onClick={onClick}
+            aria-haspopup="dialog"
             className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
         >
-            <span className="text-[15px] text-gray-500">{placeholder}</span>
+            <span
+                className={`text-[15px] ${
+                    value ? "font-medium text-gray-900" : "text-gray-500"
+                }`}
+            >
+                {value ?? placeholder}
+            </span>
             <ChevronDownIcon />
         </button>
     );
@@ -215,14 +232,33 @@ function ErrorDeliveryRequestForm({
 
 function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const [stationField, setStationField] = useState<
+        "origin" | "destination" | null
+    >(null);
+    const [originStation, setOriginStation] = useState<Station | null>(null);
+    const [destinationStation, setDestinationStation] =
+        useState<Station | null>(null);
+    const isOverlayOpen = isPaymentOpen || stationField !== null;
+
+    const handleStationSelect = (station: Station) => {
+        if (stationField === "origin") {
+            setOriginStation(station);
+        }
+
+        if (stationField === "destination") {
+            setDestinationStation(station);
+        }
+
+        setStationField(null);
+    };
 
     return (
         <div className="relative mx-auto flex h-full w-full max-w-[402px] flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-200 ${
-                    isPaymentOpen ? "pointer-events-none blur-sm" : ""
+                    isOverlayOpen ? "pointer-events-none blur-sm" : ""
                 }`}
-                aria-hidden={isPaymentOpen}
+                aria-hidden={isOverlayOpen}
             >
                 <header className="relative flex h-14 shrink-0 items-center justify-center px-5">
                     <button
@@ -242,12 +278,20 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
-                            <SelectField placeholder="출발지를 선택해주세요" />
+                            <SelectField
+                                placeholder="출발지를 선택해주세요"
+                                value={originStation?.name}
+                                onClick={() => setStationField("origin")}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>도착지</FieldLabel>
-                            <SelectField placeholder="도착지를 선택해주세요" />
+                            <SelectField
+                                placeholder="도착지를 선택해주세요"
+                                value={destinationStation?.name}
+                                onClick={() => setStationField("destination")}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
@@ -304,6 +348,18 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                 <DeliveryPaymentSheet
                     onClose={() => setIsPaymentOpen(false)}
                     onConfirm={() => setIsPaymentOpen(false)}
+                />
+            ) : null}
+
+            {stationField ? (
+                <StationSelectModal
+                    title={
+                        stationField === "origin"
+                            ? "출발역 선택"
+                            : "도착역 선택"
+                    }
+                    onClose={() => setStationField(null)}
+                    onSelect={handleStationSelect}
                 />
             ) : null}
         </div>
