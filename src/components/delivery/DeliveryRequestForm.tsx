@@ -73,19 +73,24 @@ function SizeGuideBridge() {
                 ?
             </button>
 
-            <div className="invisible absolute left-0 top-6 z-30 w-[300px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div className="invisible absolute left-0 top-6 z-30 w-[350px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 left-[-35px]">
                 <table className="w-full table-fixed text-[13px]">
+                    <colgroup>
+                        <col className="w-[16%]" />
+                        <col className="w-[48%]" />
+                        <col className="w-[36%]" />
+                    </colgroup>
                     <thead>
                         <tr className="text-color-black">
-                            <th className="pr-6 text-left font-semibold">사이즈</th>
-                            <th className="pr-6 text-center font-semibold">크기(가로+세로+높이)</th>
-                            <th className="text-center font-semibold">무게</th>
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">사이즈</th>
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">크기 (가로+세로+높이)</th>
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">무게</th>
                         </tr>
                     </thead>
-                    <tbody className="text-[#8E91A1]">
-                        <tr><td className="flex pr-6 pt-2 justify-center">S</td><td className="text-center pr-6 pt-2">~40 미만</td><td className="text-center pt-2">500g 미만</td></tr>
-                        <tr><td className="flex justify-center pr-6 pt-2">M</td><td className="text-center pr-6 pt-2">40 ~ 70</td><td className="text-center items-center pt-2">500g ~ 1.5kg 미만</td></tr>
-                        <tr><td className="flex justify-center pr-6 pt-2">L</td><td className="text-center pr-6 pt-2">70 ~ 100</td><td className="text-center pt-2">1.5kg ~ 3kg 미만</td></tr>
+                    <tbody className="whitespace-nowrap text-[12px] text-[#8E91A1]">
+                        <tr><td className="pt-1 text-center">S</td><td className="pt-1 text-center">~40 미만</td><td className="pt-1 text-center">500g 미만</td></tr>
+                        <tr><td className="pt-1 text-center">M</td><td className="pt-1 text-center">40 ~ 70</td><td className="pt-1 text-center">500g ~ 1.5kg 미만</td></tr>
+                        <tr><td className="pt-1 text-center">L</td><td className="pt-1 text-center">70 ~ 100</td><td className="pt-1 text-center">1.5kg ~ 3kg 미만</td></tr>
 
                     </tbody>
                 </table>
