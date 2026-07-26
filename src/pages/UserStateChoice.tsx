@@ -30,7 +30,7 @@ export default function UserStateChoice() {
 
     return (
         <>
-            <div className="page-container flex relative flex-col items-center justify-center">
+            <div className="page-container flex flex-col items-center justify-center">
                 <img
                     className="h-[clamp(200px,29dvh,250px)] w-[clamp(200px,29dvh,250px)] shrink-0 object-contain"
                     src="/Logo.png"
@@ -68,7 +68,7 @@ export default function UserStateChoice() {
                     type="button"
                     disabled={selectedType === null}
                     onClick={handleHome}
-                    className={`absolute bottom-10 left-5 right-5 shadow-[2px_2px_rgba(0,0,0,0.10)] rounded-lg p-3.5 font-semibold transition-colors ${
+                    className={`mt-10 w-full shadow-[2px_2px_rgba(0,0,0,0.10)] rounded-lg p-3.5 font-semibold transition-colors ${
                         selectedType
                             ? "cursor-pointer bg-purple-500 text-white hover:bg-purple-600"
                             : "cursor-not-allowed bg-gray-100 text-gray-400"

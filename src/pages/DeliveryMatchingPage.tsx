@@ -13,7 +13,7 @@ export default function DeliveryMatchingPage() {
     };
 
     return (
-        <div className="page-container">
+        <div className="page-container flex flex-col">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
                     <button onClick={() => navigate(-1)}>
@@ -29,7 +29,7 @@ export default function DeliveryMatchingPage() {
                 itemSize="S"
                 settlementPoint="3,200P"
             />
-            <div className="fixed bottom-10 left-1/2 flex w-full max-w-[402px] -translate-x-1/2 gap-3.5 px-5">
+            <div className="mt-auto flex w-full gap-3.5 pt-10">
                 <button
                     onClick={handleReject}
                     className="flex flex-1 items-center justify-center bg-gray-100 text-gray-600 font-bold rounded-lg px-2.5 py-3.5"

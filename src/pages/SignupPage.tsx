@@ -62,7 +62,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col overflow-hidden">
+        <div className="page-container relative flex flex-col">
             <header className="relative mb-[38px] flex items-center justify-center">
                 <button
                     type="button"

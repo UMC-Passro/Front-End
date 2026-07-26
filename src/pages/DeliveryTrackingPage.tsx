@@ -26,7 +26,7 @@ export default function DeliveryTrackingPage() {
     }[status];
 
     return (
-        <div className="page-container relative">
+        <div className="page-container relative flex flex-col">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
                     <button onClick={() => navigate(-1)}>
@@ -49,12 +49,14 @@ export default function DeliveryTrackingPage() {
                 <span className="text-gray-900 font-bold">발송자 정보</span>
                 <DeliveryPersonCard />
             </div>
-            <button
-                onClick={handleButtonClick}
-                className="absolute bottom-10 left-5 right-5 py-3.5 rounded-lg items-center justify-center text-gray-900 font-semibold bg-gray-100"
-            >
-                {buttonText}
-            </button>
+            <div className="mt-auto pt-10">
+                <button
+                    onClick={handleButtonClick}
+                    className="w-full py-3.5 rounded-lg items-center justify-center text-gray-900 font-semibold bg-gray-100"
+                >
+                    {buttonText}
+                </button>
+            </div>
         </div>
     );
 }
