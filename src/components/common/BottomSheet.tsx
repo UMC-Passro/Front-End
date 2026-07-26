@@ -33,9 +33,8 @@ export default function BottomSheet({
                 />
                 <h2
                     id="bottom-sheet-title"
-                    className={`mt-10 text-lg font-bold leading-[22px] text-gray-900 ${
-                        titleAlign === "center" ? "text-center" : "text-left"
-                    }`}
+                    className={`pl-[10px] pr-[10px] mt-10 text-lg font-bold leading-[22px] text-gray-900 ${titleAlign === "center" ? "text-center" : "text-left"
+                        }`}
                 >
                     {title}
                 </h2>
