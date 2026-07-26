@@ -57,14 +57,12 @@ export default function DeliveryStatusPage() {
                 </ol>
             </section>
 
-            <div className="mt-auto pt-10">
-                <button
-                    type="button"
-                    className="w-full font-semibold py-3.5 rounded-lg bg-gray-100 text-gray-900 transition-colors hover:bg-[#D8DAE6]"
-                >
-                    완료 확인
-                </button>
-            </div>
+            <button
+                type="button"
+                className="mt-10 w-full rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
+            >
+                완료 확인
+            </button>
         </div>
     );
 }

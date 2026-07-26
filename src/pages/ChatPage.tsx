@@ -9,7 +9,7 @@
 
 export default function ChatPage () {
     return (
-        <div className="flex flex-col min-h-screen bg-white max-w-md mx-auto border-x border-gray-100">
+        <div className="mx-auto flex min-h-full max-w-md flex-col border-x border-gray-100 bg-white">
             
             {/* 상단바 영역 */}
             <div className="sticky top-0 z-50 w-full bg-white px-4 pt-3 pb-4 border-b border-gray-100">
@@ -76,7 +76,7 @@ export default function ChatPage () {
             </div>
 
             {/* 3. 채팅 입력 영역 */}
-            <div className="sticky bottom-0 z-50 w-full bg-white px-4 py-4 border-gray-100">
+            <div className="w-full border-gray-100 bg-white px-4 py-4">
                 <div className="flex items-center bg-[#F7F7F9] rounded-[24px] px-4 py-2">
     
                     {/* 텍스트 입력창 */}

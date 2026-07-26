@@ -49,14 +49,12 @@ export default function DeliveryTrackingPage() {
                 <span className="text-gray-900 font-bold">발송자 정보</span>
                 <DeliveryPersonCard />
             </div>
-            <div className="mt-auto pt-10">
-                <button
-                    onClick={handleButtonClick}
-                    className="w-full py-3.5 rounded-lg items-center justify-center text-gray-900 font-semibold bg-gray-100"
-                >
-                    {buttonText}
-                </button>
-            </div>
+            <button
+                onClick={handleButtonClick}
+                className="mt-10 flex w-full items-center justify-center rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900"
+            >
+                {buttonText}
+            </button>
         </div>
     );
 }

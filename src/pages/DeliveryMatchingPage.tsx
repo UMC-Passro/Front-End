@@ -29,7 +29,7 @@ export default function DeliveryMatchingPage() {
                 itemSize="S"
                 settlementPoint="3,200P"
             />
-            <div className="mt-auto flex w-full gap-3.5 pt-10">
+            <div className="mt-10 flex w-full gap-3.5">
                 <button
                     onClick={handleReject}
                     className="flex flex-1 items-center justify-center bg-gray-100 text-gray-600 font-bold rounded-lg px-2.5 py-3.5"

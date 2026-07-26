@@ -1,7 +1,7 @@
 export default function PointSettlementPage() {
     return (
         <div className="page-container">
-            <div className="flex min-h-[calc(100dvh-100px)] w-full flex-col bg-white">
+            <div className="relative flex min-h-full w-full flex-col bg-white">
                 
                 {/* 상단바 영역 */}
                 <div className="sticky top-0 z-50 w-full bg-white px-4 pt-3 pb-2">
@@ -71,7 +71,7 @@ export default function PointSettlementPage() {
                 </div>
 
                 {/* 확인 버튼 */}
-                <div className="mt-auto w-full px-6 pt-10">
+                <div className="mt-8 w-full px-6 pb-6">
                     <button className="w-full bg-purple-500 text-white font-bold py-4 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none">
                         확인
                     </button>
