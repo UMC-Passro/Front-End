@@ -15,7 +15,7 @@ export default function DeliveryStatusPage() {
     const [status, setStatus] = useState<DeliveryStatus>("DELIVERING");
 
     return (
-        <div className="page-container relative">
+        <div className="page-container relative flex flex-col">
             <div className="flex relative items-center justify-center text-gray-500">
                 <div className="absolute left-0">
                     <button onClick={() => navigate(-1)}>
@@ -57,12 +57,14 @@ export default function DeliveryStatusPage() {
                 </ol>
             </section>
 
-            <button
-                type="button"
-                className="absolute bottom-10 left-5 right-5 font-semibold py-3.5 rounded-lg bg-gray-100 text-gray-900 transition-colors hover:bg-[#D8DAE6]"
-            >
-                완료 확인
-            </button>
+            <div className="mt-auto pt-10">
+                <button
+                    type="button"
+                    className="w-full font-semibold py-3.5 rounded-lg bg-gray-100 text-gray-900 transition-colors hover:bg-[#D8DAE6]"
+                >
+                    완료 확인
+                </button>
+            </div>
         </div>
     );
 }
