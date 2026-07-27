@@ -1,23 +1,16 @@
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/common/PageHeader";
+
 export default function FeedbackPage() {
+    const navigate = useNavigate();
+
     return (
         <div className="page-container">
             <div className="flex flex-col h-full min-h-[inherit] bg-white relative pb-8 w-full overflow-hidden justify-between">
                 
                 {/* 상단바 영역 */}
-                <div className="sticky top-0 z-50 w-full bg-white px-4 pt-3 pb-2">
-                    <div className="flex items-center justify-between h-12">
-                        {/* 뒤로가기 버튼 */}
-                        <button className="p-1 -ml-1 text-gray-500 focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                            </svg>
-                        </button>
-                        
-                        {/* 페이지 제목 */}
-                        <h1 className="text-[18px] font-bold text-gray-900 pr-6 flex-1 text-center">
-                            완료확인
-                        </h1>
-                    </div>
+                <div className="sticky top-0 z-50 w-full bg-white">
+                    <PageHeader title="완료확인" onBack={() => navigate(-1)} />
                 </div>
 
                 {/* 중앙 피드백 콘텐츠 영역 */}

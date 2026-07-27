@@ -17,11 +17,11 @@ export default function BottomSheet({
 }: BottomSheetProps) {
     return (
         <div
-            className="fixed inset-0 z-[60] mx-auto w-full max-w-[402px] bg-black/20"
+            className="bottom-sheet-backdrop-in fixed inset-0 z-[60] mx-auto w-full max-w-[402px] bg-black/20"
             onClick={onClose}
         >
             <div
-                className="absolute inset-x-0 bottom-0 max-h-[90dvh] overflow-y-auto rounded-t-[30px] bg-white px-5 pb-8 pt-3"
+                className="bottom-sheet-panel-in absolute inset-x-0 bottom-0 max-h-[90dvh] overflow-y-auto rounded-t-[30px] bg-white px-5 pb-8 pt-3"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="bottom-sheet-title"
@@ -33,9 +33,8 @@ export default function BottomSheet({
                 />
                 <h2
                     id="bottom-sheet-title"
-                    className={`mt-10 text-lg font-bold leading-[22px] text-gray-900 ${
-                        titleAlign === "center" ? "text-center" : "text-left"
-                    }`}
+                    className={`pl-[10px] pr-[10px] mt-10 text-lg font-bold leading-[22px] text-gray-900 ${titleAlign === "center" ? "text-center" : "text-left"
+                        }`}
                 >
                     {title}
                 </h2>

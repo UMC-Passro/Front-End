@@ -9,13 +9,15 @@ type HomeHeaderProps = {
 
 export function HomeHeader({ name, headline, role }: HomeHeaderProps) {
     return (
-        <header className="flex items-center justify-between gap-4">
-            <h1 className="text-xl font-bold tracking-normal">
-                안녕하세요, {name}님!
-                <br />
-                {headline}
-            </h1>
-            <RoleAvatar role={role} />
-        </header>
+        <div>
+            <div className="flex items-center justify-between gap-4">
+                <p className="text-xl font-bold tracking-normal">
+                    안녕하세요, {name}님!
+                    <br />
+                    {headline}
+                </p>
+                <RoleAvatar role={role} />
+            </div>
+        </div>
     );
 }

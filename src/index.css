@@ -24,7 +24,7 @@ body {
 @layer components {
     .page-container {
         min-height: 100dvh;
-        padding: 50px 20px;
+        padding: 12px 16px 24px;
     }
 }
 
@@ -38,17 +38,17 @@ body {
         display: none;
     }
 
-    .station-modal-backdrop-in {
-        animation: station-modal-fade-in 180ms ease-out both;
+    .bottom-sheet-backdrop-in {
+        animation: bottom-sheet-fade-in 180ms ease-out both;
     }
 
-    .station-modal-panel-in {
-        animation: station-modal-slide-in 240ms
+    .bottom-sheet-panel-in {
+        animation: bottom-sheet-slide-in 240ms
             cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 }
 
-@keyframes station-modal-fade-in {
+@keyframes bottom-sheet-fade-in {
     from {
         opacity: 0;
     }
@@ -57,7 +57,7 @@ body {
     }
 }
 
-@keyframes station-modal-slide-in {
+@keyframes bottom-sheet-slide-in {
     from {
         opacity: 0.85;
         transform: translateY(28px);
@@ -69,8 +69,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .station-modal-backdrop-in,
-    .station-modal-panel-in {
+    .bottom-sheet-backdrop-in,
+    .bottom-sheet-panel-in {
         animation: none;
     }
 }
