@@ -1,23 +1,16 @@
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/common/PageHeader";
+
 export default function PointSettlementPage() {
+    const navigate = useNavigate();
+
     return (
         <div className="page-container">
-            <div className="flex flex-col min-h-screen bg-white relative pb-24 w-full">
+            <div className="relative flex min-h-full w-full flex-col bg-white">
                 
                 {/* 상단바 영역 */}
-                <div className="sticky top-0 z-50 w-full bg-white px-4 pt-3 pb-2">
-                    <div className="flex items-center justify-between h-12">
-                        {/* 뒤로가기 버튼 */}
-                        <button className="p-1 -ml-1 text-gray-500 focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                            </svg>
-                        </button>
-                        
-                        {/* 페이지 제목 */}
-                        <h1 className="text-[18px] font-bold text-gray-900 pr-6 flex-1 text-center">
-                            포인트 정산
-                        </h1>
-                    </div>
+                <div className="sticky top-0 z-50 w-full bg-white">
+                    <PageHeader title="포인트 정산" onBack={() => navigate(-1)} />
                 </div>
 
                 {/* 상단 완료 섹션 */}
@@ -71,7 +64,7 @@ export default function PointSettlementPage() {
                 </div>
 
                 {/* 확인 버튼 */}
-                <div className="absolute bottom-6 left-0 w-full px-6">
+                <div className="mt-8 w-full px-6 pb-6">
                     <button className="w-full bg-purple-500 text-white font-bold py-4 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none">
                         확인
                     </button>

@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ChevronIcon from "../assets/icons/ChevronIcon";
+import PageHeader from "../components/common/PageHeader";
 import { BasicSignupForm, DetailSignupForm } from "../components/signup";
 import type {
     SignupFieldUpdater,
@@ -62,20 +62,12 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col overflow-hidden">
-            <header className="relative mb-[38px] flex items-center justify-center">
-                <button
-                    type="button"
-                    onClick={handleBack}
-                    className="absolute left-0 flex items-center justify-center text-gray-500"
-                    aria-label="이전 페이지로 이동"
-                >
-                    <ChevronIcon />
-                </button>
-                <h1 className="text-xl font-bold text-gray-900">
-                    {step === "basic" ? "회원가입" : "상세정보"}
-                </h1>
-            </header>
+        <div className="page-container relative flex flex-col">
+            <PageHeader
+                title={step === "basic" ? "회원가입" : "상세정보"}
+                onBack={handleBack}
+                className="mb-[38px]"
+            />
 
             {step === "basic" ? (
                 <BasicSignupForm

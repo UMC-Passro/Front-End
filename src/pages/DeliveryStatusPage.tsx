@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import ChevronIcon from "../assets/icons/ChevronIcon";
 import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
 import { useState } from "react";
 import { DeliveryStatus } from "../types/delivery";
 import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
+import PageHeader from "../components/common/PageHeader";
 
 const timelineItems = [
     { label: "전달 신청", time: "06.05(금) 11:05" },
@@ -15,15 +15,8 @@ export default function DeliveryStatusPage() {
     const [status, setStatus] = useState<DeliveryStatus>("DELIVERING");
 
     return (
-        <div className="page-container relative">
-            <div className="flex relative items-center justify-center text-gray-500">
-                <div className="absolute left-0">
-                    <button onClick={() => navigate(-1)}>
-                        <ChevronIcon />
-                    </button>
-                </div>
-                <div className="font-bold text-xl text-gray-900">배송 추적</div>
-            </div>
+        <div className="page-container relative flex flex-col">
+            <PageHeader title="배송 추적" onBack={() => navigate(-1)} />
             <DeliveryProgress status={status} />
 
             <div className="flex flex-col mt-8 gap-3">
@@ -59,7 +52,7 @@ export default function DeliveryStatusPage() {
 
             <button
                 type="button"
-                className="absolute bottom-10 left-5 right-5 font-semibold py-3.5 rounded-lg bg-gray-100 text-gray-900 transition-colors hover:bg-[#D8DAE6]"
+                className="mt-10 w-full rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
             >
                 완료 확인
             </button>

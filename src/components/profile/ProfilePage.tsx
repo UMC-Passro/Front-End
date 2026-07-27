@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type { ProfilePageData, UserRole } from "../../types/user";
-import ChevronIcon from "../../assets/icons/ChevronIcon";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../common/PageHeader";
 
 interface ProfilePageProps {
     data?: ProfilePageData;
@@ -54,7 +54,7 @@ function MoveIcon() {
 function LoadingProfilePage() {
     return (
         <section
-            className="mx-auto flex min-h-screen w-full max-w-[402px] flex-col bg-white"
+            className="mx-auto flex min-h-full w-full max-w-[402px] flex-col bg-white"
             aria-busy="true"
             aria-labelledby="profile-loading-title"
         >
@@ -93,7 +93,7 @@ function ErrorProfilePage({
     onRetry?: () => void;
 }) {
     return (
-        <section className="mx-auto flex min-h-screen w-full max-w-[402px] items-center bg-white px-5 py-6">
+        <section className="mx-auto flex min-h-full w-full max-w-[402px] items-center bg-white px-5 py-6">
             <div
                 className="w-full rounded-lg border border-rose-200 bg-rose-50 p-5 text-rose-900"
                 role="alert"
@@ -145,7 +145,7 @@ function MenuRow({ label, onClick }: { label: string; onClick?: () => void }) {
             className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-[15px] text-left transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
             onClick={onClick}
         >
-            <span className="text-gray-700">{label}</span>
+            <span className="text-gray-700 font-medium ">{label}</span>
             <MoveIcon />
         </button>
     );
@@ -221,17 +221,7 @@ function ProfilePageContent({
 
     return (
         <main className="page-container">
-            <header className="relative flex items-center justify-center text-gray-500">
-                <button
-                    type="button"
-                    className="absolute left-0 flex items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                    onClick={onBack}
-                    aria-label="이전 페이지로 이동"
-                >
-                    <ChevronIcon />
-                </button>
-                <h1 className="font-bold text-xl text-gray-900">마이페이지</h1>
-            </header>
+            <PageHeader title="마이페이지" onBack={onBack} />
 
             <section
                 className="flex flex-col items-center gap-6 pt-8 pb-6"

@@ -13,6 +13,8 @@ import HomePage from "../pages/HomePage";
 import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
 import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
 import EditProfile from "../pages/EditProfile";
+import ChatPage from "../pages/ChatPage";
+import MainLayout from "../layouts/MainLayout";
 
 export const router = createBrowserRouter([
     {
@@ -36,46 +38,56 @@ export const router = createBrowserRouter([
                 element: <SignupPage />,
             },
             {
-                path: "home",
-                element: <HomePage />,
+                path: "*",
+                element: <Navigate to="/login" replace />,
             },
         ],
     },
     {
-        path: "/mypage",
-        element: <ProtectedRoute />,
-        children: [
-            { index: true, element: <MyPage /> },
-            { path: "edit", element: <EditProfile /> },
-            {
-                path: "point",
-                element: <PointPage />,
-            },
-            {
-                path: "history",
-                element: <HistoryStatsPage />,
-            },
-        ],
-    },
-    {
-        path: "/delivery",
         element: <ProtectedRoute />,
         children: [
             {
-                path: "matching",
-                element: <DeliveryMatchingPage />,
-            },
-            {
-                path: "request",
-                element: <DeliveryRequestPage />,
-            },
-            {
-                path: "tracking",
-                element: <DeliveryTrackingPage />,
-            },
-            {
-                path: "status",
-                element: <DeliveryStatusPage />,
+                element: <MainLayout />,
+                children: [
+                    {
+                        path: "/home",
+                        element: <HomePage />,
+                    },
+                    {
+                        path: "/mypage",
+                        children: [
+                            { index: true, element: <MyPage /> },
+                            { path: "edit", element: <EditProfile /> },
+                            { path: "point", element: <PointPage /> },
+                            { path: "history", element: <HistoryStatsPage /> },
+                        ],
+                    },
+                    {
+                        path: "/delivery",
+                        children: [
+                            {
+                                path: "matching",
+                                element: <DeliveryMatchingPage />,
+                            },
+                            {
+                                path: "request",
+                                element: <DeliveryRequestPage />,
+                            },
+                            {
+                                path: "tracking",
+                                element: <DeliveryTrackingPage />,
+                            },
+                            {
+                                path: "status",
+                                element: <DeliveryStatusPage />,
+                            },
+                            {
+                                path: "chat",
+                                element: <ChatPage />,
+                            },
+                        ],
+                    },
+                ],
             },
         ],
     },

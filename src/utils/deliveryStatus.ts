@@ -1,8 +1,32 @@
-/**
- * TODO: 배송 상태값과 상태 전환 규칙을 관리하는 파일입니다.
- *
- * 구현 가이드:
- * - 요청 등록, 매칭 확정, 픽업, 이동 중, 배송 완료 상태 순서를 정의합니다.
- * - 다음 상태로 이동 가능한지 검증하는 규칙을 둘 수 있습니다.
- * - 상태 라벨과 화면 표시용 문구도 이곳에서 관리할 수 있습니다.
- */
+import type { BackendDeliveryState } from "../types/backend";
+import type { DeliveryStatus } from "../types/delivery";
+
+const DELIVERY_STATUS_LABELS: Record<BackendDeliveryState, string> = {
+    WAIT: "매칭 대기",
+    MATCHED: "픽업 대기",
+    DELIVERING: "배송중",
+    CONFIRM_REQUESTED: "완료 확인 대기",
+    DELIVERED: "배송완료",
+    CANCEL: "취소",
+};
+
+export function getDeliveryStatusLabel(status: BackendDeliveryState) {
+    return DELIVERY_STATUS_LABELS[status];
+}
+
+export function toDeliveryViewStatus(
+    status: BackendDeliveryState,
+): DeliveryStatus | null {
+    switch (status) {
+        case "WAIT":
+        case "MATCHED":
+            return "WAITING_PICKUP";
+        case "DELIVERING":
+        case "CONFIRM_REQUESTED":
+            return "DELIVERING";
+        case "DELIVERED":
+            return "COMPLETED";
+        case "CANCEL":
+            return null;
+    }
+}

@@ -1,8 +1,16 @@
+export interface NotificationItem {
+    id: number;
+    title: string;
+    content: string;
+    read: boolean;
+    createdAt: string;
+}
+
 /**
- * TODO: 알림 관련 API 함수를 정의하는 파일입니다.
- *
- * 구현 가이드:
- * - 알림 목록 조회, 읽음 처리, 푸시 토큰 등록 API를 관리합니다.
- * - 매칭 확정 푸시 알림을 받을 수 있는 구조를 준비합니다.
- * - 알림 타입은 types/notification.ts와 맞춥니다.
+ * 알림 및 푸시 토큰 API 명세가 확정되면 이 계약을 구현합니다.
  */
+export interface NotificationApiContract {
+    getNotifications(): Promise<NotificationItem[]>;
+    markAsRead(notificationId: number): Promise<void>;
+    registerPushToken(token: string): Promise<void>;
+}

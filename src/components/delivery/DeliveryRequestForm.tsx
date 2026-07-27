@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
-import ChevronIcon from "../../assets/icons/ChevronIcon";
-import { SizeInfo } from "./SizeInfo";
-import { DeliveryImageUploader } from "./DeliveryImageUploader";
+import { CameraIcon } from "../../assets/icons/CameraIcon";
+import StationSelectModal, { type Station } from "./StationSelectModal";
+import PageHeader from "../common/PageHeader";
 
 interface DeliveryRequestFormProps {
     isLoading?: boolean;
@@ -35,80 +35,176 @@ function FieldLabel({ children }: { children: string }) {
     return <p className="text-sm font-semibold text-gray-700">{children}</p>;
 }
 
-function SelectField({ placeholder }: { placeholder: string }) {
+function SelectField({
+    placeholder,
+    value,
+    error,
+    onClick,
+}: {
+    placeholder: string;
+    value?: string;
+    error?: string;
+    onClick: () => void;
+}) {
     return (
-        <button
-            type="button"
-            className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
-        >
-            <span className="text-[15px] text-gray-500">{placeholder}</span>
-            <ChevronDownIcon />
-        </button>
-    );
-}
-function SizeSelectField() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
-  const options = ["S", "M", "L"];
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
-      >
-        <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
-          {selected ?? "물품 크기를 선택해주세요"}
-        </span>
-        <ChevronDownIcon />
-      </button>
-
-      {isOpen ? (
-        <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
-          {options.map((option) => (
-            <button key={option} type="button"
-            onClick={() => {
-              setSelected(option);
-              setIsOpen(false);
-            }}
-            className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
-              {option}
+        <div className="flex flex-col gap-1">
+            <button
+                type="button"
+                onClick={onClick}
+                aria-haspopup="dialog"
+                className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
+            >
+                <span
+                    className={`text-[15px] ${value ? "font-medium text-gray-900" : "text-gray-500"
+                        }`}
+                >
+                    {value ?? placeholder}
+                </span>
+                <ChevronDownIcon />
             </button>
-          ))}
-          </div>
-      ) : null}
-      </div>
-  );
-}
-function TextField({ placeholder }: { placeholder: string }) {
-    const [value, setValue] = useState("");
-
-    return (
-        <input
-            type="text"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder={placeholder}
-            className="w-full rounded-lg bg-gray-50 px-5 py-4 text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
-        />
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
+        </div>
     );
 }
+function SizeGuideBridge() {
+    return (
+        <span className="relative inline-flex group">
+            <button
+                type="button"
+                aria-label="물품 크기 안내"
+                className="flex h-4 w-4 items-center justify-center rounded-full bg-[#8E91A1] text-[10px] font-bold leading-none text-white"
+            >
+                ?
+            </button>
 
-function PriceField() {
-    const [value, setValue] = useState("");
+            <div className="invisible absolute left-0 top-6 z-30 w-[350px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 left-[-35px]">
+                <table className="w-full table-fixed text-[13px]">
+                    <colgroup>
+                        <col className="w-[16%]" />
+                        <col className="w-[48%]" />
+                        <col className="w-[36%]" />
+                    </colgroup>
+                    <thead>
+                        <tr className="text-color-black">
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">사이즈</th>
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">크기 (가로+세로+높이)</th>
+                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">무게</th>
+                        </tr>
+                    </thead>
+                    <tbody className="whitespace-nowrap text-[12px] text-[#8E91A1]">
+                        <tr><td className="pt-1 text-center">S</td><td className="pt-1 text-center">~40 미만</td><td className="pt-1 text-center">500g 미만</td></tr>
+                        <tr><td className="pt-1 text-center">M</td><td className="pt-1 text-center">40 ~ 70</td><td className="pt-1 text-center">500g ~ 1.5kg 미만</td></tr>
+                        <tr><td className="pt-1 text-center">L</td><td className="pt-1 text-center">70 ~ 100</td><td className="pt-1 text-center">1.5kg ~ 3kg 미만</td></tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </span>
+    )
+}
+
+function SizeSelectField({
+    selected,
+    onSelect,
+    error,
+}: {
+    selected: string | null;
+    onSelect: (value: string) => void;
+    error?: string;
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const options = ["S", "M", "L"];
 
     return (
-        <div className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4">
+        <div className="flex flex-col gap-1">
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
+                >
+                    <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
+                        {selected ?? "물품 크기를 선택해주세요"}
+                    </span>
+                    <ChevronDownIcon />
+                </button>
+
+                {isOpen ? (
+                    <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
+                        {options.map((option) => (
+                            <button key={option} type="button"
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={() => {
+                                    onSelect(option);
+                                    setIsOpen(false);
+                                }}
+                                className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
+                                {option}
+                            </button>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
+        </div>
+    );
+}
+function TextField({
+    placeholder,
+    value,
+    onChange,
+    error,
+}: {
+    placeholder: string;
+    value: string;
+    onChange: (value: string) => void;
+    error?: string;
+}) {
+    return (
+        <div className="flex flex-col gap-1">
             <input
                 type="text"
-                inputMode="numeric"
                 value={value}
-                onChange={(event) => setValue(event.target.value)}
-                placeholder="물품가액을 입력해주세요"
-                className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                className="w-full rounded-lg bg-gray-50 px-5 py-4 text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
             />
-            <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
+        </div>
+    );
+}
+
+function PriceField({
+    value,
+    onChange,
+    error,
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    error?: string;
+}) {
+    return (
+        <div className="flex flex-col gap-1">
+            <div className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4">
+                <input
+                    type="text"
+                    inputMode="numeric"
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    placeholder="물품가액을 입력해주세요"
+                    className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
+                />
+                <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+            </div>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
         </div>
     );
 }
@@ -116,7 +212,7 @@ function PriceField() {
 function LoadingDeliveryRequestForm() {
     return (
         <section
-            className="mx-auto flex h-screen w-full max-w-[402px] flex-col bg-white"
+            className="mx-auto flex h-full w-full max-w-[402px] flex-col bg-white"
             aria-busy="true"
             aria-labelledby="delivery-request-loading-title"
         >
@@ -126,7 +222,7 @@ function LoadingDeliveryRequestForm() {
             <div className="flex h-14 shrink-0 items-center justify-center px-5">
                 <div className="h-5 w-16 animate-pulse rounded bg-slate-200" />
             </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
+            <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
                 <div className="flex flex-col gap-5">
                     {Array.from({ length: 6 }, (_, index) => (
                         <div key={index} className="flex flex-col gap-[10px]">
@@ -151,7 +247,7 @@ function ErrorDeliveryRequestForm({
     onRetry?: () => void;
 }) {
     return (
-        <section className="mx-auto flex h-screen w-full max-w-[402px] items-center bg-white px-5 py-6">
+        <section className="mx-auto flex h-full w-full max-w-[402px] items-center bg-white px-5 py-6">
             <div
                 className="w-full rounded-lg border border-rose-200 bg-rose-50 p-5 text-rose-900"
                 role="alert"
@@ -176,82 +272,191 @@ function ErrorDeliveryRequestForm({
 
 function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const [stationField, setStationField] = useState<
+        "origin" | "destination" | null
+    >(null);
+    const [originStation, setOriginStation] = useState<Station | null>(null);
+    const [destinationStation, setDestinationStation] =
+        useState<Station | null>(null);
+    const [originError, setOriginError] = useState("");
+    const [destinationError, setDestinationError] = useState("");
+    const isOverlayOpen = isPaymentOpen || stationField !== null;
+
+    const handleStationSelect = (station: Station) => {
+        if (stationField === "origin") {
+            setOriginStation(station);
+            setOriginError("");
+        }
+
+        if (stationField === "destination") {
+            setDestinationStation(station);
+            setDestinationError("");
+        }
+
+        setStationField(null);
+    };
+
+    const handleStationModalClose = () => {
+        if (stationField === "origin" && !originStation) {
+            setOriginError("출발지를 선택해주세요.");
+        }
+
+        if (stationField === "destination" && !destinationStation) {
+            setDestinationError("도착지를 선택해주세요.");
+        }
+
+        setStationField(null);
+    };
+
+    const [itemName, setItemName] = useState("");
+    const [itemNameError, setItemNameError] = useState("");
+    const [itemPrice, setItemPrice] = useState("");
+    const [itemPriceError, setItemPriceError] = useState("");
+    const [itemSize, setItemSize] = useState<string | null>(null);
+    const [itemSizeError, setItemSizeError] = useState("");
+    const [memo, setMemo] = useState("");
+
+    const handleMatchingRequest = () => {
+        let hasError = false;
+
+        if (!originStation) {
+            setOriginError("출발지를 선택해주세요.");
+            hasError = true;
+        } else {
+            setOriginError("");
+        }
+
+        if (!destinationStation) {
+            setDestinationError("도착지를 선택해주세요.");
+            hasError = true;
+        } else {
+            setDestinationError("");
+        }
+
+        if (itemName.trim() === "") {
+            setItemNameError("물품명을 입력해주세요.");
+            hasError = true;
+        } else {
+            setItemNameError("");
+        }
+
+        if (itemPrice.trim() === "") {
+            setItemPriceError("물품 가액을 입력해주세요.");
+            hasError = true;
+        } else {
+            setItemPriceError("");
+        }
+
+        if (!itemSize) {
+            setItemSizeError("물품 크기를 선택해주세요.");
+            hasError = true;
+        } else {
+            setItemSizeError("");
+        }
+
+        if (hasError) {
+            return;
+        }
+
+        setIsPaymentOpen(true);
+    };
 
     return (
-        <div className="page-container relative">
+        <div className="relative mx-auto flex h-full w-full max-w-[402px] flex-col bg-white">
             <div
-                className={`flex flex-col transition duration-200 ${
-                    isPaymentOpen ? "pointer-events-none blur-sm" : ""
-                }`}
-                aria-hidden={isPaymentOpen}
+                className={`flex min-h-0 flex-1 flex-col transition duration-100 ${isOverlayOpen ? "pointer-events-none blur-sm" : ""
+                    }`}
+                aria-hidden={isOverlayOpen}
             >
-                <header className="flex relative items-center justify-center text-gray-500">
-                    <button
-                        type="button"
-                        className="absolute left-0 flex items-center justify-center rounded-full transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                        onClick={onBack}
-                        aria-label="이전 페이지로 이동"
-                    >
-                        <ChevronIcon />
-                    </button>
-                    <h1 className="font-bold text-xl text-gray-900">
-                        배송 요청
-                    </h1>
-                </header>
+                <PageHeader
+                    title="배송 요청"
+                    onBack={onBack}
+                    className="mx-4 mt-3 shrink-0"
+                />
 
-                <div className="flex-1 mt-3">
+                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
-                            <SelectField placeholder="출발지를 선택해주세요" />
+                            <SelectField
+                                placeholder="출발지를 선택해주세요"
+                                value={originStation?.name}
+                                error={originError}
+                                onClick={() => setStationField("origin")}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>도착지</FieldLabel>
-                            <SelectField placeholder="도착지를 선택해주세요" />
+                            <SelectField
+                                placeholder="도착지를 선택해주세요"
+                                value={destinationStation?.name}
+                                error={destinationError}
+                                onClick={() => setStationField("destination")}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>물품명</FieldLabel>
-                            <TextField placeholder="물품명을 입력해주세요" />
+                            <TextField
+                                placeholder="물품명을 입력해주세요"
+                                value={itemName}
+                                onChange={setItemName}
+                                error={itemNameError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>물품가액</FieldLabel>
-                            <PriceField />
+                            <PriceField
+                                value={itemPrice}
+                                onChange={setItemPrice}
+                                error={itemPriceError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <div className="flex items-center gap-1">
                                 <FieldLabel>물품 크기</FieldLabel>
-                                <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-gray-500 text-white text-xs font-bold cursor-pointer">
-                                    ?
-                                    <SizeInfo
-                                        boxTranslate="-18%"
-                                        arrowLeft="18%"
-                                    />
-                                </div>
+                                <SizeGuideBridge />
                             </div>
-                            <SizeSelectField />
+                            <SizeSelectField
+                                selected={itemSize}
+                                onSelect={setItemSize}
+                                error={itemSizeError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>사진 등록</FieldLabel>
-                            <DeliveryImageUploader />
+                            <button
+                                type="button"
+                                className="flex h-[60px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-[10px] bg-[#F8F9FD]"
+                                aria-label="사진 등록"
+                            >
+                                <CameraIcon />
+                                <span className="text-[10px] font-medium leading-3 text-gray-300">
+                                    0/3
+                                </span>
+                            </button>
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>메모</FieldLabel>
-                            <TextField placeholder="메모를 입력해주세요" />
+                            <TextField
+                              placeholder="메모를 입력해주세요"
+                              value={memo}
+                              onChange={setMemo}
+                            />
                         </div>
                     </div>
                 </div>
 
-                <div className="shrink-0">
+                <div className="shrink-0 px-5 py-[14px]">
                     <button
                         type="button"
-                        onClick={() => setIsPaymentOpen(true)}
-                        className="flex w-full mt-9 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-[#6E73F5] focus:ring-offset-2"
+                        onClick={handleMatchingRequest}
+                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                     >
                         매칭 요청
                     </button>
@@ -262,6 +467,18 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                 <DeliveryPaymentSheet
                     onClose={() => setIsPaymentOpen(false)}
                     onConfirm={() => setIsPaymentOpen(false)}
+                />
+            ) : null}
+
+            {stationField ? (
+                <StationSelectModal
+                    title={
+                        stationField === "origin"
+                            ? "출발역 선택"
+                            : "도착역 선택"
+                    }
+                    onClose={handleStationModalClose}
+                    onSelect={handleStationSelect}
                 />
             ) : null}
         </div>

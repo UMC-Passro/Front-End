@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ChevronIcon from "../assets/icons/ChevronIcon";
+import PageHeader from "../components/common/PageHeader";
 import { DeliveryImageUploader } from "../components/delivery/DeliveryImageUploader";
 import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
 import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
@@ -26,15 +26,8 @@ export default function DeliveryTrackingPage() {
     }[status];
 
     return (
-        <div className="page-container relative">
-            <div className="flex relative items-center justify-center text-gray-500">
-                <div className="absolute left-0">
-                    <button onClick={() => navigate(-1)}>
-                        <ChevronIcon />
-                    </button>
-                </div>
-                <div className="font-bold text-xl text-gray-900">배송 추적</div>
-            </div>
+        <div className="page-container relative flex flex-col">
+            <PageHeader title="배송 추적" onBack={() => navigate(-1)} />
             <DeliveryProgress status={status} />
 
             {status === "WAITING_PICKUP" && (
@@ -51,7 +44,7 @@ export default function DeliveryTrackingPage() {
             </div>
             <button
                 onClick={handleButtonClick}
-                className="absolute bottom-10 left-5 right-5 py-3.5 rounded-lg items-center justify-center text-gray-900 font-semibold bg-gray-100"
+                className="mt-10 flex w-full items-center justify-center rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900"
             >
                 {buttonText}
             </button>

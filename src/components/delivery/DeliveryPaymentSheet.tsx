@@ -34,29 +34,32 @@ function DeliveryPaymentSheet({
                 </button>
             }
         >
-            <div className="flex flex-col gap-2.5">
-                {BREAKDOWN_ITEMS.map((item) => (
-                    <div
-                        key={item.label}
-                        className="flex items-center justify-between"
-                    >
-                        <span className="text-gray-400">{item.label}</span>
-                        <span className="text-lg font-semibold text-gray-600">
-                            {item.value}
-                        </span>
-                    </div>
-                ))}
-            </div>
+            <div className="pl-[10px] pr-[10px]">
 
-            <div className="my-4 h-px bg-gray-100" aria-hidden="true" />
+                <div className="flex flex-col gap-2.5">
+                    {BREAKDOWN_ITEMS.map((item) => (
+                        <div
+                            key={item.label}
+                            className="flex items-center justify-between"
+                        >
+                            <span className="text-gray-400">{item.label}</span>
+                            <span className="text-lg font-semibold text-gray-600">
+                                {item.value}
+                            </span>
+                        </div>
+                    ))}
+                </div>
 
-            <div className="flex items-center justify-between">
-                <span className="text-xl font-bold text-gray-800">
-                    {TOTAL_LABEL}
-                </span>
-                <span className="text-2xl font-bold text-purple-600">
-                    {TOTAL_VALUE}
-                </span>
+                <div className="my-4 h-px bg-gray-100" aria-hidden="true" />
+
+                <div className="flex items-center justify-between">
+                    <span className="text-xl font-bold text-gray-800">
+                        {TOTAL_LABEL}
+                    </span>
+                    <span className="text-2xl font-bold text-purple-600">
+                        {TOTAL_VALUE}
+                    </span>
+                </div>
             </div>
         </BottomSheet>
     );

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { UserRole } from "../../types/user";
 
 type RoleAvatarProps = {
@@ -5,15 +6,17 @@ type RoleAvatarProps = {
 };
 
 export function RoleAvatar({ role }: RoleAvatarProps) {
+  const navigate = useNavigate();
   const isCarrier = role === "carrier";
 
   return (
-    <div
+    <button
+      type="button"
+      onClick={() => navigate("/mypage")}
       className={`relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#E3E5EF] bg-white shadow-sm min-[390px]:h-[76px] min-[390px]:w-[76px] ${
         isCarrier ? "bg-[#F0F1FF]" : "bg-[#FFF8EE]"
       }`}
-      aria-label={isCarrier ? "배송자 프로필" : "발송자 프로필"}
-      role="img"
+      aria-label={`${isCarrier ? "배송자" : "발송자"} 마이페이지로 이동`}
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <img
@@ -26,6 +29,6 @@ export function RoleAvatar({ role }: RoleAvatarProps) {
           }`}
         />
       </div>
-    </div>
+    </button>
   );
 }
