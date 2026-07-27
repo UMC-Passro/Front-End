@@ -140,18 +140,6 @@ export default function DetailSignupForm({
                     showValidation={showValidation}
                     onOpen={() => setIsDatePickerOpen(true)}
                 />
-                <DetailTextField
-                    id="signup-address"
-                    label="주소"
-                    type="text"
-                    placeholder="주소를 입력해주세요"
-                    value={formData.address}
-                    validationMessage={validationMessages.address}
-                    validationFallback="주소 검증 메시지"
-                    showValidation={showValidation}
-                    onChange={(value) => updateField("address", value)}
-                />
-
                 <div className="flex flex-col gap-[4px]">
                     <FieldLabel>통학로 설정</FieldLabel>
                     <SelectField
@@ -173,7 +161,9 @@ export default function DetailSignupForm({
                 </div>
             </div>
 
-            <SignupSubmitButton>회원 가입 완료</SignupSubmitButton>
+            <div className="fixed bottom-[15px] w-[100%]" style={{ "maxWidth": "min(361px, calc(100% - 42px))" }}>
+                <SignupSubmitButton>회원 가입 완료</SignupSubmitButton>
+            </div>
 
             {isDatePickerOpen ? (
                 <DatePickerSheet
