@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import ChevronIcon from "../assets/icons/ChevronIcon";
 import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
 import { useState } from "react";
 import { DeliveryStatus } from "../types/delivery";
 import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
+import PageHeader from "../components/common/PageHeader";
 
 const timelineItems = [
     { label: "전달 신청", time: "06.05(금) 11:05" },
@@ -16,14 +16,7 @@ export default function DeliveryStatusPage() {
 
     return (
         <div className="page-container relative flex flex-col">
-            <div className="flex relative items-center justify-center text-gray-500">
-                <div className="absolute left-0">
-                    <button onClick={() => navigate(-1)}>
-                        <ChevronIcon />
-                    </button>
-                </div>
-                <div className="font-bold text-xl text-gray-900">배송 추적</div>
-            </div>
+            <PageHeader title="배송 추적" onBack={() => navigate(-1)} />
             <DeliveryProgress status={status} />
 
             <div className="flex flex-col mt-8 gap-3">
