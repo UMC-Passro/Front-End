@@ -26,7 +26,7 @@ export default function DetailTextField({
   onChange,
 }: DetailTextFieldProps) {
   return (
-    <section className="flex flex-col gap-[10px]">
+    <section className="flex flex-col gap-[4px]">
       <label className={SIGNUP_LABEL_CLASS} htmlFor={id}>
         {label}
       </label>

@@ -10,6 +10,12 @@ export type SignupDateValue = {
   day: number;
 };
 
+export type SignupStation = {
+  id: string;
+  name: string;
+  region: string;
+};
+
 export type SignupDetailValidationMessages = {
   name: string;
   phone: string;
@@ -28,6 +34,8 @@ export type SignupFormData = {
   birthDate: string;
   gender: SignupGender;
   address: string;
+  originStation: SignupStation | null;
+  destinationStation: SignupStation | null;
 };
 
 export type SignupFieldUpdater = <K extends keyof SignupFormData>(
