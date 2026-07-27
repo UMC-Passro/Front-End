@@ -49,7 +49,7 @@ export default function LoginPage() {
                     placeholder="아이디를 입력해 주세요"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="아이디"
                     autoComplete="email"
                 />
@@ -58,14 +58,14 @@ export default function LoginPage() {
                     placeholder="비밀번호를 입력해 주세요"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none mb-5 placeholder:text-gray-400 placeholder:font-semibold"
+                    className="shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] w-full text-sm bg-gray-50 rounded-lg px-5 py-4 outline-none mb-5 placeholder:text-gray-400 placeholder:font-semibold"
                     aria-label="비밀번호"
                     autoComplete="current-password"
                 />
 
                 {errorMessage ? (
                     <p
-                        className="-mt-3 text-sm font-semibold text-red-700"
+                        className="-mt-3 text-xs font-semibold text-red-500"
                         role="alert"
                     >
                         {errorMessage}
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
-                    className="shadow-[2px_2px_rgba(0,0,0,0.10)] w-full bg-purple-500 text-white rounded-lg py-4 font-bold"
+                    className="shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] w-full bg-purple-500 text-white rounded-lg py-4 font-bold"
                 >
                     로그인
                 </button>
