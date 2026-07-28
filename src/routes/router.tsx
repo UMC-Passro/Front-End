@@ -15,6 +15,8 @@ import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
 import EditProfile from "../pages/EditProfile";
 import ChatPage from "../pages/ChatPage";
 import MainLayout from "../layouts/MainLayout";
+import FindIdPage from "../pages/FindIdPage";
+import FindPasswordPage from "../pages/FindPasswordPage";
 
 export const router = createBrowserRouter([
     {
@@ -36,6 +38,18 @@ export const router = createBrowserRouter([
             {
                 path: "signup",
                 element: <SignupPage />,
+            },
+            {
+                path: "find-id",
+                element: <FindIdPage />,
+            },
+            {
+                path: "find-password",
+                element: <FindPasswordPage />,
+            },
+            {
+                path: "find-pwd",
+                element: <Navigate to="/find-password" replace />,
             },
             {
                 path: "*",

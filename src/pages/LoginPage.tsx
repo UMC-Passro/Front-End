@@ -82,7 +82,7 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-center gap-3 mt-4 text-sm text-gray-600">
                 <Link
-                    to="/find-pwd"
+                    to="/find-id"
                     className="hover:text-gray-900 hover:underline"
                 >
                     아이디 찾기
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 <span className="h-3 w-px bg-gray-200" />
 
                 <Link
-                    to="/find-pwd"
+                    to="/find-password"
                     className="hover:text-gray-900 hover:underline"
                 >
                     비밀번호 찾기
