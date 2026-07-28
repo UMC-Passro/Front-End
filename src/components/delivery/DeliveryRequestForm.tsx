@@ -11,7 +11,6 @@ interface DeliveryRequestFormProps {
     onBack?: () => void;
 }
 
-
 function ChevronDownIcon() {
     return (
         <svg
@@ -39,27 +38,34 @@ function FieldLabel({ children }: { children: string }) {
 function SelectField({
     placeholder,
     value,
+    error,
     onClick,
 }: {
     placeholder: string;
     value?: string;
+    error?: string;
     onClick: () => void;
 }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            aria-haspopup="dialog"
-            className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
-        >
-            <span
-                className={`text-[15px] ${value ? "font-medium text-gray-900" : "text-gray-500"
-                    }`}
+        <div className="flex flex-col gap-1">
+            <button
+                type="button"
+                onClick={onClick}
+                aria-haspopup="dialog"
+                className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
             >
-                {value ?? placeholder}
-            </span>
-            <ChevronDownIcon />
-        </button>
+                <span
+                    className={`text-[15px] ${value ? "font-medium text-gray-900" : "text-gray-500"
+                        }`}
+                >
+                    {value ?? placeholder}
+                </span>
+                <ChevronDownIcon />
+            </button>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
+        </div>
     );
 }
 function SizeGuideBridge() {
@@ -99,69 +105,106 @@ function SizeGuideBridge() {
     )
 }
 
-function SizeSelectField() {
+function SizeSelectField({
+    selected,
+    onSelect,
+    error,
+}: {
+    selected: string | null;
+    onSelect: (value: string) => void;
+    error?: string;
+}) {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState<string | null>(null);
     const options = ["S", "M", "L"];
 
     return (
-        <div className="relative">
-            <button
-                type="button"
-                onClick={() => setIsOpen((prev) => !prev)}
-                className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
-            >
-                <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
-                    {selected ?? "물품 크기를 선택해주세요"}
-                </span>
-                <ChevronDownIcon />
-            </button>
+        <div className="flex flex-col gap-1">
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
+                >
+                    <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
+                        {selected ?? "물품 크기를 선택해주세요"}
+                    </span>
+                    <ChevronDownIcon />
+                </button>
 
-            {isOpen ? (
-                <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
-                    {options.map((option) => (
-                        <button key={option} type="button"
-                            onClick={() => {
-                                setSelected(option);
-                                setIsOpen(false);
-                            }}
-                            className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
-                            {option}
-                        </button>
-                    ))}
-                </div>
+                {isOpen ? (
+                    <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
+                        {options.map((option) => (
+                            <button key={option} type="button"
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={() => {
+                                    onSelect(option);
+                                    setIsOpen(false);
+                                }}
+                                className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
+                                {option}
+                            </button>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
             ) : null}
         </div>
     );
 }
-function TextField({ placeholder }: { placeholder: string }) {
-    const [value, setValue] = useState("");
-
+function TextField({
+    placeholder,
+    value,
+    onChange,
+    error,
+}: {
+    placeholder: string;
+    value: string;
+    onChange: (value: string) => void;
+    error?: string;
+}) {
     return (
-        <input
-            type="text"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder={placeholder}
-            className="w-full rounded-lg bg-gray-50 px-5 py-4 text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
-        />
+        <div className="flex flex-col gap-1">
+            <input
+                type="text"
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                className="w-full rounded-lg bg-gray-50 px-5 py-4 text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
+            />
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
+        </div>
     );
 }
 
-function PriceField() {
-    const [value, setValue] = useState("");
-
+function PriceField({
+    value,
+    onChange,
+    error,
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    error?: string;
+}) {
     return (
-        <div className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4">
-            <input
-                type="text"
-                inputMode="numeric"
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-                placeholder="물품가액을 입력해주세요"
-                className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
-            />
-            <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+        <div className="flex flex-col gap-1">
+            <div className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4">
+                <input
+                    type="text"
+                    inputMode="numeric"
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    placeholder="물품가액을 입력해주세요"
+                    className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
+                />
+                <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+            </div>
+            {error ? (
+                <p className="text-xs font-medium text-rose-600">{error}</p>
+            ) : null}
         </div>
     );
 }
@@ -235,18 +278,87 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [originStation, setOriginStation] = useState<Station | null>(null);
     const [destinationStation, setDestinationStation] =
         useState<Station | null>(null);
+    const [originError, setOriginError] = useState("");
+    const [destinationError, setDestinationError] = useState("");
     const isOverlayOpen = isPaymentOpen || stationField !== null;
 
     const handleStationSelect = (station: Station) => {
         if (stationField === "origin") {
             setOriginStation(station);
+            setOriginError("");
         }
 
         if (stationField === "destination") {
             setDestinationStation(station);
+            setDestinationError("");
         }
 
         setStationField(null);
+    };
+
+    const handleStationModalClose = () => {
+        if (stationField === "origin" && !originStation) {
+            setOriginError("출발지를 선택해주세요.");
+        }
+
+        if (stationField === "destination" && !destinationStation) {
+            setDestinationError("도착지를 선택해주세요.");
+        }
+
+        setStationField(null);
+    };
+
+    const [itemName, setItemName] = useState("");
+    const [itemNameError, setItemNameError] = useState("");
+    const [itemPrice, setItemPrice] = useState("");
+    const [itemPriceError, setItemPriceError] = useState("");
+    const [itemSize, setItemSize] = useState<string | null>(null);
+    const [itemSizeError, setItemSizeError] = useState("");
+    const [memo, setMemo] = useState("");
+
+    const handleMatchingRequest = () => {
+        let hasError = false;
+
+        if (!originStation) {
+            setOriginError("출발지를 선택해주세요.");
+            hasError = true;
+        } else {
+            setOriginError("");
+        }
+
+        if (!destinationStation) {
+            setDestinationError("도착지를 선택해주세요.");
+            hasError = true;
+        } else {
+            setDestinationError("");
+        }
+
+        if (itemName.trim() === "") {
+            setItemNameError("물품명을 입력해주세요.");
+            hasError = true;
+        } else {
+            setItemNameError("");
+        }
+
+        if (itemPrice.trim() === "") {
+            setItemPriceError("물품 가액을 입력해주세요.");
+            hasError = true;
+        } else {
+            setItemPriceError("");
+        }
+
+        if (!itemSize) {
+            setItemSizeError("물품 크기를 선택해주세요.");
+            hasError = true;
+        } else {
+            setItemSizeError("");
+        }
+
+        if (hasError) {
+            return;
+        }
+
+        setIsPaymentOpen(true);
     };
 
     return (
@@ -269,6 +381,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             <SelectField
                                 placeholder="출발지를 선택해주세요"
                                 value={originStation?.name}
+                                error={originError}
                                 onClick={() => setStationField("origin")}
                             />
                         </div>
@@ -278,18 +391,28 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             <SelectField
                                 placeholder="도착지를 선택해주세요"
                                 value={destinationStation?.name}
+                                error={destinationError}
                                 onClick={() => setStationField("destination")}
                             />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>물품명</FieldLabel>
-                            <TextField placeholder="물품명을 입력해주세요" />
+                            <TextField
+                                placeholder="물품명을 입력해주세요"
+                                value={itemName}
+                                onChange={setItemName}
+                                error={itemNameError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>물품가액</FieldLabel>
-                            <PriceField />
+                            <PriceField
+                                value={itemPrice}
+                                onChange={setItemPrice}
+                                error={itemPriceError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
@@ -297,7 +420,11 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                                 <FieldLabel>물품 크기</FieldLabel>
                                 <SizeGuideBridge />
                             </div>
-                            <SizeSelectField />
+                            <SizeSelectField
+                                selected={itemSize}
+                                onSelect={setItemSize}
+                                error={itemSizeError}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
@@ -316,7 +443,11 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>메모</FieldLabel>
-                            <TextField placeholder="메모를 입력해주세요" />
+                            <TextField
+                              placeholder="메모를 입력해주세요"
+                              value={memo}
+                              onChange={setMemo}
+                            />
                         </div>
                     </div>
                 </div>
@@ -324,7 +455,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                 <div className="shrink-0 px-5 py-[14px]">
                     <button
                         type="button"
-                        onClick={() => setIsPaymentOpen(true)}
+                        onClick={handleMatchingRequest}
                         className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                     >
                         매칭 요청
@@ -346,7 +477,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             ? "출발역 선택"
                             : "도착역 선택"
                     }
-                    onClose={() => setStationField(null)}
+                    onClose={handleStationModalClose}
                     onSelect={handleStationSelect}
                 />
             ) : null}
