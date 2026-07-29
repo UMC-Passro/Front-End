@@ -1,4 +1,7 @@
-import { DELIVERY_FILTER, DeliveryFilterLabel } from "../../../types/delivery";
+import {
+    DELIVERY_FILTER,
+    DeliveryFilterLabel,
+} from "../../../types/delivery/delivery";
 
 interface DeliveryFilterButtonProps {
     selected: DeliveryFilterLabel;

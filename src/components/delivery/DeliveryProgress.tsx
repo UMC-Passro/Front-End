@@ -1,4 +1,4 @@
-import { DeliveryStatus } from "../../types/delivery";
+import { DeliveryStatus } from "../../types/delivery/delivery";
 
 interface DeliveryProgressProps {
     status: DeliveryStatus;
