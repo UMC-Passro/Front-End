@@ -3,6 +3,7 @@ import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
 import PageHeader from "../common/PageHeader";
+import { SizeInfo } from "./SizeInfo";
 
 interface DeliveryRequestFormProps {
     isLoading?: boolean;
@@ -55,8 +56,9 @@ function SelectField({
                 className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-4 text-left"
             >
                 <span
-                    className={`text-[15px] ${value ? "font-medium text-gray-900" : "text-gray-500"
-                        }`}
+                    className={`text-[15px] ${
+                        value ? "font-medium text-gray-900" : "text-gray-500"
+                    }`}
                 >
                     {value ?? placeholder}
                 </span>
@@ -67,42 +69,6 @@ function SelectField({
             ) : null}
         </div>
     );
-}
-function SizeGuideBridge() {
-    return (
-        <span className="relative inline-flex group">
-            <button
-                type="button"
-                aria-label="물품 크기 안내"
-                className="flex h-4 w-4 items-center justify-center rounded-full bg-[#8E91A1] text-[10px] font-bold leading-none text-white"
-            >
-                ?
-            </button>
-
-            <div className="invisible absolute left-0 top-6 z-30 w-[350px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#EDEEF3] bg-white p-4 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 left-[-35px]">
-                <table className="w-full table-fixed text-[13px]">
-                    <colgroup>
-                        <col className="w-[16%]" />
-                        <col className="w-[48%]" />
-                        <col className="w-[36%]" />
-                    </colgroup>
-                    <thead>
-                        <tr className="text-color-black">
-                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">사이즈</th>
-                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">크기 (가로+세로+높이)</th>
-                            <th className="h-6 whitespace-nowrap text-center align-middle font-semibold">무게</th>
-                        </tr>
-                    </thead>
-                    <tbody className="whitespace-nowrap text-[12px] text-[#8E91A1]">
-                        <tr><td className="pt-1 text-center">S</td><td className="pt-1 text-center">~40 미만</td><td className="pt-1 text-center">500g 미만</td></tr>
-                        <tr><td className="pt-1 text-center">M</td><td className="pt-1 text-center">40 ~ 70</td><td className="pt-1 text-center">500g ~ 1.5kg 미만</td></tr>
-                        <tr><td className="pt-1 text-center">L</td><td className="pt-1 text-center">70 ~ 100</td><td className="pt-1 text-center">1.5kg ~ 3kg 미만</td></tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </span>
-    )
 }
 
 function SizeSelectField({
@@ -125,7 +91,13 @@ function SizeSelectField({
                     onClick={() => setIsOpen((prev) => !prev)}
                     className="flex h-[52px] w-full items-center justify-between rounded-[10px] bg-[#F8F9FD] px-5 text-left"
                 >
-                    <span className={selected ? "text-[15px] font-medium text-[#373840]" : "text-[15px] font-medium text-[#8E91A1]"}>
+                    <span
+                        className={
+                            selected
+                                ? "text-[15px] font-medium text-[#373840]"
+                                : "text-[15px] font-medium text-[#8E91A1]"
+                        }
+                    >
                         {selected ?? "물품 크기를 선택해주세요"}
                     </span>
                     <ChevronDownIcon />
@@ -134,13 +106,16 @@ function SizeSelectField({
                 {isOpen ? (
                     <div className="absolute inset-x-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-[#EDEEF3] bg-white shadow-lg">
                         {options.map((option) => (
-                            <button key={option} type="button"
+                            <button
+                                key={option}
+                                type="button"
                                 onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => {
                                     onSelect(option);
                                     setIsOpen(false);
                                 }}
-                                className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]">
+                                className="flex h-11 w-full items-center px-5 text-[15px] font-medium text-[#373840] hover:bg-[#F8F9FD]"
+                            >
                                 {option}
                             </button>
                         ))}
@@ -364,8 +339,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     return (
         <div className="relative mx-auto flex h-full w-full max-w-[402px] flex-col bg-white">
             <div
-                className={`flex min-h-0 flex-1 flex-col transition duration-100 ${isOverlayOpen ? "pointer-events-none blur-sm" : ""
-                    }`}
+                className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
+                    isOverlayOpen ? "pointer-events-none blur-sm" : ""
+                }`}
                 aria-hidden={isOverlayOpen}
             >
                 <PageHeader
@@ -418,7 +394,13 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                         <div className="flex flex-col gap-[10px]">
                             <div className="flex items-center gap-1">
                                 <FieldLabel>물품 크기</FieldLabel>
-                                <SizeGuideBridge />
+                                <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-gray-500 text-white text-xs font-bold cursor-pointer">
+                                    ?
+                                    <SizeInfo
+                                        boxTranslate="-18%"
+                                        arrowLeft="18%"
+                                    />
+                                </div>
                             </div>
                             <SizeSelectField
                                 selected={itemSize}
@@ -444,9 +426,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>메모</FieldLabel>
                             <TextField
-                              placeholder="메모를 입력해주세요"
-                              value={memo}
-                              onChange={setMemo}
+                                placeholder="메모를 입력해주세요"
+                                value={memo}
+                                onChange={setMemo}
                             />
                         </div>
                     </div>
