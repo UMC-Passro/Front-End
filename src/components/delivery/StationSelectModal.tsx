@@ -105,7 +105,7 @@ export default function StationSelectModal({
                 <div className="mt-6 flex items-center justify-between">
                     <h2
                         id="station-modal-title"
-                        className="text-xl font-bold text-gray-900"
+                        className="text-xl font-bold text-gray-700"
                     >
                         {title}
                     </h2>
@@ -126,7 +126,7 @@ export default function StationSelectModal({
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="역 이름 또는 지역을 검색해주세요"
-                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-900 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500"
+                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-700 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500"
                         autoFocus
                     />
                 </label>
@@ -141,7 +141,7 @@ export default function StationSelectModal({
                                         className="flex w-full items-center justify-between py-4 text-left hover:bg-gray-50"
                                         onClick={() => onSelect(station)}
                                     >
-                                        <span className="font-semibold text-gray-900">
+                                        <span className="font-semibold text-gray-700">
                                             {station.name}
                                         </span>
                                         <span className="text-sm text-gray-500">

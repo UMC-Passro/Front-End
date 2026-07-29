@@ -1,9 +1,22 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
 import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
+
+const ITEM_PRICE_PATTERN = /^[0-9]+$/;
+
+function useDebouncedValue<T>(value: T, delayMs: number) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedValue(value), delayMs);
+        return () => clearTimeout(timer);
+    }, [value, delayMs]);
+
+    return debouncedValue;
+}
 
 interface DeliveryRequestFormProps {
     isLoading?: boolean;
@@ -290,8 +303,40 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [itemSize, setItemSize] = useState<string | null>(null);
     const [itemSizeError, setItemSizeError] = useState("");
     const [memo, setMemo] = useState("");
+    const [hasSubmitted, setHasSubmitted] = useState(false);
+
+    const debouncedItemName = useDebouncedValue(itemName, 300);
+    const debouncedItemPrice = useDebouncedValue(itemPrice, 300);
+
+    useEffect(() => {
+        if (!hasSubmitted) {
+            return;
+        }
+
+        setItemNameError(
+            debouncedItemName.trim() === "" ? "물품명을 입력해주세요." : "",
+        );
+    }, [debouncedItemName, hasSubmitted]);
+
+    useEffect(() => {
+        if (!hasSubmitted) {
+            return;
+        }
+
+        const trimmedPrice = debouncedItemPrice.trim();
+
+        if (trimmedPrice === "") {
+            setItemPriceError("물품 가액을 입력해주세요.");
+        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
+            setItemPriceError("숫자만 입력해주세요.");
+        } else {
+            setItemPriceError("");
+        }
+    }, [debouncedItemPrice, hasSubmitted]);
 
     const handleMatchingRequest = () => {
+        setHasSubmitted(true);
+
         let hasError = false;
 
         if (!originStation) {
@@ -315,8 +360,13 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
             setItemNameError("");
         }
 
-        if (itemPrice.trim() === "") {
+        const trimmedPrice = itemPrice.trim();
+
+        if (trimmedPrice === "") {
             setItemPriceError("물품 가액을 입력해주세요.");
+            hasError = true;
+        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
+            setItemPriceError("숫자만 입력해주세요.");
             hasError = true;
         } else {
             setItemPriceError("");
@@ -404,7 +454,10 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             </div>
                             <SizeSelectField
                                 selected={itemSize}
-                                onSelect={setItemSize}
+                                onSelect={(size) => {
+                                    setItemSize(size);
+                                    setItemSizeError("");
+                                }}
                                 error={itemSizeError}
                             />
                         </div>

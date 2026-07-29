@@ -18,7 +18,7 @@ export default function BirthDateField({
     onOpen,
 }: BirthDateFieldProps) {
     return (
-        <section className="flex flex-col gap-[10px]">
+        <section className="flex flex-col gap-[4px]">
             <span className={SIGNUP_LABEL_CLASS}>생년월일</span>
             <button
                 type="button"
@@ -27,9 +27,8 @@ export default function BirthDateField({
                 aria-label="생년월일 선택"
             >
                 <span
-                    className={`flex h-full items-center ${
-                        value ? "text-gray-800" : "text-gray-500"
-                    }`}
+                    className={`flex h-full items-center ${value ? "text-gray-800" : "text-gray-500"
+                        }`}
                 >
                     {value ? formatBirthDate(value) : "생년월일을 입력해주세요"}
                 </span>
