@@ -112,7 +112,9 @@ export default function BasicSignupForm({
         />
       </div>
 
-      <SignupSubmitButton>다음</SignupSubmitButton>
+      <div className="fixed bottom-[15px] w-[100%]" style={{ "maxWidth": "min(361px, calc(100% - 42px))" }}>
+        <SignupSubmitButton>다음</SignupSubmitButton>
+      </div>
       <FeedbackModal
         message={modalMessage}
         onClose={() => setModalMessage("")}

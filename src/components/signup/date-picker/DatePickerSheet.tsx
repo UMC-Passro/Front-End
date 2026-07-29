@@ -62,11 +62,11 @@ export default function DatePickerSheet({
 
     return (
         <div
-            className="absolute inset-0 z-30 flex items-end bg-black/40"
+            className="bottom-sheet-backdrop-in fixed inset-0 z-30 mx-auto flex w-full max-w-[402px] items-end overflow-hidden bg-black/40"
             onClick={onClose}
         >
             <div
-                className="h-[460px] w-full rounded-t-[30px] bg-white px-5 pb-2.5 pt-[17px]"
+                className="bottom-sheet-panel-in relative h-[460px] w-full rounded-t-[30px] bg-white px-5 pb-2.5 pt-[17px]"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="date-picker-title"
@@ -75,7 +75,7 @@ export default function DatePickerSheet({
                 <div className="mx-auto h-1 w-[55px] rounded-full bg-gray-200" />
                 <h2
                     id="date-picker-title"
-                    className="mt-6 text-center text-2xl font-bold text-gray-900"
+                    className="mt-6 text-center text-2xl font-semibold text-gray-700"
                 >
                     날짜 선택
                 </h2>

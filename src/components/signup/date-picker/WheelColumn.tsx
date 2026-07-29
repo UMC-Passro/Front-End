@@ -81,8 +81,8 @@ export default function WheelColumn({
             onClick={() => onChange(option)}
             className={`flex h-9 w-full snap-center items-center justify-center rounded-[10px] text-[22px] leading-9 ${
               isSelected
-                ? "font-extrabold text-[#202126]"
-                : "font-semibold text-[#D4D6E2]"
+                ? "font-semibold text-gray-700"
+                : "font-medium text-gray-200"
             }`}
           >
             {option}
@@ -93,4 +93,3 @@ export default function WheelColumn({
     </div>
   );
 }
-

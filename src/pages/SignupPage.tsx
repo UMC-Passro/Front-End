@@ -20,6 +20,8 @@ const initialSignupFormData: SignupFormData = {
     birthDate: "",
     gender: "NONE",
     address: "",
+    originStation: null,
+    destinationStation: null,
 };
 
 export default function SignupPage() {
