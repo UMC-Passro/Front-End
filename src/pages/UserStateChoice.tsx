@@ -14,7 +14,7 @@ export default function UserStateChoice() {
             return;
         }
 
-        if (selectedType === "carrier") {
+        if (selectedType === "shipper") {
             setIsVerificationOpen(true);
             return;
         }
@@ -24,7 +24,7 @@ export default function UserStateChoice() {
     };
 
     const handleVerificationComplete = () => {
-        setCurrentUserRole("carrier");
+        setCurrentUserRole("shipper");
         navigate("/home");
     };
 
@@ -53,9 +53,9 @@ export default function UserStateChoice() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setSelectedType("carrier")}
+                        onClick={() => setSelectedType("shipper")}
                         className={`shadow-[2px_2px_rgba(0,0,0,0.10)] w-full rounded-lg p-5 transition-colors ${
-                            selectedType === "carrier"
+                            selectedType === "shipper"
                                 ? "bg-gray-500 text-white"
                                 : "bg-gray-50 text-gray-600"
                         }`}
