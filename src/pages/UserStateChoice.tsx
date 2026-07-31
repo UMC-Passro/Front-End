@@ -30,16 +30,17 @@ export default function UserStateChoice() {
 
     return (
         <>
-            <div className="page-container flex flex-col items-center justify-center">
-                <img
-                    className="h-[clamp(200px,29dvh,250px)] w-[clamp(200px,29dvh,250px)] shrink-0 object-contain"
-                    src="/Logo.png"
-                    alt="Logo"
-                    width={250}
-                    height={250}
-                />
+            <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
+                <div className="scrollbar-hidden flex flex-1 flex-col items-center justify-center overflow-y-auto pb-6">
+                    <img
+                        className="h-[clamp(200px,29dvh,250px)] w-[clamp(200px,29dvh,250px)] shrink-0 object-contain"
+                        src="/Logo.png"
+                        alt="Logo"
+                        width={250}
+                        height={250}
+                    />
 
-                <div className="mt-6 flex w-full flex-col gap-3">
+                    <div className="mt-6 flex w-full flex-col gap-3">
                     <button
                         type="button"
                         onClick={() => setSelectedType("sender")}
@@ -62,13 +63,14 @@ export default function UserStateChoice() {
                     >
                         물건을 전달하고 싶어요!
                     </button>
+                    </div>
                 </div>
 
                 <button
                     type="button"
                     disabled={selectedType === null}
                     onClick={handleHome}
-                    className={`mt-10 w-full shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] rounded-lg p-3.5 font-semibold transition-colors ${
+                    className={`w-full shrink-0 shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] rounded-lg p-3.5 font-semibold transition-colors ${
                         selectedType
                             ? "cursor-pointer bg-purple-500 text-white hover:bg-purple-600"
                             : "cursor-not-allowed bg-gray-100 text-gray-400"

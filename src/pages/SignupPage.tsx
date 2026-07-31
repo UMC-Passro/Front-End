@@ -103,11 +103,11 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col">
+        <div className="page-container relative flex h-dvh min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title={step === "basic" ? "회원가입" : "상세정보"}
                 onBack={handleBack}
-                className="mb-[38px]"
+                className="shrink-0"
             />
 
             {step === "basic" ? (

@@ -30,7 +30,7 @@ function DeliveryConsentSheet({
                     type="button"
                     onClick={onConfirm}
                     disabled={!agreed}
-                    className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-[#373840] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-300"
+                    className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-300"
                 >
                     배송 등록하기
                 </button>

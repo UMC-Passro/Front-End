@@ -10,6 +10,7 @@ interface ProfilePageProps {
     onRetry?: () => void;
     onBack?: () => void;
     onEditProfile?: () => void;
+    onInquiry?: () => void;
     onManageRoutes?: () => void;
     onViewPoints?: () => void;
     onViewHistory?: () => void;
@@ -105,7 +106,7 @@ function ErrorProfilePage({
                 {onRetry ? (
                     <button
                         type="button"
-                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-700 focus:ring-offset-2"
+                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none"
                         onClick={onRetry}
                     >
                         다시 시도
@@ -128,7 +129,7 @@ function StatItem({
     return (
         <button
             type="button"
-            className="flex flex-col items-center gap-0.5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/60 disabled:cursor-default"
+            className="flex flex-col items-center gap-0.5 focus:outline-none disabled:cursor-default"
             onClick={onClick}
             disabled={!onClick}
         >
@@ -138,15 +139,23 @@ function StatItem({
     );
 }
 
-function MenuRow({ label, onClick }: { label: string; onClick?: () => void }) {
+function MenuRow({
+    label,
+    onClick,
+    showArrow = false,
+}: {
+    label: string;
+    onClick?: () => void;
+    showArrow?: boolean;
+}) {
     return (
         <button
             type="button"
-            className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-[15px] text-left transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            className="flex w-full items-center justify-between rounded-lg bg-gray-50 px-5 py-[15px] text-left transition hover:bg-slate-100 focus:outline-none"
             onClick={onClick}
         >
             <span className="text-gray-700 font-medium ">{label}</span>
-            <MoveIcon />
+            {showArrow ? <MoveIcon /> : null}
         </button>
     );
 }
@@ -155,6 +164,7 @@ function ProfilePageContent({
     data,
     onBack,
     onEditProfile,
+    onInquiry,
     onManageRoutes,
     onViewPoints,
     onViewHistory,
@@ -164,6 +174,7 @@ function ProfilePageContent({
         ProfilePageProps,
         | "onBack"
         | "onEditProfile"
+        | "onInquiry"
         | "onManageRoutes"
         | "onViewPoints"
         | "onViewHistory"
@@ -179,12 +190,10 @@ function ProfilePageContent({
         typeof stats?.completedDeliveries === "number"
             ? stats.completedDeliveries
             : 0;
-    const hasShipperFeatures = role === "shipper";
-
     const statItems = useMemo(() => {
         const items = [
             {
-                label: "배송 내역",
+                label: "전달 내역",
                 value: numberFormatter.format(completedDeliveries),
                 onClick: onViewHistory,
             },
@@ -200,18 +209,9 @@ function ProfilePageContent({
             },
         ];
 
-        if (hasShipperFeatures && typeof stats?.acceptanceRate === "number") {
-            items.push({
-                label: "수락률",
-                value: `${stats.acceptanceRate}%`,
-                onClick: undefined,
-            });
-        }
-
         return items;
     }, [
         completedDeliveries,
-        hasShipperFeatures,
         onViewHistory,
         onViewPoints,
         pointBalance,
@@ -220,8 +220,14 @@ function ProfilePageContent({
     ]);
 
     return (
-        <main className="page-container">
-            <PageHeader title="마이페이지" onBack={onBack} />
+        <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title="마이페이지"
+                onBack={onBack}
+                className="shrink-0"
+            />
+
+            <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pb-6">
 
             <section
                 className="flex flex-col items-center gap-6 pt-8 pb-6"
@@ -291,10 +297,16 @@ function ProfilePageContent({
                     프로필 설정 메뉴
                 </h2>
                 <div className="flex w-full flex-col gap-6">
-                    <MenuRow label="프로필 설정" onClick={onEditProfile} />
+                    <MenuRow
+                        label="프로필 설정"
+                        onClick={onEditProfile}
+                        showArrow
+                    />
+                    <MenuRow label="문의하기" onClick={onInquiry} />
                     <MenuRow label="로그아웃" onClick={onLogout} />
                 </div>
             </section>
+            </div>
         </main>
     );
 }

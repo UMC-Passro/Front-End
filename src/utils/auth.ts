@@ -10,6 +10,11 @@ export interface AuthUser {
     email: string;
     name: string;
     role: UserRole;
+    nickname?: string;
+    phone?: string;
+    birthDate?: string;
+    address?: string;
+    profileEmail?: string;
 }
 
 function createUserId(email: string) {
@@ -109,6 +114,34 @@ export function setCurrentUserRole(role: UserRole) {
     const updatedUser: AuthUser = {
         ...currentUser,
         role,
+    };
+
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+    return updatedUser;
+}
+
+export function updateCurrentUserProfile(
+    updates: Partial<
+        Pick<
+            AuthUser,
+            | "name"
+            | "nickname"
+            | "phone"
+            | "birthDate"
+            | "address"
+            | "profileEmail"
+        >
+    >,
+) {
+    const currentUser = getCurrentUser();
+
+    if (!currentUser) {
+        return null;
+    }
+
+    const updatedUser: AuthUser = {
+        ...currentUser,
+        ...updates,
     };
 
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));

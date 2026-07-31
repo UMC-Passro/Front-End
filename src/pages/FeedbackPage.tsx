@@ -5,16 +5,15 @@ export default function FeedbackPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="page-container">
-            <div className="flex flex-col h-full min-h-[inherit] bg-white relative pb-8 w-full overflow-hidden justify-between">
+        <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
                 
                 {/* 상단바 영역 */}
-                <div className="sticky top-0 z-50 w-full bg-white">
+                <div className="w-full shrink-0 bg-white">
                     <PageHeader title="완료확인" onBack={() => navigate(-1)} />
                 </div>
 
                 {/* 중앙 피드백 콘텐츠 영역 */}
-                <div className="flex-1 flex flex-col items-center justify-center px-6 space-y-12 my-auto">
+                <div className="scrollbar-hidden flex flex-1 flex-col items-center justify-center space-y-12 overflow-y-auto px-6 py-6">
                     
                     {/* 1. 상단 질문 & 별점 섹션 */}
                     <div className="flex flex-col items-center w-full text-center">
@@ -63,13 +62,11 @@ export default function FeedbackPage() {
                 </div>
 
                 {/* 3. 하단 고정 완료하기 버튼 영역 */}
-                <div className="px-6 w-full mt-auto">
+                <div className="w-full shrink-0 px-6">
                     <button className="w-full bg-purple-500 text-white text-[16px] font-bold py-4 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none">
                         완료하기
                     </button>
                 </div>
-
-            </div>
         </div>
     )
 }
