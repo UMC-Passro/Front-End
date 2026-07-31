@@ -14,8 +14,8 @@ export default function MyPage() {
         return {
             profile: {
                 id: currentUser.id,
-                name: currentUser.name,
-                email: currentUser.email,
+                name: currentUser.nickname || currentUser.name,
+                email: currentUser.profileEmail || currentUser.email,
                 schoolName: "",
                 department: "",
                 role: currentUser.role,
@@ -36,6 +36,10 @@ export default function MyPage() {
 
     const handleEditProfile = useCallback(() => {
         navigate("/mypage/edit");
+    }, [navigate]);
+
+    const handleInquiry = useCallback(() => {
+        navigate("/mypage/inquiry");
     }, [navigate]);
 
     const handleBack = useCallback(() => {
@@ -64,6 +68,7 @@ export default function MyPage() {
             data={profileData}
             onBack={handleBack}
             onEditProfile={handleEditProfile}
+            onInquiry={handleInquiry}
             onManageRoutes={handleManageRoutes}
             onViewPoints={handleViewPoints}
             onViewHistory={handleViewHistory}

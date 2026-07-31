@@ -15,17 +15,22 @@ export default function DeliveryStatusPage() {
     const [status, setStatus] = useState<DeliveryStatus>("DELIVERING");
 
     return (
-        <div className="page-container relative flex flex-col">
-            <PageHeader title="배송 추적" onBack={() => navigate(-1)} />
-            <DeliveryProgress status={status} />
+        <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title="배송 추적"
+                onBack={() => navigate(-1)}
+                className="shrink-0"
+            />
+            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                <DeliveryProgress status={status} />
 
-            <div className="flex flex-col mt-8 gap-3">
-                <span className="text-gray-900 font-bold">전달자 정보</span>
-                <DeliveryPersonCard />
-            </div>
+                <div className="flex flex-col mt-8 gap-3">
+                    <span className="text-gray-900 font-bold">전달자 정보</span>
+                    <DeliveryPersonCard />
+                </div>
 
-            <section className="mt-12">
-                <h2 className="text-[17px] font-bold">전달 타임라인</h2>
+                <section className="mt-12">
+                    <h2 className="text-[17px] font-bold">전달 타임라인</h2>
 
                 <ol className="relative mt-[23px] ml-[18px] flex flex-col gap-[23px]">
                     <span
@@ -47,12 +52,13 @@ export default function DeliveryStatusPage() {
                             </time>
                         </li>
                     ))}
-                </ol>
-            </section>
+                    </ol>
+                </section>
+            </div>
 
             <button
                 type="button"
-                className="mt-10 w-full rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
+                className="w-full shrink-0 rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
             >
                 완료 확인
             </button>

@@ -1,27 +1,25 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
-
-/**
- * TODO: 배송자-발송자 인앱 채팅 페이지를 구현하는 파일입니다.
- *
- * 구현 가이드:
- * - 매칭된 배송 건별 채팅방을 보여줍니다.
- * - 메시지 목록과 메시지 입력 컴포넌트를 배치합니다.
- * - 실시간 통신 방식은 추후 백엔드 구조에 맞춰 결정합니다.
- */
+import { chatRooms } from "../data/chatRooms";
 
 export default function ChatPage() {
     const navigate = useNavigate();
+    const { chatRoomId } = useParams();
+    const room = chatRooms.find((chatRoom) => chatRoom.id === chatRoomId);
+
+    if (!room) {
+        return <Navigate to="/delivery/chat" replace />;
+    }
 
     return (
-        <div className="flex min-h-full w-full flex-col bg-white">
+        <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
 
             {/* 상단바 영역 */}
-            <div className="sticky top-0 z-50 w-full bg-white px-4 pt-3 pb-4 border-b border-gray-100">
+            <div className="z-40 w-full shrink-0 border-b border-gray-100 bg-white px-4 pb-4 pt-3">
 
                 <PageHeader
-                    title="송현수"
-                    onBack={() => navigate(-1)}
+                    title={room.participantName}
+                    onBack={() => navigate("/delivery/chat")}
                     className="mb-3"
                     rightAction={
                         <button
@@ -40,42 +38,44 @@ export default function ChatPage() {
                 <div className="flex items-center justify-between bg-[#F7F7F9] rounded-2xl p-4">
                     <div>
                         <h2 className="text-[15px] font-bold text-gray-900 mb-0.5">
-                            무인양품 티셔츠
+                            {room.itemName}
                         </h2>
 
                         <p className="text-sm text-gray-400 font-semibold">
-                            안양 &rarr; 정왕역
+                            {room.route}
                         </p>
                     </div>
 
                     {/* 배송 상태 태그 */}
                     <span className="bg-[#EBEBFF] text-[#6366F1] text-xs font-semibold px-3 py-1.5 rounded-xl">
-                        배송중
+                        {room.status}
                     </span>
                 </div>
 
             </div>
 
             {/* 2. 채팅 내용 영역 */}
-            <div className="flex-1 px-4 py-6 space-y-4 bg-white overflow-y-auto">
-
-                {/* 내 메시지 (오른쪽 정렬) */}
-                <div className="flex justify-end">
-                    <div className="max-w-[75%] bg-[#6366F1] text-white text-[15px] px-4 py-3 rounded-full shadow-sm leading-relaxed font-semibold">
-                        픽업 장소 도착했습니다!
+            <div className="scrollbar-hidden min-h-0 flex-1 space-y-4 overflow-y-auto bg-white px-4 py-6">
+                {room.messages.map((message) => (
+                    <div
+                        key={message.id}
+                        className={`flex ${message.sender === "me" ? "justify-end" : "justify-start"}`}
+                    >
+                        <div
+                            className={`max-w-[75%] rounded-full px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${
+                                message.sender === "me"
+                                    ? "bg-[#6366F1] text-white"
+                                    : "bg-[#EFEFEF] text-gray-800"
+                            }`}
+                        >
+                            {message.text}
+                        </div>
                     </div>
-                </div>
-
-                {/* 상대방 메시지 (왼쪽 정렬) */}
-                <div className="flex justify-start">
-                    <div className="max-w-[75%] bg-[#EFEFEF] text-gray-800 text-[15px] px-4 py-3 rounded-full shadow-sm leading-relaxed font-semibold">
-                        5분 뒤에 도착합니다. 감사합니다!
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* 3. 채팅 입력 영역 */}
-            <div className="w-full border-gray-100 bg-white px-4 py-4">
+            <div className="w-full shrink-0 border-gray-100 bg-white px-4 py-4">
                 <div className="flex items-center bg-[#F7F7F9] rounded-[24px] px-4 py-2">
 
                     {/* 텍스트 입력창 */}

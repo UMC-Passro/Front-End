@@ -147,7 +147,7 @@ export default function BasicSignupForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-col gap-[27px]">
+      <div className="scrollbar-hidden flex flex-1 flex-col gap-[27px] overflow-y-auto pb-6 pt-[38px]">
         <EmailField
           value={formData.email}
           code={formData.emailCode}
@@ -175,7 +175,7 @@ export default function BasicSignupForm({
         />
       </div>
 
-      <div className="fixed bottom-[15px] w-[100%]" style={{ "maxWidth": "min(361px, calc(100% - 42px))" }}>
+      <div className="shrink-0 pt-4 [&>button]:mt-0">
         <SignupSubmitButton>다음</SignupSubmitButton>
       </div>
       <FeedbackModal

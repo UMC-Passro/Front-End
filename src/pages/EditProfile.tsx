@@ -1,72 +1,232 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CameraIcon } from "../assets/icons/CameraIcon";
 import PageHeader from "../components/common/PageHeader";
+import BirthDateField from "../components/signup/detail/BirthDateField";
+import DatePickerSheet from "../components/signup/date-picker/DatePickerSheet";
+import { formatPhoneNumber } from "../utils/signupFormatters";
+import {
+    getCurrentUser,
+    updateCurrentUserProfile,
+} from "../utils/auth";
+
+const editableFieldClassName =
+    "min-h-[52px] w-full rounded-[10px] bg-gray-50 px-5 py-[15px] text-[15px] font-medium leading-[22px] text-gray-800 outline-none placeholder:text-gray-500";
+
+function MoveIcon() {
+    return (
+        <svg
+            width="8"
+            height="14"
+            viewBox="0 0 8 14"
+            fill="none"
+            aria-hidden="true"
+        >
+            <path
+                d="M1 1L7 7L1 13"
+                stroke="#B3B5C1"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
+function EditableProfileField({
+    label,
+    value,
+    placeholder,
+    type = "text",
+    inputMode,
+    autoComplete,
+    onChange,
+    onBlur,
+}: {
+    label: string;
+    value: string;
+    placeholder: string;
+    type?: "text" | "tel" | "email";
+    inputMode?: "text" | "tel" | "email";
+    autoComplete?: string;
+    onChange: (value: string) => void;
+    onBlur: () => void;
+}) {
+    return (
+        <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium leading-[22px] text-gray-600">
+                {label}
+            </span>
+            <input
+                type={type}
+                inputMode={inputMode}
+                value={value}
+                placeholder={placeholder}
+                autoComplete={autoComplete}
+                onChange={(event) => onChange(event.target.value)}
+                onBlur={onBlur}
+                className={editableFieldClassName}
+            />
+        </label>
+    );
+}
 
 export default function EditProfile() {
     const navigate = useNavigate();
+    const currentUser = getCurrentUser();
+    const [nickname, setNickname] = useState(
+        currentUser?.nickname || currentUser?.name || "패스로 사용자",
+    );
+    const [name, setName] = useState(currentUser?.name || "");
+    const [phone, setPhone] = useState(currentUser?.phone || "");
+    const [birthDate, setBirthDate] = useState(currentUser?.birthDate || "");
+    const [address, setAddress] = useState(
+        currentUser?.address || "서울시 마포구",
+    );
+    const [email, setEmail] = useState(
+        currentUser?.profileEmail || "test@gmail.com",
+    );
+    const [isNicknameEditing, setIsNicknameEditing] = useState(false);
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     return (
-        <div className="page-container flex min-h-full flex-col">
-            <PageHeader title="프로필 설정" onBack={() => navigate(-1)} />
+        <main className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title="프로필 설정"
+                onBack={() => navigate(-1)}
+                className="shrink-0"
+            />
 
-            {/* 전체 카드 상자 */}
-            <div className="mt-8 w-full max-w-md bg-gray-300 border border-black py-12 px-8 flex flex-col gap-8 rounded-lg shadow-md">
-                
-                {/* 상단 프로필 영역 (사진 + 텍스트 가로 배치) */}
-                <div className="flex items-center gap-6 w-full pb-4 border-b border-gray-400">
-                    
-                    {/* 1. 동그라미 프로필 사진 틀 */}
-                    <div className="w-20 h-20 bg-gray-400 rounded-full flex items-center justify-center border-2 border-gray-500 shrink-0">
-                        {/* 임시로 넣은 아이콘 모양 텍스트 (나중에 <img> 태그로 바꾸면 됩니다) */}
-                        <span className="text-gray-200 text-xs">사진</span>
+            <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto px-1 pb-6">
+                <section className="flex flex-col items-center pb-8 pt-8">
+                    <div className="relative">
+                        <div className="flex h-[110px] w-[110px] items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-700">
+                            {(nickname || name || "?").charAt(0).toUpperCase()}
+                        </div>
+                        <button
+                            type="button"
+                            className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
+                            aria-label="프로필 사진 변경"
+                        >
+                            <CameraIcon />
+                        </button>
                     </div>
 
-                    {/* 2. 닉네임 및 발송자 정보 */}
-                    <div className="flex flex-col">
-                        <h1 className="text-2xl text-gray-700 font-bold mb-0.5">
-                            닉네임
-                        </h1>
-                        <p className="text-sm text-gray-500 font-medium">
-                            발송자 or 배송자
-                        </p>
+                    <div className="mt-8 flex items-center gap-1">
+                        {isNicknameEditing ? (
+                            <input
+                                type="text"
+                                value={nickname}
+                                autoFocus
+                                onChange={(event) =>
+                                    setNickname(event.target.value)
+                                }
+                                onBlur={() => {
+                                    setIsNicknameEditing(false);
+                                    updateCurrentUserProfile({ nickname });
+                                }}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter") {
+                                        event.currentTarget.blur();
+                                    }
+                                }}
+                                aria-label="닉네임"
+                                className="w-40 border-b border-gray-300 bg-transparent text-center text-2xl font-bold leading-[30px] text-gray-900 outline-none"
+                            />
+                        ) : (
+                            <h2 className="text-2xl font-bold leading-[30px] text-gray-900">
+                                {nickname || "닉네임"}
+                            </h2>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setIsNicknameEditing(true)}
+                            className="p-1 text-xl leading-none text-gray-500"
+                            aria-label="닉네임 수정"
+                        >
+                            ✎
+                        </button>
                     </div>
-                </div>
+                </section>
 
-                {/* 닉네임 변경 섹션 */}
-                <div className="w-full flex flex-col gap-2">
-                    <h2 className="text-lg text-gray-600 font-bold">
-                        닉네임 변경
-                    </h2>
-                    <input 
-                        type="text"
-                        placeholder="NickName"
-                        className="w-full border border-gray-400 text-sm rounded-md px-4 py-2.5 bg-white outline-none focus:border-gray-600"
+                <div className="flex flex-col gap-5">
+                    <EditableProfileField
+                        label="이름"
+                        value={name}
+                        placeholder="이름을 입력해주세요"
+                        autoComplete="name"
+                        onChange={setName}
+                        onBlur={() => updateCurrentUserProfile({ name })}
                     />
-                </div>
+                    <EditableProfileField
+                        label="전화번호"
+                        value={phone}
+                        placeholder="전화번호를 입력해주세요"
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        onChange={(value) =>
+                            setPhone(formatPhoneNumber(value))
+                        }
+                        onBlur={() => updateCurrentUserProfile({ phone })}
+                    />
+                    <BirthDateField
+                        value={birthDate}
+                        validationMessage=""
+                        showValidation={false}
+                        onOpen={() => setIsDatePickerOpen(true)}
+                    />
+                    <EditableProfileField
+                        label="주소"
+                        value={address}
+                        placeholder="주소를 입력해주세요"
+                        autoComplete="street-address"
+                        onChange={setAddress}
+                        onBlur={() => updateCurrentUserProfile({ address })}
+                    />
 
-                {/* 비밀번호 변경 섹션 */}
-                <div className="w-full flex flex-col gap-2">
-                    <h2 className="text-lg text-gray-600 font-bold">
-                        비밀번호 변경
-                    </h2>
-                    <div className="flex flex-col gap-2">
-                        <input 
-                            type="password"
-                            placeholder="기존 비밀번호"
-                            className="w-full border border-gray-400 text-sm rounded-md px-4 py-2.5 bg-white outline-none focus:border-gray-600"
-                        />
-                        <input 
-                            type="password"
-                            placeholder="변경 비밀번호"
-                            className="w-full border border-gray-400 text-sm rounded-md px-4 py-2.5 bg-white outline-none focus:border-gray-600"
-                        />
+                    <EditableProfileField
+                        label="이메일"
+                        value={email}
+                        placeholder="이메일을 입력해주세요"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        onChange={setEmail}
+                        onBlur={() =>
+                            updateCurrentUserProfile({ profileEmail: email })
+                        }
+                    />
+
+                    <div className="flex flex-col gap-1.5">
+                        <span className="text-sm font-medium leading-[22px] text-gray-600">
+                            비밀번호 변경
+                        </span>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/mypage/edit/password")}
+                            className="flex min-h-[52px] w-full items-center justify-between rounded-[10px] bg-gray-50 px-5 py-[15px] text-left transition-colors hover:bg-gray-100"
+                        >
+                            <span className="text-base font-medium leading-[22px] text-gray-700">
+                                비밀번호 변경
+                            </span>
+                            <MoveIcon />
+                        </button>
                     </div>
                 </div>
-
-                {/* 저장 버튼 */}
-                <button className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-md py-3 font-semibold transition-colors mt-4">
-                    변경사항 저장
-                </button>
             </div>
-        </div>
-    )
+
+            {isDatePickerOpen ? (
+                <DatePickerSheet
+                    value={birthDate}
+                    onClose={() => setIsDatePickerOpen(false)}
+                    onConfirm={(value) => {
+                        setBirthDate(value);
+                        updateCurrentUserProfile({ birthDate: value });
+                        setIsDatePickerOpen(false);
+                    }}
+                />
+            ) : null}
+        </main>
+    );
 }

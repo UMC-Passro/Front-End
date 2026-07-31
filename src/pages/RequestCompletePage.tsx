@@ -1,8 +1,7 @@
 export default function RequestCompletePage() {
     return (
-        <div className="page-container">
-            <div className="flex flex-col h-full min-h-[inherit] bg-white relative pb-6 w-full overflow-hidden justify-between">
-                <div className="flex-1 flex flex-col items-center justify-center px-6 pt-12">
+        <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
+                <div className="scrollbar-hidden flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 pb-6 pt-12">
                     {/* 로고 이미지 */}
                     <img 
                         src="/Logo.png" 
@@ -19,13 +18,11 @@ export default function RequestCompletePage() {
                 </div>
 
                 {/* 완료하기 */}
-                <div className="px-6 w-full mt-auto">
+                <div className="w-full shrink-0 px-6">
                     <button className="w-full bg-purple-500 text-white font-bold py-3.5 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none">
                         완료하기
                     </button>
                 </div>
-
-            </div>
         </div>
     )
 }

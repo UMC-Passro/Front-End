@@ -129,7 +129,7 @@ export default function StationSelectModal({
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="역 이름 또는 지역을 검색해주세요"
-                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-700 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500"
+                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-700 outline-none placeholder:text-gray-400"
                         autoFocus
                     />
                 </label>
