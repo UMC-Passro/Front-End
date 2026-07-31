@@ -6,6 +6,7 @@ export { fileApi } from "./fileApi";
 export { inquiryApi } from "./inquiryApi";
 export { matchingApi } from "./matchingApi";
 export { reviewApi } from "./reviewApi";
+export { subwayApi } from "./subwayApi";
 
 export type { AccountApiContract } from "./accountApi";
 export type { ChatApiContract } from "./chatApi";

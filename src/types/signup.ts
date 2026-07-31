@@ -3,6 +3,7 @@ export type SignupStep = "basic" | "detail";
 export type SignupGender = "M" | "W" | "NONE";
 
 export type SignupNicknameCheckStatus = "idle" | "available" | "duplicate";
+export type SignupEmailVerificationStatus = "idle" | "sent" | "verified";
 
 export type SignupDateValue = {
   year: number;
@@ -11,7 +12,7 @@ export type SignupDateValue = {
 };
 
 export type SignupStation = {
-  id: string;
+  id: number;
   name: string;
   region: string;
 };
@@ -20,7 +21,8 @@ export type SignupDetailValidationMessages = {
   name: string;
   phone: string;
   birthDate: string;
-  address: string;
+  originStation: string;
+  destinationStation: string;
 };
 
 export type SignupFormData = {

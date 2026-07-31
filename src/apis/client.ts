@@ -4,10 +4,14 @@ import axios, {
     type InternalAxiosRequestConfig,
 } from "axios";
 import { ApiError, type ApiErrorBody, type ApiResponse } from "../types/api";
+import type { TokenResponse } from "./authApi";
+import { API_ENDPOINTS } from "./endpoints";
 import { tokenStorage } from "./tokenStorage";
 
 const DEFAULT_API_BASE_URL = "http://localhost:8080";
 const DEFAULT_TIMEOUT_MS = 10_000;
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
 function getTimeout() {
     const configuredTimeout = Number(import.meta.env.VITE_API_TIMEOUT_MS);
@@ -17,7 +21,7 @@ function getTimeout() {
 }
 
 export const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL,
+    baseURL: API_BASE_URL,
     timeout: getTimeout(),
     headers: {
         "Content-Type": "application/json",
@@ -33,6 +37,81 @@ apiClient.interceptors.request.use(
         }
 
         return config;
+    },
+);
+
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
+}
+
+let tokenReissueRequest: Promise<TokenResponse> | null = null;
+
+function reissueTokens(refreshToken: string): Promise<TokenResponse> {
+    if (!tokenReissueRequest) {
+        tokenReissueRequest = axios
+            .post<ApiResponse<TokenResponse>>(
+                `${API_BASE_URL}${API_ENDPOINTS.auth.reissue}`,
+                { refreshToken },
+                {
+                    timeout: getTimeout(),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
+            )
+            .then((response) => unwrapResponse(response.data))
+            .finally(() => {
+                tokenReissueRequest = null;
+            });
+    }
+
+    return tokenReissueRequest;
+}
+
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config as
+            | RetryableRequestConfig
+            | undefined;
+        const requestUrl = originalRequest?.url;
+        const responseBody = isApiErrorBody(error.response?.data)
+            ? error.response.data
+            : undefined;
+        const isAuthRequest =
+            requestUrl === API_ENDPOINTS.auth.login ||
+            requestUrl === API_ENDPOINTS.auth.reissue;
+        const isAuthenticationFailure =
+            error.response?.status === 401 ||
+            (error.response?.status === 403 && !responseBody?.code);
+
+        if (
+            !isAuthenticationFailure ||
+            !originalRequest ||
+            originalRequest._retry ||
+            isAuthRequest
+        ) {
+            return Promise.reject(error);
+        }
+
+        const refreshToken = tokenStorage.getRefreshToken();
+        if (!refreshToken) {
+            tokenStorage.clearTokens();
+            return Promise.reject(error);
+        }
+
+        originalRequest._retry = true;
+
+        try {
+            const tokens = await reissueTokens(refreshToken);
+            tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
+            originalRequest.headers.Authorization =
+                `Bearer ${tokens.accessToken}`;
+            return apiClient.request(originalRequest);
+        } catch {
+            tokenStorage.clearTokens();
+            return Promise.reject(error);
+        }
     },
 );
 

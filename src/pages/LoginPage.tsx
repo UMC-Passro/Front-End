@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../utils/auth";
+import { ApiError } from "../types/api";
 
 type LoginLocationState = {
     from?: {
@@ -14,11 +15,12 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const state = location.state as LoginLocationState | null;
     const from = state?.from?.pathname ?? "/user-state-choice";
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!email.trim() || !password.trim()) {
@@ -26,8 +28,21 @@ export default function LoginPage() {
             return;
         }
 
-        login(email);
-        navigate(from, { replace: true });
+        setErrorMessage("");
+        setIsSubmitting(true);
+
+        try {
+            await login(email, password);
+            navigate(from, { replace: true });
+        } catch (error) {
+            setErrorMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "로그인 중 오류가 발생했습니다.",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -74,9 +89,10 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
-                    className="shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] w-full bg-purple-500 text-white rounded-lg py-4 font-bold"
+                    disabled={isSubmitting}
+                    className="shadow-[0px_0px_3px_0px_rgba(0,_0,_0,_0.1)] w-full bg-purple-500 text-white rounded-lg py-4 font-bold disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    로그인
+                    {isSubmitting ? "로그인 중..." : "로그인"}
                 </button>
             </form>
 

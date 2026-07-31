@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
 import { BasicSignupForm, DetailSignupForm } from "../components/signup";
 import type {
+    SignupEmailVerificationStatus,
     SignupFieldUpdater,
     SignupFormData,
     SignupStep,
 } from "../types/signup";
+import { authApi } from "../apis/authApi";
+import { ApiError } from "../types/api";
+import FeedbackModal from "../components/signup/common/FeedbackModal";
 
 const initialSignupFormData: SignupFormData = {
     nickname: "",
@@ -30,6 +34,11 @@ export default function SignupPage() {
     const [formData, setFormData] = useState<SignupFormData>(
         initialSignupFormData,
     );
+    const [emailVerificationStatus, setEmailVerificationStatus] =
+        useState<SignupEmailVerificationStatus>("idle");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+    const [isSignupComplete, setIsSignupComplete] = useState(false);
 
     const updateField: SignupFieldUpdater = (key, value) => {
         setFormData((prev) => ({
@@ -40,18 +49,48 @@ export default function SignupPage() {
 
     const handleBasicSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        // TODO: 닉네임 중복 확인, 이메일 인증 확인, 비밀번호 일치 검증을 연결합니다.
         setStep("detail");
     };
 
-    const handleFinalSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleFinalSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // TODO: 최종 회원가입 API 요청을 연결합니다.
-        console.log("회원가입 데이터", formData);
+        if (!formData.originStation || !formData.destinationStation) {
+            setModalMessage("출발역과 도착역을 선택해주세요.");
+            return;
+        }
 
-        navigate("/login");
+        if (formData.originStation.id === formData.destinationStation.id) {
+            setModalMessage("출발역과 도착역은 서로 달라야 합니다.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setModalMessage("");
+
+        try {
+            await authApi.signup({
+                email: formData.email.trim(),
+                password: formData.password,
+                nickname: formData.nickname.trim(),
+                name: formData.name.trim(),
+                phone: formData.phone,
+                birth: formData.birthDate,
+                sourceStationId: formData.originStation.id,
+                destinationStationId: formData.destinationStation.id,
+                wayPoints: [],
+            });
+            setIsSignupComplete(true);
+            setModalMessage("회원가입이 완료되었습니다.");
+        } catch (error) {
+            setModalMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "회원가입 중 오류가 발생했습니다.",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleBack = () => {
@@ -76,14 +115,29 @@ export default function SignupPage() {
                     formData={formData}
                     updateField={updateField}
                     onSubmit={handleBasicSubmit}
+                    emailVerificationStatus={emailVerificationStatus}
+                    onEmailVerificationStatusChange={
+                        setEmailVerificationStatus
+                    }
                 />
             ) : (
                 <DetailSignupForm
                     formData={formData}
                     updateField={updateField}
                     onSubmit={handleFinalSubmit}
+                    isSubmitting={isSubmitting}
                 />
             )}
+
+            <FeedbackModal
+                message={modalMessage}
+                onClose={() => {
+                    setModalMessage("");
+                    if (isSignupComplete) {
+                        navigate("/login", { replace: true });
+                    }
+                }}
+            />
         </div>
     );
 }

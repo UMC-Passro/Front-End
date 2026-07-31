@@ -1,4 +1,6 @@
 import type { UserRole } from "../types/user";
+import { authApi } from "../apis/authApi";
+import { tokenStorage } from "../apis/tokenStorage";
 
 const AUTH_USER_KEY = "passro.authUser";
 const SELECTED_USER_ROLE_KEY = "passro.selectedUserRole";
@@ -31,41 +33,64 @@ function isUserRole(value: string | null): value is UserRole {
     return value === "sender" || value === "shipper";
 }
 
-export function login(email: string): AuthUser {
-    const normalizedEmail = email.trim().toLowerCase();
-    const authUser: AuthUser = {
-        id: createUserId(normalizedEmail),
-        email: normalizedEmail,
-        name: getNameFromEmail(normalizedEmail),
-        role: getRoleFromEmail(normalizedEmail),
-    };
+function createSessionUser(email: string): AuthUser {
+  const normalizedEmail = email.trim().toLowerCase();
+  const authUser: AuthUser = {
+    id: createUserId(normalizedEmail),
+    email: normalizedEmail,
+    name: getNameFromEmail(normalizedEmail),
+    role: getRoleFromEmail(normalizedEmail),
+  };
 
-    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authUser));
-    return authUser;
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authUser));
+  return authUser;
 }
 
-export function logout() {
-    localStorage.removeItem(AUTH_USER_KEY);
-    localStorage.removeItem(SELECTED_USER_ROLE_KEY);
+function clearLocalSession() {
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem(SELECTED_USER_ROLE_KEY);
+  tokenStorage.clearTokens();
+}
+
+export async function login(email: string, password: string): Promise<AuthUser> {
+  const tokens = await authApi.login({
+    email: email.trim(),
+    password,
+  });
+
+  tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
+  return createSessionUser(email);
+}
+
+export async function logout(): Promise<void> {
+  try {
+    if (tokenStorage.getAccessToken()) {
+      await authApi.logout();
+    }
+  } catch {
+    // 서버 로그아웃 실패와 관계없이 로컬 인증 정보는 반드시 제거한다.
+  } finally {
+    clearLocalSession();
+  }
 }
 
 export function getCurrentUser(): AuthUser | null {
-    const storedUser = localStorage.getItem(AUTH_USER_KEY);
+  const storedUser = localStorage.getItem(AUTH_USER_KEY);
 
-    if (!storedUser) {
-        return null;
-    }
+  if (!storedUser) {
+    return null;
+  }
 
-    try {
-        return JSON.parse(storedUser) as AuthUser;
-    } catch {
-        logout();
-        return null;
-    }
+  try {
+    return JSON.parse(storedUser) as AuthUser;
+  } catch {
+    clearLocalSession();
+    return null;
+  }
 }
 
 export function isAuthenticated() {
-    return getCurrentUser() !== null;
+  return tokenStorage.getAccessToken() !== null && getCurrentUser() !== null;
 }
 
 export function getSelectedUserRole(): UserRole | null {
