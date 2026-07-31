@@ -1,9 +1,9 @@
-import type { BackendPlace } from "../types/backend";
 import { apiRequest } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 
 export interface SendMailRequest {
     mail: string;
+    student: boolean;
 }
 
 export interface ConfirmMailRequest {
@@ -11,14 +11,36 @@ export interface ConfirmMailRequest {
     code: string;
 }
 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface TokenResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
+export interface FindIdRequest {
+    name: string;
+    phone: string;
+}
+
+export interface FindPasswordRequest extends FindIdRequest {
+    email: string;
+}
+
 export interface SignupRequest {
     email: string;
     password: string;
     nickname: string;
-    place_id: BackendPlace;
     name: string;
     phone: string;
     birth: string;
+    sourceStationId: number;
+    destinationStationId: number;
+    wayPoints?: number[];
+    point?: number;
     picture?: string;
 }
 
@@ -43,6 +65,45 @@ export const authApi = {
         return apiRequest<null>({
             method: "POST",
             url: API_ENDPOINTS.auth.signup,
+            data: request,
+        });
+    },
+
+    login(request: LoginRequest) {
+        return apiRequest<TokenResponse>({
+            method: "POST",
+            url: API_ENDPOINTS.auth.login,
+            data: request,
+        });
+    },
+
+    logout() {
+        return apiRequest<null>({
+            method: "DELETE",
+            url: API_ENDPOINTS.auth.logout,
+        });
+    },
+
+    reissue(refreshToken: string) {
+        return apiRequest<TokenResponse>({
+            method: "POST",
+            url: API_ENDPOINTS.auth.reissue,
+            data: { refreshToken },
+        });
+    },
+
+    findId(request: FindIdRequest) {
+        return apiRequest<null>({
+            method: "POST",
+            url: API_ENDPOINTS.auth.findId,
+            data: request,
+        });
+    },
+
+    findPassword(request: FindPasswordRequest) {
+        return apiRequest<null>({
+            method: "POST",
+            url: API_ENDPOINTS.auth.findPassword,
             data: request,
         });
     },

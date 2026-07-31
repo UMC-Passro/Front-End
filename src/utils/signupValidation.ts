@@ -5,14 +5,6 @@ import type {
 } from "../types/signup";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MOCK_DUPLICATE_NICKNAMES = [
-  "passro",
-  "admin",
-  "test",
-  "중복",
-  "김패스로",
-];
-
 export function isEmailValid(email: string) {
   return EMAIL_PATTERN.test(email.trim());
 }
@@ -68,12 +60,6 @@ export function getNicknameValidation(
   };
 }
 
-export function isDuplicateNickname(nickname: string) {
-  return MOCK_DUPLICATE_NICKNAMES.some(
-    (item) => item.toLowerCase() === nickname.trim().toLowerCase(),
-  );
-}
-
 export function getDetailValidationMessages(
   formData: SignupFormData,
 ): SignupDetailValidationMessages {
@@ -87,7 +73,10 @@ export function getDetailValidationMessages(
         ? ""
         : "전화번호 형식을 확인해주세요",
     birthDate: formData.birthDate ? "" : "생년월일을 선택해주세요",
-    address: formData.address.trim() ? "" : "주소를 입력해주세요",
+    originStation: formData.originStation ? "" : "출발역을 선택해주세요",
+    destinationStation: formData.destinationStation
+      ? ""
+      : "도착역을 선택해주세요",
   };
 }
 

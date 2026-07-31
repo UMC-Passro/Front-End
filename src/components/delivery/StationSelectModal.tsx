@@ -1,51 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { subwayApi } from "../../apis/subwayApi";
+import { ApiError } from "../../types/api";
 
 export interface Station {
-    id: string;
+    id: number;
     name: string;
     region: string;
 }
-
-const INITIAL_STATIONS: Station[] = [
-    { id: "seoul", name: "서울역", region: "서울특별시" },
-    { id: "yongsan", name: "용산역", region: "서울특별시" },
-    { id: "yeongdeungpo", name: "영등포역", region: "서울특별시" },
-    { id: "cheongnyangni", name: "청량리역", region: "서울특별시" },
-    { id: "suseo", name: "수서역", region: "서울특별시" },
-    { id: "haengsin", name: "행신역", region: "경기도 고양시" },
-    { id: "gwangmyeong", name: "광명역", region: "경기도 광명시" },
-    { id: "suwon", name: "수원역", region: "경기도 수원시" },
-    { id: "pyeongtaek", name: "평택역", region: "경기도 평택시" },
-    { id: "cheonan", name: "천안역", region: "충청남도 천안시" },
-    { id: "cheonan-asan", name: "천안아산역", region: "충청남도 아산시" },
-    { id: "gongju", name: "공주역", region: "충청남도 공주시" },
-    { id: "osong", name: "오송역", region: "충청북도 청주시" },
-    { id: "daejeon", name: "대전역", region: "대전광역시" },
-    { id: "seodaejeon", name: "서대전역", region: "대전광역시" },
-    { id: "jecheon", name: "제천역", region: "충청북도 제천시" },
-    { id: "wonju", name: "원주역", region: "강원특별자치도 원주시" },
-    { id: "gangneung", name: "강릉역", region: "강원특별자치도 강릉시" },
-    { id: "chuncheon", name: "춘천역", region: "강원특별자치도 춘천시" },
-    { id: "jeonju", name: "전주역", region: "전북특별자치도 전주시" },
-    { id: "iksan", name: "익산역", region: "전북특별자치도 익산시" },
-    { id: "gwangju-songjeong", name: "광주송정역", region: "광주광역시" },
-    { id: "mokpo", name: "목포역", region: "전라남도 목포시" },
-    { id: "suncheon", name: "순천역", region: "전라남도 순천시" },
-    { id: "yeosu-expo", name: "여수엑스포역", region: "전라남도 여수시" },
-    { id: "gimcheon-gumi", name: "김천구미역", region: "경상북도 김천시" },
-    { id: "gumi", name: "구미역", region: "경상북도 구미시" },
-    { id: "daegu", name: "대구역", region: "대구광역시" },
-    { id: "dongdaegu", name: "동대구역", region: "대구광역시" },
-    { id: "gyeongju", name: "경주역", region: "경상북도 경주시" },
-    { id: "pohang", name: "포항역", region: "경상북도 포항시" },
-    { id: "ulsan", name: "울산역", region: "울산광역시" },
-    { id: "miryang", name: "밀양역", region: "경상남도 밀양시" },
-    { id: "changwon-jungang", name: "창원중앙역", region: "경상남도 창원시" },
-    { id: "masan", name: "마산역", region: "경상남도 창원시" },
-    { id: "jinju", name: "진주역", region: "경상남도 진주시" },
-    { id: "gupo", name: "구포역", region: "부산광역시" },
-    { id: "busan", name: "부산역", region: "부산광역시" },
-];
 
 interface StationSelectModalProps {
     title: string;
@@ -59,6 +20,9 @@ export default function StationSelectModal({
     onSelect,
 }: StationSelectModalProps) {
     const [query, setQuery] = useState("");
+    const [stations, setStations] = useState<Station[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,18 +35,57 @@ export default function StationSelectModal({
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [onClose]);
 
-    const filteredStations = useMemo(() => {
-        const normalizedQuery = query.trim().toLocaleLowerCase("ko-KR");
-
-        if (!normalizedQuery) {
-            return INITIAL_STATIONS;
+    useEffect(() => {
+        const keyword = query.trim();
+        if (!keyword) {
+            setStations([]);
+            setErrorMessage("");
+            setIsLoading(false);
+            return;
         }
 
-        return INITIAL_STATIONS.filter((station) =>
-            `${station.name} ${station.region}`
-                .toLocaleLowerCase("ko-KR")
-                .includes(normalizedQuery),
-        );
+        if (!/^[가-힣0-9]+$/.test(keyword)) {
+            setStations([]);
+            setErrorMessage("검색어는 한글과 숫자만 입력해주세요.");
+            return;
+        }
+
+        let canceled = false;
+        const timer = window.setTimeout(async () => {
+            setIsLoading(true);
+            setErrorMessage("");
+
+            try {
+                const result = await subwayApi.search(keyword);
+                if (!canceled) {
+                    setStations(
+                        result.map((station) => ({
+                            id: station.id,
+                            name: station.subwayStationName,
+                            region: station.subwayRouteName,
+                        })),
+                    );
+                }
+            } catch (error) {
+                if (!canceled) {
+                    setStations([]);
+                    setErrorMessage(
+                        error instanceof ApiError
+                            ? error.message
+                            : "지하철역 검색 중 오류가 발생했습니다.",
+                    );
+                }
+            } finally {
+                if (!canceled) {
+                    setIsLoading(false);
+                }
+            }
+        }, 300);
+
+        return () => {
+            canceled = true;
+            window.clearTimeout(timer);
+        };
     }, [query]);
 
     return (
@@ -132,9 +135,17 @@ export default function StationSelectModal({
                 </label>
 
                 <div className="scrollbar-hidden mt-4 min-h-0 overflow-y-auto">
-                    {filteredStations.length > 0 ? (
+                    {isLoading ? (
+                        <p className="py-12 text-center text-sm text-gray-500">
+                            검색 중...
+                        </p>
+                    ) : errorMessage ? (
+                        <p className="py-12 text-center text-sm text-red-500">
+                            {errorMessage}
+                        </p>
+                    ) : stations.length > 0 ? (
                         <ul className="divide-y divide-gray-100">
-                            {filteredStations.map((station) => (
+                            {stations.map((station) => (
                                 <li key={station.id}>
                                     <button
                                         type="button"
@@ -153,7 +164,9 @@ export default function StationSelectModal({
                         </ul>
                     ) : (
                         <p className="py-12 text-center text-sm text-gray-500">
-                            검색 결과가 없습니다.
+                            {query.trim()
+                                ? "검색 결과가 없습니다."
+                                : "역 이름을 검색해주세요."}
                         </p>
                     )}
                 </div>

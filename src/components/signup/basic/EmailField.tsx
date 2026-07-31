@@ -1,25 +1,37 @@
 import ValidationMessage from "../common/ValidationMessage";
 import { SIGNUP_LABEL_CLASS } from "../common/styles";
 import { getEmailValidationMessage } from "../../../utils/signupValidation";
+import type { SignupEmailVerificationStatus } from "../../../types/signup";
 import { BASIC_ACTION_BUTTON_CLASS, BASIC_FIELD_CLASS } from "./constants";
 
 type EmailFieldProps = {
     value: string;
-    isRequested: boolean;
+    code: string;
+    status: SignupEmailVerificationStatus;
+    isSending: boolean;
+    isConfirming: boolean;
     showValidation: boolean;
     onChange: (value: string) => void;
+    onCodeChange: (value: string) => void;
     onRequest: () => void;
+    onConfirm: () => void;
 };
 
 export default function EmailField({
     value,
-    isRequested,
+    code,
+    status,
+    isSending,
+    isConfirming,
     showValidation,
     onChange,
+    onCodeChange,
     onRequest,
+    onConfirm,
 }: EmailFieldProps) {
-    const validationMessage = getEmailValidationMessage(value, isRequested);
-    const requestButtonClass = isRequested
+    const isVerified = status === "verified";
+    const validationMessage = getEmailValidationMessage(value, isVerified);
+    const requestButtonClass = status !== "idle"
         ? "rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]"
         : BASIC_ACTION_BUTTON_CLASS;
 
@@ -41,16 +53,60 @@ export default function EmailField({
                 <button
                     type="button"
                     onClick={onRequest}
+                    disabled={isSending || isVerified}
                     className={requestButtonClass}
                 >
-                    인증 요청
+                    {isSending
+                        ? "발송 중..."
+                        : status === "sent"
+                          ? "재전송"
+                          : isVerified
+                            ? "인증 완료"
+                            : "인증 요청"}
                 </button>
             </div>
 
+            {status !== "idle" ? (
+                <div className="grid grid-cols-[1fr_127px] gap-[10px]">
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="6자리 인증번호"
+                        value={code}
+                        disabled={isVerified}
+                        onChange={(event) =>
+                            onCodeChange(
+                                event.target.value.replace(/\D/g, "").slice(0, 6),
+                            )
+                        }
+                        className={BASIC_FIELD_CLASS}
+                    />
+                    <button
+                        type="button"
+                        onClick={onConfirm}
+                        disabled={isConfirming || isVerified}
+                        className={BASIC_ACTION_BUTTON_CLASS}
+                    >
+                        {isConfirming
+                            ? "확인 중..."
+                            : isVerified
+                              ? "인증 완료"
+                              : "인증 확인"}
+                    </button>
+                </div>
+            ) : null}
+
             <ValidationMessage
-                message={validationMessage}
+                message={
+                    isVerified ? "이메일 인증이 완료되었습니다" : validationMessage
+                }
                 fallback="이메일 검증 메시지"
-                visible={showValidation && Boolean(validationMessage)}
+                colorClass={isVerified ? "text-[#24A148]" : "text-[#E5484D]"}
+                visible={
+                    isVerified ||
+                    (showValidation && Boolean(validationMessage))
+                }
             />
         </section>
     );

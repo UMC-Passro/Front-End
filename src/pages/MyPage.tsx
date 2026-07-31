@@ -54,8 +54,8 @@ export default function MyPage() {
         navigate("/mypage/history");
     }, [navigate]);
 
-    const handleLogout = useCallback(() => {
-        logout();
+    const handleLogout = useCallback(async () => {
+        await logout();
         navigate("/login", { replace: true });
     }, [navigate]);
 

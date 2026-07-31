@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type {
+  SignupEmailVerificationStatus,
   SignupFieldUpdater,
   SignupFormData,
   SignupNicknameCheckStatus,
@@ -7,9 +8,10 @@ import type {
 import {
   getEmailValidationMessage,
   getPasswordValidation,
-  isDuplicateNickname,
   isEmailValid,
 } from "../../../utils/signupValidation";
+import { authApi } from "../../../apis/authApi";
+import { ApiError } from "../../../types/api";
 import FeedbackModal from "../common/FeedbackModal";
 import SignupSubmitButton from "../common/SignupSubmitButton";
 import EmailField from "./EmailField";
@@ -20,31 +22,85 @@ type BasicSignupFormProps = {
   formData: SignupFormData;
   updateField: SignupFieldUpdater;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  emailVerificationStatus: SignupEmailVerificationStatus;
+  onEmailVerificationStatusChange: (
+    status: SignupEmailVerificationStatus,
+  ) => void;
 };
 
 export default function BasicSignupForm({
   formData,
   updateField,
   onSubmit,
+  emailVerificationStatus,
+  onEmailVerificationStatusChange,
 }: BasicSignupFormProps) {
   const [showValidation, setShowValidation] = useState(false);
-  const [isEmailRequested, setIsEmailRequested] = useState(false);
+  const [emailAction, setEmailAction] = useState<"send" | "confirm" | null>(
+    null,
+  );
   const [nicknameCheckStatus, setNicknameCheckStatus] =
     useState<SignupNicknameCheckStatus>("idle");
   const [modalMessage, setModalMessage] = useState("");
 
   const handleEmailChange = (value: string) => {
     updateField("email", value);
-    setIsEmailRequested(false);
+    updateField("emailCode", "");
+    onEmailVerificationStatusChange("idle");
   };
 
-  const handleEmailRequest = () => {
+  const handleEmailRequest = async () => {
     if (!isEmailValid(formData.email)) {
       setShowValidation(true);
       return;
     }
 
-    setIsEmailRequested(true);
+    setEmailAction("send");
+    setModalMessage("");
+
+    try {
+      await authApi.sendMail({
+        mail: formData.email.trim(),
+        student: false,
+      });
+      onEmailVerificationStatusChange("sent");
+      setModalMessage("인증번호를 이메일로 발송했습니다.");
+    } catch (error) {
+      setModalMessage(
+        error instanceof ApiError
+          ? error.message
+          : "인증 메일 발송 중 오류가 발생했습니다.",
+      );
+    } finally {
+      setEmailAction(null);
+    }
+  };
+
+  const handleEmailConfirm = async () => {
+    if (!/^\d{6}$/.test(formData.emailCode)) {
+      setModalMessage("6자리 인증번호를 입력해주세요.");
+      return;
+    }
+
+    setEmailAction("confirm");
+    setModalMessage("");
+
+    try {
+      await authApi.confirmMail({
+        mail: formData.email.trim(),
+        code: formData.emailCode,
+      });
+      onEmailVerificationStatusChange("verified");
+      setModalMessage("이메일 인증이 완료되었습니다.");
+    } catch (error) {
+      setModalMessage(
+        error instanceof ApiError
+          ? error.message
+          : "인증번호 확인 중 오류가 발생했습니다.",
+      );
+    } finally {
+      setEmailAction(null);
+    }
   };
 
   const handleNicknameChange = (value: string) => {
@@ -62,10 +118,9 @@ export default function BasicSignupForm({
       return;
     }
 
-    const isDuplicate = isDuplicateNickname(nickname);
-    setNicknameCheckStatus(isDuplicate ? "duplicate" : "available");
+    setNicknameCheckStatus("available");
     setModalMessage(
-      isDuplicate ? "같은 닉네임이 존재합니다." : "사용 가능한 닉네임입니다.",
+      "최종 회원가입 단계에서 닉네임 중복 여부를 확인합니다.",
     );
   };
 
@@ -74,7 +129,10 @@ export default function BasicSignupForm({
     setShowValidation(true);
 
     const isFormValid =
-      !getEmailValidationMessage(formData.email, isEmailRequested) &&
+      !getEmailValidationMessage(
+        formData.email,
+        emailVerificationStatus === "verified",
+      ) &&
       getPasswordValidation(formData.password) &&
       formData.passwordCheck.length > 0 &&
       formData.password === formData.passwordCheck &&
@@ -92,10 +150,15 @@ export default function BasicSignupForm({
       <div className="flex flex-col gap-[27px]">
         <EmailField
           value={formData.email}
-          isRequested={isEmailRequested}
+          code={formData.emailCode}
+          status={emailVerificationStatus}
+          isSending={emailAction === "send"}
+          isConfirming={emailAction === "confirm"}
           showValidation={showValidation}
           onChange={handleEmailChange}
+          onCodeChange={(value) => updateField("emailCode", value)}
           onRequest={handleEmailRequest}
+          onConfirm={handleEmailConfirm}
         />
         <PasswordFields
           password={formData.password}

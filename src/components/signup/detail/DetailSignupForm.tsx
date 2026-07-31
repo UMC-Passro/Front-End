@@ -7,6 +7,7 @@ import {
 } from "../../../utils/signupValidation";
 import DatePickerSheet from "../date-picker/DatePickerSheet";
 import SignupSubmitButton from "../common/SignupSubmitButton";
+import ValidationMessage from "../common/ValidationMessage";
 import BirthDateField from "./BirthDateField";
 import DetailTextField from "./DetailTextField";
 import StationSelectModal, {
@@ -17,6 +18,7 @@ type DetailSignupFormProps = {
     formData: SignupFormData;
     updateField: SignupFieldUpdater;
     onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+    isSubmitting: boolean;
 };
 
 
@@ -76,6 +78,7 @@ export default function DetailSignupForm({
     formData,
     updateField,
     onSubmit,
+    isSubmitting,
 }: DetailSignupFormProps) {
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [stationField, setStationField] = useState<
@@ -147,6 +150,14 @@ export default function DetailSignupForm({
                         value={formData.originStation?.name}
                         onClick={() => setStationField("origin")}
                     />
+                    <ValidationMessage
+                        message={validationMessages.originStation}
+                        fallback=""
+                        visible={
+                            showValidation &&
+                            Boolean(validationMessages.originStation)
+                        }
+                    />
                     <div className="flex flex-row gap-[10px] justify-center items-center mt-[10px] mb-[10px]">
                         <div className="w-[100px] text-right font-semibold text-[13px] text-gray-500">경유지 추가</div>
                         <div className="w-2  font-semibold text-[13px] text-gray-200">|</div>
@@ -158,11 +169,21 @@ export default function DetailSignupForm({
                         value={formData.destinationStation?.name}
                         onClick={() => setStationField("destination")}
                     />
+                    <ValidationMessage
+                        message={validationMessages.destinationStation}
+                        fallback=""
+                        visible={
+                            showValidation &&
+                            Boolean(validationMessages.destinationStation)
+                        }
+                    />
                 </div>
             </div>
 
             <div className="fixed bottom-[15px] w-[100%]" style={{ "maxWidth": "min(361px, calc(100% - 42px))" }}>
-                <SignupSubmitButton>회원 가입 완료</SignupSubmitButton>
+                <SignupSubmitButton disabled={isSubmitting}>
+                    {isSubmitting ? "가입 처리 중..." : "회원 가입 완료"}
+                </SignupSubmitButton>
             </div>
 
             {isDatePickerOpen ? (

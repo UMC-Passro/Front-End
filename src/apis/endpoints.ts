@@ -3,6 +3,14 @@ export const API_ENDPOINTS = {
         sendMail: "/auth/mail/send",
         confirmMail: "/auth/mail/confirm",
         signup: "/auth/signup",
+        login: "/auth/login",
+        logout: "/auth/logout",
+        reissue: "/auth/reissue",
+        findId: "/auth/find/id",
+        findPassword: "/auth/find/password",
+    },
+    subway: {
+        search: "/subway/search",
     },
     sender: {
         root: "/sender",
