@@ -6,30 +6,31 @@ const AUTH_USER_KEY = "passro.authUser";
 const SELECTED_USER_ROLE_KEY = "passro.selectedUserRole";
 
 export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
+    id: string;
+    email: string;
+    name: string;
+    role: UserRole;
 }
 
 function createUserId(email: string) {
-  return email.trim().toLowerCase();
+    return email.trim().toLowerCase();
 }
 
 function getNameFromEmail(email: string) {
-  const localPart = email.split("@")[0]?.trim();
-  return localPart || "패스로 사용자";
+    const localPart = email.split("@")[0]?.trim();
+    return localPart || "패스로 사용자";
 }
 
 function getRoleFromEmail(email: string): UserRole {
-  const normalizedEmail = email.toLowerCase();
-  return normalizedEmail.includes("carrier") || normalizedEmail.includes("delivery")
-    ? "carrier"
-    : "sender";
+    const normalizedEmail = email.toLowerCase();
+    return normalizedEmail.includes("shipper") ||
+        normalizedEmail.includes("delivery")
+        ? "shipper"
+        : "sender";
 }
 
 function isUserRole(value: string | null): value is UserRole {
-  return value === "sender" || value === "carrier";
+    return value === "sender" || value === "shipper";
 }
 
 function createSessionUser(email: string): AuthUser {
@@ -93,23 +94,23 @@ export function isAuthenticated() {
 }
 
 export function getSelectedUserRole(): UserRole | null {
-  const storedRole = localStorage.getItem(SELECTED_USER_ROLE_KEY);
-  return isUserRole(storedRole) ? storedRole : null;
+    const storedRole = localStorage.getItem(SELECTED_USER_ROLE_KEY);
+    return isUserRole(storedRole) ? storedRole : null;
 }
 
 export function setCurrentUserRole(role: UserRole) {
-  localStorage.setItem(SELECTED_USER_ROLE_KEY, role);
+    localStorage.setItem(SELECTED_USER_ROLE_KEY, role);
 
-  const currentUser = getCurrentUser();
-  if (!currentUser) {
-    return null;
-  }
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        return null;
+    }
 
-  const updatedUser: AuthUser = {
-    ...currentUser,
-    role,
-  };
+    const updatedUser: AuthUser = {
+        ...currentUser,
+        role,
+    };
 
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
-  return updatedUser;
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+    return updatedUser;
 }

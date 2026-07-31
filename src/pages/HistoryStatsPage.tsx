@@ -8,7 +8,7 @@ import {
     DeliveryFilter,
     DeliveryFilterLabel,
     DeliveryStatus,
-} from "../types/delivery";
+} from "../types/delivery/delivery";
 
 interface DeliveryItem {
     id: number;

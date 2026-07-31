@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
 import { useState } from "react";
-import { DeliveryStatus } from "../types/delivery";
+import { DeliveryStatus } from "../types/delivery/delivery";
 import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
 import PageHeader from "../components/common/PageHeader";
 

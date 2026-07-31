@@ -51,7 +51,7 @@ const recentHistories: RecentHistory[] = [
 ];
 
 const homeContentByRole: Record<UserRole, HomeContent> = {
-    carrier: {
+    shipper: {
         name: "현수",
         headline: "배송을 시작해보세요!",
         activeDelivery,
@@ -70,7 +70,7 @@ const homeContentByRole: Record<UserRole, HomeContent> = {
 
 export default function HomePage() {
     const currentUser = getCurrentUser();
-    const userRole = getSelectedUserRole() ?? currentUser?.role ?? "carrier";
+    const userRole = getSelectedUserRole() ?? currentUser?.role ?? "shipper";
     const content = homeContentByRole[userRole];
 
     return <HomeDashboard role={userRole} content={content} />;

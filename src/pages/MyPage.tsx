@@ -9,7 +9,7 @@ export default function MyPage() {
     const currentUser = getCurrentUser()!;
 
     const profileData = useMemo<ProfilePageData>(() => {
-        const isCarrier = currentUser.role === "carrier";
+        const isShipper = currentUser.role === "shipper";
 
         return {
             profile: {
@@ -29,7 +29,7 @@ export default function MyPage() {
                 deliveryRequests: 0,
                 completedDeliveries: 0,
                 savedRoutes: 0,
-                acceptanceRate: isCarrier ? 0 : undefined,
+                acceptanceRate: isShipper ? 0 : undefined,
             },
         };
     }, [currentUser]);

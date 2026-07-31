@@ -1,5 +1,8 @@
 import ArrowIcon from "../../../assets/icons/ArrowIcon";
-import { DELIVERY_FILTER, DeliveryStatus } from "../../../types/delivery";
+import {
+    DELIVERY_FILTER,
+    DeliveryStatus,
+} from "../../../types/delivery/delivery";
 
 interface DeliveryItem {
     id: number;
