@@ -18,7 +18,7 @@ interface ProfilePageProps {
 
 const roleLabels: Record<UserRole, string> = {
     sender: "발송자",
-    carrier: "배송자",
+    shipper: "배송자",
 };
 
 const numberFormatter = new Intl.NumberFormat("ko-KR");
@@ -179,7 +179,7 @@ function ProfilePageContent({
         typeof stats?.completedDeliveries === "number"
             ? stats.completedDeliveries
             : 0;
-    const hasCarrierFeatures = role === "carrier";
+    const hasShipperFeatures = role === "shipper";
 
     const statItems = useMemo(() => {
         const items = [
@@ -200,7 +200,7 @@ function ProfilePageContent({
             },
         ];
 
-        if (hasCarrierFeatures && typeof stats?.acceptanceRate === "number") {
+        if (hasShipperFeatures && typeof stats?.acceptanceRate === "number") {
             items.push({
                 label: "수락률",
                 value: `${stats.acceptanceRate}%`,
@@ -211,7 +211,7 @@ function ProfilePageContent({
         return items;
     }, [
         completedDeliveries,
-        hasCarrierFeatures,
+        hasShipperFeatures,
         onViewHistory,
         onViewPoints,
         pointBalance,

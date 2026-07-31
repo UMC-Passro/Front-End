@@ -3,7 +3,7 @@ import PageHeader from "../components/common/PageHeader";
 import { DeliveryImageUploader } from "../components/delivery/DeliveryImageUploader";
 import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
 import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
-import { DeliveryStatus } from "../types/delivery";
+import { DeliveryStatus } from "../types/delivery/delivery";
 import { useNavigate } from "react-router-dom";
 
 export default function DeliveryTrackingPage() {

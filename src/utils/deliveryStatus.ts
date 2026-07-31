@@ -1,5 +1,5 @@
 import type { BackendDeliveryState } from "../types/backend";
-import type { DeliveryStatus } from "../types/delivery";
+import type { DeliveryStatus } from "../types/delivery/delivery";
 
 const DELIVERY_STATUS_LABELS: Record<BackendDeliveryState, string> = {
     WAIT: "매칭 대기",

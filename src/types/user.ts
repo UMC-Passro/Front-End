@@ -1,38 +1,42 @@
-export type UserRole = "sender" | "carrier";
+export type UserRole = "sender" | "shipper";
 
-export type SchoolVerificationStatus = "verified" | "pending" | "rejected" | "none";
+export type SchoolVerificationStatus =
+    | "verified"
+    | "pending"
+    | "rejected"
+    | "none";
 
 export interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  schoolName: string;
-  department?: string;
-  avatarUrl?: string;
-  role: UserRole;
-  verificationStatus: SchoolVerificationStatus;
-  rating: number;
-  reviewCount: number;
-  pointBalance: number;
+    id: string;
+    name: string;
+    email: string;
+    schoolName: string;
+    department?: string;
+    avatarUrl?: string;
+    role: UserRole;
+    verificationStatus: SchoolVerificationStatus;
+    rating: number;
+    reviewCount: number;
+    pointBalance: number;
 }
 
 export interface CommuteRouteSummary {
-  id: string;
-  name: string;
-  origin: string;
-  destination: string;
-  timeRange: string;
+    id: string;
+    name: string;
+    origin: string;
+    destination: string;
+    timeRange: string;
 }
 
 export interface ProfileStats {
-  deliveryRequests: number;
-  completedDeliveries: number;
-  savedRoutes: number;
-  acceptanceRate?: number;
+    deliveryRequests: number;
+    completedDeliveries: number;
+    savedRoutes: number;
+    acceptanceRate?: number;
 }
 
 export interface ProfilePageData {
-  profile: UserProfile;
-  primaryRoute?: CommuteRouteSummary;
-  stats: ProfileStats;
+    profile: UserProfile;
+    primaryRoute?: CommuteRouteSummary;
+    stats: ProfileStats;
 }
