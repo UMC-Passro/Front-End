@@ -107,4 +107,14 @@ export const authApi = {
             data: request,
         });
     },
+    
+    checkNicknameAvailable(nickname: string) {
+        return apiRequest<boolean>({
+            method: "GET",
+            url: API_ENDPOINTS.auth.availableNickname,
+            params: {
+                nickname
+            }
+        })
+    }
 };
