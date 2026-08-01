@@ -31,7 +31,7 @@ export default function EmailField({
 }: EmailFieldProps) {
     const isVerified = status === "verified";
     const validationMessage = getEmailValidationMessage(value, isVerified);
-    const requestButtonClass = status !== "idle"
+    const requestButtonClass = status === "idle"
         ? "rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]"
         : BASIC_ACTION_BUTTON_CLASS;
 
@@ -47,8 +47,11 @@ export default function EmailField({
                     type="email"
                     placeholder="이메일을 입력해주세요"
                     value={value}
+                    readOnly={status === "verified"}
                     onChange={(event) => onChange(event.target.value)}
-                    className={BASIC_FIELD_CLASS}
+                    className={
+                        status === "verified" ? "w-full rounded-lg bg-gray-500 px-5 py-4 text-[15px] text-gray-200 outline-none" :
+                            BASIC_FIELD_CLASS}
                 />
                 <button
                     type="button"
@@ -59,14 +62,14 @@ export default function EmailField({
                     {isSending
                         ? "발송 중..."
                         : status === "sent"
-                          ? "재전송"
-                          : isVerified
-                            ? "인증 완료"
-                            : "인증 요청"}
+                            ? "재전송"
+                            : isVerified
+                                ? "인증 완료"
+                                : "인증 요청"}
                 </button>
             </div>
 
-            {status !== "idle" ? (
+            {status === "sent" ? (
                 <div className="grid grid-cols-[1fr_127px] gap-[10px]">
                     <input
                         type="text"
@@ -86,13 +89,13 @@ export default function EmailField({
                         type="button"
                         onClick={onConfirm}
                         disabled={isConfirming || isVerified}
-                        className={BASIC_ACTION_BUTTON_CLASS}
+                        className={"rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]"}
                     >
                         {isConfirming
                             ? "확인 중..."
                             : isVerified
-                              ? "인증 완료"
-                              : "인증 확인"}
+                                ? "인증 완료"
+                                : "인증 확인"}
                     </button>
                 </div>
             ) : null}
