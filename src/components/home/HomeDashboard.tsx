@@ -22,8 +22,9 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
     return (
         <section className="page-container relative flex flex-col pt-5">
             <div
-                className={`flex flex-col h-full transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
-                    }`}
+                className={`flex flex-col h-full transition duration-200  ${
+                    isConsentOpen ? "pointer-events-none blur-sm" : ""
+                }`}
                 aria-hidden={isConsentOpen}
             >
                 <HomeHeader
@@ -60,7 +61,7 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
                 <button
                     type="button"
                     onClick={() => setIsConsentOpen(true)}
-                    className="mt-10 w-full rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
+                    className="absolute bottom-5 left-5 right-5 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
                 >
                     {content.actionLabel}
                 </button>

@@ -52,7 +52,7 @@ export default function DeliveryStatusPage() {
 
             <button
                 type="button"
-                className="mt-10 w-full rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
+                className="absolute bottom-5 left-5 right-5 rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900 transition-colors hover:bg-[#D8DAE6]"
             >
                 완료 확인
             </button>
