@@ -15,19 +15,13 @@ export type BackendDeliveryLogType =
     | "CANCELED";
 
 export interface BackendPlace {
-    id?: number;
-    address?: string;
+    id: number;
+    subwayRouteName: string;
+    subwayStationName: string;
 }
 
-export interface BackendAccountSummary {
-    id: number;
-    email?: string;
-    nickname?: string;
-    name?: string;
-    phone?: string;
-    certified?: boolean;
-    point?: number;
-    picture?: string;
-    role?: "USER" | "ADMIN";
-    place_id?: BackendPlace | null;
+export interface BackendDeliveryPartyInfo {
+    name: string;
+    picture: string | null;
+    place: BackendPlace | null;
 }

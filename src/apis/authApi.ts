@@ -61,6 +61,14 @@ export const authApi = {
         });
     },
 
+    confirmUniversityMail(request: ConfirmMailRequest) {
+        return apiRequest<null>({
+            method: "POST",
+            url: API_ENDPOINTS.auth.confirmUniversityMail,
+            data: request,
+        });
+    },
+
     signup(request: SignupRequest) {
         return apiRequest<null>({
             method: "POST",

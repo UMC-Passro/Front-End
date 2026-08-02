@@ -1,24 +1,42 @@
-export type PointTransactionType = "SAVING" | "USE" | "EXPIRE";
+import type { BackendDeliveryState, BackendPlace } from "../types/backend";
+import { apiRequest } from "./client";
+import { API_ENDPOINTS } from "./endpoints";
 
-export interface PointTransaction {
+export type PointIncrementReason =
+    | "DELIVERY_PAYMENT"
+    | "DELIVERY_REFUND"
+    | "DELIVERY_SETTLEMENT";
+
+export interface PointDelivery {
     id: number;
-    name: string;
-    amount: number;
-    type: PointTransactionType;
+    name: string | null;
+    origin: BackendPlace | null;
+    destination: BackendPlace | null;
+    status: BackendDeliveryState;
+    memo: string | null;
+}
+
+export interface PointLog {
+    pointLogId: number;
+    delivery: PointDelivery;
+    incrementReason: PointIncrementReason;
+    deltaPoint: number;
+    beforePoint: number;
+    afterPoint: number;
+    incrementReasonMemo: string | null;
     createdAt: string;
 }
 
-export interface PointSummary {
-    balance: number;
-    transactions: PointTransaction[];
+export interface PointHistory {
+    currentPoint: number;
+    pointLogs: PointLog[];
 }
 
-/**
- * 포인트 잔액 및 거래 내역 API가 확정되면 이 계약을 구현합니다.
- */
-export interface PointApiContract {
-    getSummary(): Promise<PointSummary>;
-    getTransactions(
-        type?: PointTransactionType,
-    ): Promise<PointTransaction[]>;
-}
+export const pointApi = {
+    getHistory() {
+        return apiRequest<PointHistory>({
+            method: "GET",
+            url: API_ENDPOINTS.account.points,
+        });
+    },
+};

@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from "./endpoints";
 
 export interface SubwayStationItem {
     id: number;
-    region: string;
+    region?: string;
     stationName: string;
     routeName: string;
 }

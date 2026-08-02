@@ -1,21 +1,65 @@
-import type { ProfilePageData } from "../types/user";
+import { apiRequest } from "./client";
+import { API_ENDPOINTS } from "./endpoints";
 
 export interface UpdateProfileRequest {
-    nickname?: string;
-    picture?: string;
+    nickname: string;
+    phoneNumber: string;
+    startPlaceId: number;
+    destinationPlaceId: number;
+    wayPoints?: number[];
 }
 
 export interface ChangePasswordRequest {
-    currentPassword: string;
-    newPassword: string;
+    password: string;
+    code: string;
 }
 
-/**
- * 백엔드 계정 API가 확정되면 이 계약을 구현합니다.
- * 가짜 엔드포인트 호출을 방지하기 위해 현재는 구현체를 제공하지 않습니다.
- */
-export interface AccountApiContract {
-    getMe(): Promise<ProfilePageData>;
-    updateProfile(request: UpdateProfileRequest): Promise<ProfilePageData>;
-    changePassword(request: ChangePasswordRequest): Promise<void>;
+export interface SenderMyPage {
+    picture: string | null;
+    nickname: string;
+    deliveryCount: number;
+    point: number;
 }
+
+export interface ShipperMyPage extends SenderMyPage {
+    rating: number;
+}
+
+export const accountApi = {
+    getSenderMyPage() {
+        return apiRequest<SenderMyPage>({
+            method: "GET",
+            url: API_ENDPOINTS.account.senderMyPage,
+        });
+    },
+
+    getShipperMyPage() {
+        return apiRequest<ShipperMyPage>({
+            method: "GET",
+            url: API_ENDPOINTS.account.shipperMyPage,
+        });
+    },
+
+    updateProfile(request: UpdateProfileRequest) {
+        return apiRequest<null>({
+            method: "PATCH",
+            url: API_ENDPOINTS.account.editMyInfo,
+            data: request,
+        });
+    },
+
+    sendPasswordEditMail() {
+        return apiRequest<null>({
+            method: "PATCH",
+            url: API_ENDPOINTS.account.sendPasswordEditMail,
+        });
+    },
+
+    changePassword(request: ChangePasswordRequest) {
+        return apiRequest<null>({
+            method: "PATCH",
+            url: API_ENDPOINTS.account.editPassword,
+            data: request,
+        });
+    },
+};

@@ -1,4 +1,5 @@
 import type {
+    BackendDeliveryPartyInfo,
     BackendDeliveryLogType,
     BackendDeliveryState,
     BackendPlace,
@@ -7,36 +8,38 @@ import { apiRequest } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 
 export interface CreateDeliveryRequest {
-    originAddress: string;
-    destAddress: string;
+    sourceStationId: number;
+    destinationStationId: number;
     name: string;
     price: number;
-    size: "S" | "M" | "L" | string;
+    size: "S" | "M" | "L";
     picture?: string;
     memo?: string;
 }
 
 export interface SenderDeliveryListItem {
     deliveryId: number;
-    goodName: string;
-    originAddress: string;
-    destAddress: string;
+    name: string | null;
+    originPlace: BackendPlace;
+    destPlace: BackendPlace;
     status: BackendDeliveryState;
 }
 
 export interface SenderDeliveryDetail {
     id: number;
+    name: string | null;
     status: BackendDeliveryState;
-    shipperInfo: {
-        name?: string;
-        picture?: string;
-        place?: BackendPlace | null;
-    } | null;
+    shipperInfo: BackendDeliveryPartyInfo | null;
     deliveryTimeLine: Array<{
         id: number;
         type: BackendDeliveryLogType;
+        image: string | null;
         createdAt: string;
     }>;
+}
+
+export interface DeliveryStatusUpdateRequest {
+    imageKey?: string;
 }
 
 export interface DeliveryPayment {
@@ -84,10 +87,14 @@ export const deliveryApi = {
         });
     },
 
-    complete(deliveryId: number) {
+    complete(
+        deliveryId: number,
+        request?: DeliveryStatusUpdateRequest,
+    ) {
         return apiRequest<null>({
             method: "PATCH",
             url: API_ENDPOINTS.sender.complete(deliveryId),
+            data: request,
         });
     },
 

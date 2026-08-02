@@ -1,23 +1,57 @@
+import type { BackendDeliveryState } from "../types/backend";
+import { apiRequest } from "./client";
+import { API_ENDPOINTS } from "./endpoints";
+
 export interface ChatMessage {
     id: number;
-    roomId: number;
     senderId: number;
+    senderNickname: string;
     content: string;
+    isRead: boolean;
     createdAt: string;
-    read: boolean;
 }
 
 export interface SendMessageRequest {
     content: string;
 }
 
-/**
- * 채팅 REST/Socket 명세가 확정되면 이 계약을 구현합니다.
- */
-export interface ChatApiContract {
-    getMessages(roomId: number): Promise<ChatMessage[]>;
-    sendMessage(
-        roomId: number,
-        request: SendMessageRequest,
-    ): Promise<ChatMessage>;
+export interface ChatRoomInfo {
+    partnerNickname: string;
+    partnerPicture: string | null;
+    itemName: string | null;
+    departure: string | null;
+    arrival: string | null;
+    deliveryStatus: BackendDeliveryState;
 }
+
+export const chatApi = {
+    getMessages(deliveryId: number, afterId?: number) {
+        return apiRequest<ChatMessage[]>({
+            method: "GET",
+            url: API_ENDPOINTS.chat.messages(deliveryId),
+            params: afterId === undefined ? undefined : { afterId },
+        });
+    },
+
+    sendMessage(deliveryId: number, request: SendMessageRequest) {
+        return apiRequest<ChatMessage>({
+            method: "POST",
+            url: API_ENDPOINTS.chat.messages(deliveryId),
+            data: request,
+        });
+    },
+
+    getRoomInfo(deliveryId: number) {
+        return apiRequest<ChatRoomInfo>({
+            method: "GET",
+            url: API_ENDPOINTS.chat.info(deliveryId),
+        });
+    },
+
+    getUnreadCount(deliveryId: number) {
+        return apiRequest<number>({
+            method: "GET",
+            url: API_ENDPOINTS.chat.unreadCount(deliveryId),
+        });
+    },
+};
