@@ -1,22 +1,8 @@
-import type {
-    BackendAccountSummary,
-    BackendDeliveryState,
-    BackendPlace,
-} from "../types/backend";
-import { apiRequest } from "./client";
-import { API_ENDPOINTS } from "./endpoints";
+import { ShipperDelivery } from "../../types/delivery/shipper";
+import { apiRequest } from "../client";
+import { API_ENDPOINTS } from "../endpoints";
 
-export interface ShipperDelivery {
-    id: number;
-    senderAccount: BackendAccountSummary;
-    shipperAccount: BackendAccountSummary | null;
-    originPlace: BackendPlace | null;
-    destPlace: BackendPlace | null;
-    deliveryState: BackendDeliveryState;
-    memo?: string;
-}
-
-export const matchingApi = {
+export const shipperDeliveryApi = {
     getMatchRequests() {
         return apiRequest<ShipperDelivery[]>({
             method: "GET",

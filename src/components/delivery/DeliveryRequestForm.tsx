@@ -4,6 +4,7 @@ import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
 import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
+import { DeliveryImageUploader } from "./DeliveryImageUploader";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
 
@@ -247,7 +248,7 @@ function ErrorDeliveryRequestForm({
                 {onRetry ? (
                     <button
                         type="button"
-                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-700 focus:ring-offset-2"
+                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none"
                         onClick={onRetry}
                     >
                         다시 시도
@@ -387,7 +388,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     };
 
     return (
-        <div className="relative mx-auto flex h-full w-full max-w-[402px] flex-col bg-white">
+        <div className="relative flex page-container flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
                     isOverlayOpen ? "pointer-events-none blur-sm" : ""
@@ -397,10 +398,10 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                 <PageHeader
                     title="배송 요청"
                     onBack={onBack}
-                    className="mx-4 mt-3 shrink-0"
+                    className="shrink-0"
                 />
 
-                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto px-5 pb-6 pt-4">
+                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto pb-6 pt-4">
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
@@ -464,16 +465,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>사진 등록</FieldLabel>
-                            <button
-                                type="button"
-                                className="flex h-[60px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-[10px] bg-[#F8F9FD]"
-                                aria-label="사진 등록"
-                            >
-                                <CameraIcon />
-                                <span className="text-[10px] font-medium leading-3 text-gray-300">
-                                    0/3
-                                </span>
-                            </button>
+                            <DeliveryImageUploader />
                         </div>
 
                         <div className="flex flex-col gap-[10px]">
@@ -487,11 +479,11 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     </div>
                 </div>
 
-                <div className="shrink-0 px-5 py-[14px]">
+                <div className="flex">
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        className="absolute bottom-5 left-5 right-5 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
                         매칭 요청
                     </button>

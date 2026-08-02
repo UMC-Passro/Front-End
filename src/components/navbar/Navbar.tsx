@@ -10,8 +10,8 @@ export default function Navbar() {
         },
         {
             id: 2,
-            title: "요청",
-            navigate: "/delivery/request",
+            title: "유형 선택",
+            navigate: "/user-state-choice",
             imgUrl: "/boxIcon.png",
         },
         {

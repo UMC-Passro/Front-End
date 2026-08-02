@@ -1,10 +1,10 @@
 export { apiClient, apiRequest } from "./client";
 export { tokenStorage } from "./tokenStorage";
 export { authApi } from "./authApi";
-export { deliveryApi } from "./deliveryApi";
+export { senderDeliveryApi } from "./delivery/senderDeliveryApi";
 export { fileApi } from "./fileApi";
 export { inquiryApi } from "./inquiryApi";
-export { matchingApi } from "./matchingApi";
+export { shipperDeliveryApi } from "./delivery/shipperDeliveryApi";
 export { reviewApi } from "./reviewApi";
 export { subwayApi } from "./subwayApi";
 

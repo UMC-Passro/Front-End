@@ -28,7 +28,7 @@ function DeliveryPaymentSheet({
                 <button
                     type="button"
                     onClick={onConfirm}
-                    className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-[#373840] focus:ring-offset-2"
+                    className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none"
                 >
                     확인
                 </button>

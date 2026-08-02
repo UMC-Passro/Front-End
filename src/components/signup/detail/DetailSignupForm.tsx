@@ -112,7 +112,7 @@ export default function DetailSignupForm({
 
     return (
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-            <div className="flex flex-col gap-5">
+            <div className="scrollbar-hidden flex flex-1 flex-col gap-5 overflow-y-auto pb-6 pt-[38px]">
                 <DetailTextField
                     id="signup-name"
                     label="이름"
@@ -180,7 +180,7 @@ export default function DetailSignupForm({
                 </div>
             </div>
 
-            <div className="fixed bottom-[15px] w-[100%]" style={{ "maxWidth": "min(361px, calc(100% - 42px))" }}>
+            <div className="shrink-0 pt-4 [&>button]:mt-0">
                 <SignupSubmitButton disabled={isSubmitting}>
                     {isSubmitting ? "가입 처리 중..." : "회원 가입 완료"}
                 </SignupSubmitButton>
