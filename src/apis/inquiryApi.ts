@@ -1,7 +1,15 @@
 import { apiRequest } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 
-export type InquiryCategory =
+export type GeneralInquiryCategory =
+    | "ACCOUNT"
+    | "PAYMENT"
+    | "DELIVERY"
+    | "SERVICE"
+    | "BUG"
+    | "ETC";
+
+export type DeliveryInquiryCategory =
     | "DELAY"
     | "DAMAGE"
     | "LOST"
@@ -9,36 +17,62 @@ export type InquiryCategory =
     | "POINT"
     | "ETC";
 
-export interface CreateInquiryRequest {
+// InquiryPage currently represents delivery-specific inquiry categories.
+export type InquiryCategory = DeliveryInquiryCategory;
+
+export interface CreateGeneralInquiryRequest {
+    category: GeneralInquiryCategory;
+    title: string;
+    content: string;
+}
+
+export interface GeneralInquiry {
+    inquiryId: number;
+    category: GeneralInquiryCategory;
+    title: string;
+    content: string;
+    writerNickname: string | null;
+    createdAt: string;
+}
+
+export interface CreateDeliveryInquiryRequest {
     deliveryId: number;
-    category: InquiryCategory;
+    category: DeliveryInquiryCategory;
     title?: string;
     content: string;
 }
 
-export interface Inquiry {
+export interface DeliveryInquiry {
     inquiryId: number;
     deliveryId: number;
-    category: InquiryCategory;
-    title?: string;
+    category: DeliveryInquiryCategory;
+    title: string | null;
     content: string;
-    writerNickname?: string;
+    writerNickname: string | null;
     createdAt: string;
 }
 
 export const inquiryApi = {
-    create(request: CreateInquiryRequest) {
-        return apiRequest<Inquiry>({
+    createGeneral(request: CreateGeneralInquiryRequest) {
+        return apiRequest<GeneralInquiry>({
             method: "POST",
             url: API_ENDPOINTS.inquiry.root,
             data: request,
         });
     },
 
+    createDelivery(request: CreateDeliveryInquiryRequest) {
+        return apiRequest<DeliveryInquiry>({
+            method: "POST",
+            url: API_ENDPOINTS.deliveryInquiry.root,
+            data: request,
+        });
+    },
+
     getByDelivery(deliveryId: number) {
-        return apiRequest<Inquiry[]>({
+        return apiRequest<DeliveryInquiry[]>({
             method: "GET",
-            url: API_ENDPOINTS.inquiry.byDelivery(deliveryId),
+            url: API_ENDPOINTS.deliveryInquiry.byDelivery(deliveryId),
         });
     },
 };

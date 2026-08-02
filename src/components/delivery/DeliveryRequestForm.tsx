@@ -1,12 +1,23 @@
 import { memo, useEffect, useState } from "react";
+import {
+    deliveryApi,
+    type CreateDeliveryRequest,
+    type DeliveryPayment,
+} from "../../apis/deliveryApi";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
+import { ApiError } from "../../types/api";
 import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
+const WON_PER_TEN_THOUSAND = 10_000;
+
+function getApiErrorMessage(error: unknown, fallback: string) {
+    return error instanceof ApiError ? error.message : fallback;
+}
 
 function useDebouncedValue<T>(value: T, delayMs: number) {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -24,6 +35,7 @@ interface DeliveryRequestFormProps {
     error?: string | null;
     onRetry?: () => void;
     onBack?: () => void;
+    onComplete?: (deliveryId: number) => void;
 }
 
 function ChevronDownIcon() {
@@ -90,12 +102,12 @@ function SizeSelectField({
     onSelect,
     error,
 }: {
-    selected: string | null;
-    onSelect: (value: string) => void;
+    selected: CreateDeliveryRequest["size"] | null;
+    onSelect: (value: CreateDeliveryRequest["size"]) => void;
     error?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const options = ["S", "M", "L"];
+    const options: CreateDeliveryRequest["size"][] = ["S", "M", "L"];
 
     return (
         <div className="flex flex-col gap-1">
@@ -259,8 +271,19 @@ function ErrorDeliveryRequestForm({
     );
 }
 
-function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
+function DeliveryRequestFormContent({
+    onBack,
+    onComplete,
+}: Pick<DeliveryRequestFormProps, "onBack" | "onComplete">) {
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const [createdDeliveryId, setCreatedDeliveryId] = useState<number | null>(
+        null,
+    );
+    const [payment, setPayment] = useState<DeliveryPayment | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [requestError, setRequestError] = useState("");
+    const [paymentError, setPaymentError] = useState("");
     const [stationField, setStationField] = useState<
         "origin" | "destination" | null
     >(null);
@@ -301,7 +324,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [itemNameError, setItemNameError] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [itemPriceError, setItemPriceError] = useState("");
-    const [itemSize, setItemSize] = useState<string | null>(null);
+    const [itemSize, setItemSize] = useState<
+        CreateDeliveryRequest["size"] | null
+    >(null);
     const [itemSizeError, setItemSizeError] = useState("");
     const [memo, setMemo] = useState("");
     const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -330,13 +355,20 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
             setItemPriceError("물품 가액을 입력해주세요.");
         } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
             setItemPriceError("숫자만 입력해주세요.");
+        } else if (
+            !Number.isSafeInteger(
+                Number(trimmedPrice) * WON_PER_TEN_THOUSAND,
+            )
+        ) {
+            setItemPriceError("입력할 수 있는 물품 가액을 초과했습니다.");
         } else {
             setItemPriceError("");
         }
     }, [debouncedItemPrice, hasSubmitted]);
 
-    const handleMatchingRequest = () => {
+    const handleMatchingRequest = async () => {
         setHasSubmitted(true);
+        setRequestError("");
 
         let hasError = false;
 
@@ -349,6 +381,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
         if (!destinationStation) {
             setDestinationError("도착지를 선택해주세요.");
+            hasError = true;
+        } else if (destinationStation.id === originStation?.id) {
+            setDestinationError("출발지와 도착지는 같을 수 없습니다.");
             hasError = true;
         } else {
             setDestinationError("");
@@ -363,11 +398,16 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
         const trimmedPrice = itemPrice.trim();
 
+        const priceInWon = Number(trimmedPrice) * WON_PER_TEN_THOUSAND;
+
         if (trimmedPrice === "") {
             setItemPriceError("물품 가액을 입력해주세요.");
             hasError = true;
         } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
             setItemPriceError("숫자만 입력해주세요.");
+            hasError = true;
+        } else if (!Number.isSafeInteger(priceInWon)) {
+            setItemPriceError("입력할 수 있는 물품 가액을 초과했습니다.");
             hasError = true;
         } else {
             setItemPriceError("");
@@ -384,7 +424,80 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
             return;
         }
 
-        setIsPaymentOpen(true);
+        if (!originStation || !destinationStation || !itemSize) {
+            return;
+        }
+
+        if (createdDeliveryId !== null && payment) {
+            setPaymentError("");
+            setIsPaymentOpen(true);
+            return;
+        }
+
+        setIsSubmitting(true);
+        let deliveryId = createdDeliveryId;
+        let requestStage: "create" | "payment" =
+            deliveryId === null ? "create" : "payment";
+
+        try {
+            if (deliveryId === null) {
+                const createdId = await deliveryApi.create({
+                    sourceStationId: originStation.id,
+                    destinationStationId: destinationStation.id,
+                    name: itemName.trim(),
+                    price: priceInWon,
+                    size: itemSize,
+                    memo: memo.trim() || undefined,
+                });
+                deliveryId = Number(createdId);
+
+                if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
+                    throw new Error("Invalid delivery ID response");
+                }
+
+                setCreatedDeliveryId(deliveryId);
+                requestStage = "payment";
+            }
+
+            const paymentResult = await deliveryApi.getPayment(deliveryId);
+            setPayment(paymentResult);
+            setPaymentError("");
+            setIsPaymentOpen(true);
+        } catch (error) {
+            setRequestError(
+                getApiErrorMessage(
+                    error,
+                    requestStage === "create"
+                        ? "배송 요청을 등록하지 못했습니다. 다시 시도해주세요."
+                        : "결제 정보를 불러오지 못했습니다. 다시 시도해주세요.",
+                ),
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handlePaymentConfirm = async () => {
+        if (createdDeliveryId === null || isConfirming) {
+            return;
+        }
+
+        setIsConfirming(true);
+        setPaymentError("");
+
+        try {
+            await deliveryApi.agreeTerms(createdDeliveryId);
+            onComplete?.(createdDeliveryId);
+        } catch (error) {
+            setPaymentError(
+                getApiErrorMessage(
+                    error,
+                    "결제를 완료하지 못했습니다. 다시 시도해주세요.",
+                ),
+            );
+        } finally {
+            setIsConfirming(false);
+        }
     };
 
     return (
@@ -401,7 +514,10 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     className="shrink-0"
                 />
 
-                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto pb-6 pt-4">
+                <fieldset
+                    disabled={createdDeliveryId !== null}
+                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 px-5 pb-6 pt-4"
+                >
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
@@ -477,23 +593,44 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             />
                         </div>
                     </div>
-                </div>
+                </fieldset>
 
-                <div className="flex">
+                <div className="shrink-0 px-5 py-[14px]">
+                    {createdDeliveryId !== null ? (
+                        <p className="mb-2 text-center text-xs font-medium text-purple-600">
+                            배송 요청이 생성되었습니다. 결제를 완료해주세요.
+                        </p>
+                    ) : null}
+                    {requestError ? (
+                        <p
+                            className="mb-2 text-center text-xs font-medium text-rose-600"
+                            role="alert"
+                        >
+                            {requestError}
+                        </p>
+                    ) : null}
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
+                        disabled={isSubmitting}
+                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none disabled:cursor-not-allowed disabled:bg-purple-300"
                     >
-                        매칭 요청
+                        {isSubmitting
+                            ? "결제 정보 확인 중..."
+                            : createdDeliveryId !== null
+                              ? "결제 계속하기"
+                              : "매칭 요청"}
                     </button>
                 </div>
             </div>
 
-            {isPaymentOpen ? (
+            {isPaymentOpen && payment ? (
                 <DeliveryPaymentSheet
+                    payment={payment}
+                    isConfirming={isConfirming}
+                    errorMessage={paymentError}
                     onClose={() => setIsPaymentOpen(false)}
-                    onConfirm={() => setIsPaymentOpen(false)}
+                    onConfirm={handlePaymentConfirm}
                 />
             ) : null}
 
@@ -517,6 +654,7 @@ function DeliveryRequestForm({
     error = null,
     onRetry,
     onBack,
+    onComplete,
 }: DeliveryRequestFormProps) {
     if (isLoading) {
         return <LoadingDeliveryRequestForm />;
@@ -526,7 +664,12 @@ function DeliveryRequestForm({
         return <ErrorDeliveryRequestForm message={error} onRetry={onRetry} />;
     }
 
-    return <DeliveryRequestFormContent onBack={onBack} />;
+    return (
+        <DeliveryRequestFormContent
+            onBack={onBack}
+            onComplete={onComplete}
+        />
+    );
 }
 
 export default memo(DeliveryRequestForm);

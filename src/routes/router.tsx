@@ -30,6 +30,9 @@ const DeliveryMatchingPage = lazy(
 const DeliveryRequestPage = lazy(
     () => import("../pages/DeliveryRequestPage"),
 );
+const RequestCompletePage = lazy(
+    () => import("../pages/RequestCompletePage"),
+);
 const DeliveryTrackingPage = lazy(
     () => import("../pages/DeliveryTrackingPage"),
 );
@@ -117,6 +120,10 @@ export const router = createBrowserRouter([
                             {
                                 path: "request",
                                 element: <DeliveryRequestPage />,
+                            },
+                            {
+                                path: "request/complete",
+                                element: <RequestCompletePage />,
                             },
                             {
                                 path: "tracking",

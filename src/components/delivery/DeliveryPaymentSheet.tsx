@@ -1,43 +1,61 @@
 import { memo } from "react";
+import type { DeliveryPayment } from "../../apis/deliveryApi";
 import BottomSheet from "../common/BottomSheet";
 
-const BREAKDOWN_ITEMS = [
-    { label: "기본 요금", value: "2,500 P" },
-    { label: "거리 요금", value: "+ 200 P" },
-    { label: "무게 요금", value: "+ 500 P" },
-];
-
-const TOTAL_LABEL = "최종 정산 금액";
-const TOTAL_VALUE = "3,200 P";
-
 interface DeliveryPaymentSheetProps {
+    payment: DeliveryPayment;
+    isConfirming?: boolean;
+    errorMessage?: string;
     onConfirm?: () => void;
     onClose?: () => void;
 }
 
+function formatPoint(value: number, prefix = "") {
+    return `${prefix}${value.toLocaleString("ko-KR")} P`;
+}
+
 function DeliveryPaymentSheet({
+    payment,
+    isConfirming = false,
+    errorMessage,
     onConfirm,
     onClose,
 }: DeliveryPaymentSheetProps) {
+    const breakdownItems = [
+        { label: "기본 요금", value: formatPoint(payment.basePoint) },
+        { label: "거리 요금", value: formatPoint(payment.distancePoint, "+ ") },
+        { label: "무게 요금", value: formatPoint(payment.weightPoint, "+ ") },
+    ];
+
     return (
         <BottomSheet
             title="정산 금액"
             titleAlign="left"
-            onClose={onClose}
+            onClose={isConfirming ? undefined : onClose}
             footer={
-                <button
-                    type="button"
-                    onClick={onConfirm}
-                    className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none"
-                >
-                    확인
-                </button>
+                <div>
+                    {errorMessage ? (
+                        <p
+                            className="mb-3 text-sm font-medium text-rose-600"
+                            role="alert"
+                        >
+                            {errorMessage}
+                        </p>
+                    ) : null}
+                    <button
+                        type="button"
+                        onClick={onConfirm}
+                        disabled={isConfirming}
+                        className="flex w-full items-center justify-center rounded-lg bg-gray-800 py-3.5 font-bold text-white transition hover:bg-gray-900 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+                    >
+                        {isConfirming ? "결제 처리 중..." : "확인"}
+                    </button>
+                </div>
             }
         >
-            <div className="pl-[10px] pr-[10px]">
-
+            <div className="px-[10px]">
                 <div className="flex flex-col gap-2.5">
-                    {BREAKDOWN_ITEMS.map((item) => (
+                    {breakdownItems.map((item) => (
                         <div
                             key={item.label}
                             className="flex items-center justify-between"
@@ -54,10 +72,10 @@ function DeliveryPaymentSheet({
 
                 <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-gray-800">
-                        {TOTAL_LABEL}
+                        최종 정산 금액
                     </span>
                     <span className="text-2xl font-bold text-purple-600">
-                        {TOTAL_VALUE}
+                        {formatPoint(payment.totalPoint)}
                     </span>
                 </div>
             </div>

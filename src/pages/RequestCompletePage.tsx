@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function RequestCompletePage() {
+    const navigate = useNavigate();
+
     return (
         <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
                 <div className="scrollbar-hidden flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 pb-6 pt-12">
@@ -19,7 +23,11 @@ export default function RequestCompletePage() {
 
                 {/* 완료하기 */}
                 <div className="w-full shrink-0 px-6">
-                    <button className="w-full bg-purple-500 text-white font-bold py-3.5 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none">
+                    <button
+                        type="button"
+                        onClick={() => navigate("/home", { replace: true })}
+                        className="w-full bg-purple-500 text-white font-bold py-3.5 rounded-xl shadow-sm active:bg-indigo-700 transition focus:outline-none"
+                    >
                         완료하기
                     </button>
                 </div>
