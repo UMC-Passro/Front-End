@@ -8,9 +8,11 @@ export const API_ENDPOINTS = {
         reissue: "/auth/reissue",
         findId: "/auth/find/id",
         findPassword: "/auth/find/password",
+        availableNickname: "/auth/nickname/check"
     },
     subway: {
         search: "/subway/search",
+        path: "/subway/routes/shortest"
     },
     sender: {
         root: "/sender",

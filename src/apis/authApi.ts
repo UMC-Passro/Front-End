@@ -12,7 +12,7 @@ export interface ConfirmMailRequest {
 }
 
 export interface LoginRequest {
-    email: string;
+    mail: string;
     password: string;
 }
 
@@ -23,19 +23,19 @@ export interface TokenResponse {
 
 export interface FindIdRequest {
     name: string;
-    phone: string;
+    phoneNumber: string;
 }
 
 export interface FindPasswordRequest extends FindIdRequest {
-    email: string;
+    mail: string;
 }
 
 export interface SignupRequest {
-    email: string;
+    mail: string;
     password: string;
     nickname: string;
     name: string;
-    phone: string;
+    phoneNumber: string;
     birth: string;
     sourceStationId: number;
     destinationStationId: number;
@@ -107,4 +107,14 @@ export const authApi = {
             data: request,
         });
     },
+    
+    checkNicknameAvailable(nickname: string) {
+        return apiRequest<boolean>({
+            method: "GET",
+            url: API_ENDPOINTS.auth.availableNickname,
+            params: {
+                nickname
+            }
+        })
+    }
 };

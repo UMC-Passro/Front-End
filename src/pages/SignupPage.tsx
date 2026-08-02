@@ -7,6 +7,7 @@ import type {
     SignupEmailVerificationStatus,
     SignupFieldUpdater,
     SignupFormData,
+    SignupRouteStations,
     SignupStep,
 } from "../types/signup";
 import { authApi } from "../apis/authApi";
@@ -24,8 +25,15 @@ const initialSignupFormData: SignupFormData = {
     birthDate: "",
     gender: "NONE",
     address: "",
-    originStation: null,
-    destinationStation: null,
+    originStationId: -1,
+    destinationStationId: -1,
+    wayPoints: [],
+};
+
+const initialRouteStations: SignupRouteStations = {
+    origin: null,
+    destination: null,
+    wayPoints: [],
 };
 
 export default function SignupPage() {
@@ -33,6 +41,9 @@ export default function SignupPage() {
     const [step, setStep] = useState<SignupStep>("basic");
     const [formData, setFormData] = useState<SignupFormData>(
         initialSignupFormData,
+    );
+    const [routeStations, setRouteStations] = useState<SignupRouteStations>(
+        initialRouteStations,
     );
     const [emailVerificationStatus, setEmailVerificationStatus] =
         useState<SignupEmailVerificationStatus>("idle");
@@ -55,13 +66,24 @@ export default function SignupPage() {
     const handleFinalSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!formData.originStation || !formData.destinationStation) {
+        if (formData.originStationId <= 0 || formData.destinationStationId <= 0) {
             setModalMessage("출발역과 도착역을 선택해주세요.");
             return;
         }
 
-        if (formData.originStation.id === formData.destinationStation.id) {
+        if (formData.originStationId === formData.destinationStationId) {
             setModalMessage("출발역과 도착역은 서로 달라야 합니다.");
+            return;
+        }
+
+        const routeStationIds = [
+            formData.originStationId,
+            ...formData.wayPoints,
+            formData.destinationStationId,
+        ];
+
+        if (new Set(routeStationIds).size !== routeStationIds.length) {
+            setModalMessage("출발역, 경유역, 도착역은 서로 달라야 합니다.");
             return;
         }
 
@@ -70,15 +92,15 @@ export default function SignupPage() {
 
         try {
             await authApi.signup({
-                email: formData.email.trim(),
+                mail: formData.email.trim(),
                 password: formData.password,
                 nickname: formData.nickname.trim(),
                 name: formData.name.trim(),
-                phone: formData.phone,
+                phoneNumber: formData.phone,
                 birth: formData.birthDate,
-                sourceStationId: formData.originStation.id,
-                destinationStationId: formData.destinationStation.id,
-                wayPoints: [],
+                sourceStationId: formData.originStationId,
+                destinationStationId: formData.destinationStationId,
+                wayPoints: formData.wayPoints,
             });
             setIsSignupComplete(true);
             setModalMessage("회원가입이 완료되었습니다.");
@@ -103,11 +125,11 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col">
+        <div className="page-container relative flex h-dvh min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title={step === "basic" ? "회원가입" : "상세정보"}
                 onBack={handleBack}
-                className="mb-[38px]"
+                className="shrink-0"
             />
 
             {step === "basic" ? (
@@ -124,6 +146,8 @@ export default function SignupPage() {
                 <DetailSignupForm
                     formData={formData}
                     updateField={updateField}
+                    routeStations={routeStations}
+                    onRouteStationsChange={setRouteStations}
                     onSubmit={handleFinalSubmit}
                     isSubmitting={isSubmitting}
                 />

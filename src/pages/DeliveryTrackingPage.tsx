@@ -16,7 +16,7 @@ export default function DeliveryTrackingPage() {
         }
 
         if (status === "DELIVERING") {
-            navigate("/delivery/complete");
+            navigate("/home", { replace: true });
         }
     };
     const buttonText = {
@@ -26,25 +26,31 @@ export default function DeliveryTrackingPage() {
     }[status];
 
     return (
-        <div className="page-container relative flex flex-col">
-            <PageHeader title="배송 추적" onBack={() => navigate(-1)} />
-            <DeliveryProgress status={status} />
+        <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title="배송 추적"
+                onBack={() => navigate(-1)}
+                className="shrink-0"
+            />
+            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                <DeliveryProgress status={status} />
 
-            {status === "WAITING_PICKUP" && (
-                <div className="mt-12">
-                    <span className="flex text-gray-900 font-bold mb-3">
-                        물품인수 사진 등록
-                    </span>
-                    <DeliveryImageUploader />
+                {status === "WAITING_PICKUP" && (
+                    <div className="mt-12">
+                        <span className="flex text-gray-900 font-bold mb-3">
+                            물품인수 사진 등록
+                        </span>
+                        <DeliveryImageUploader />
+                    </div>
+                )}
+                <div className="flex flex-col mt-8 gap-3">
+                    <span className="text-gray-900 font-bold">발송자 정보</span>
+                    <DeliveryPersonCard />
                 </div>
-            )}
-            <div className="flex flex-col mt-8 gap-3">
-                <span className="text-gray-900 font-bold">발송자 정보</span>
-                <DeliveryPersonCard />
             </div>
             <button
                 onClick={handleButtonClick}
-                className="absolute bottom-5 left-5 right-5 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900"
+                className="flex w-full shrink-0 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-semibold text-gray-900"
             >
                 {buttonText}
             </button>

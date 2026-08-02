@@ -44,25 +44,27 @@ export default function StationSelectModal({
             return;
         }
 
-        if (!/^[가-힣0-9]+$/.test(keyword)) {
+        if (!/[가-힣0-9]/.test(keyword)) {
             setStations([]);
             setErrorMessage("검색어는 한글과 숫자만 입력해주세요.");
+            setIsLoading(false);
             return;
         }
 
         let canceled = false;
-        const timer = window.setTimeout(async () => {
-            setIsLoading(true);
-            setErrorMessage("");
+        setStations([]);
+        setErrorMessage("");
+        setIsLoading(true);
 
+        const timer = window.setTimeout(async () => {
             try {
                 const result = await subwayApi.search(keyword);
                 if (!canceled) {
                     setStations(
                         result.map((station) => ({
                             id: station.id,
-                            name: station.subwayStationName,
-                            region: station.subwayRouteName,
+                            name: station.stationName,
+                            region: station.routeName,
                         })),
                     );
                 }
@@ -129,7 +131,7 @@ export default function StationSelectModal({
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="역 이름 또는 지역을 검색해주세요"
-                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-700 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500"
+                        className="w-full rounded-xl bg-gray-50 px-4 py-3.5 text-[15px] text-gray-700 outline-none placeholder:text-gray-400"
                         autoFocus
                     />
                 </label>
@@ -137,7 +139,7 @@ export default function StationSelectModal({
                 <div className="scrollbar-hidden mt-4 min-h-0 overflow-y-auto">
                     {isLoading ? (
                         <p className="py-12 text-center text-sm text-gray-500">
-                            검색 중...
+                            검색중입니다...
                         </p>
                     ) : errorMessage ? (
                         <p className="py-12 text-center text-sm text-red-500">

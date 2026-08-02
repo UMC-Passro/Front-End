@@ -13,16 +13,22 @@ export default function DeliveryMatchingPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col">
-            <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
-            <DeliveryRoute departure="안양역" destination="정왕역" />
-            <DeliveryInfo
-                itemName="무인양품 티셔츠"
-                itemPrice="3 만원"
-                itemSize="S"
-                settlementPoint="3,200P"
+        <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title="매칭 요청"
+                onBack={() => navigate(-1)}
+                className="shrink-0"
             />
-            <div className="absolute bottom-5 left-5 right-5 flex gap-3.5">
+            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                <DeliveryRoute departure="안양역" destination="정왕역" />
+                <DeliveryInfo
+                    itemName="무인양품 티셔츠"
+                    itemPrice="3 만원"
+                    itemSize="S"
+                    settlementPoint="3,200P"
+                />
+            </div>
+            <div className="flex w-full shrink-0 gap-3.5 pt-4">
                 <button
                     onClick={handleReject}
                     className="flex flex-1 items-center justify-center bg-gray-100 text-gray-600 font-bold rounded-lg px-2.5 py-3.5"

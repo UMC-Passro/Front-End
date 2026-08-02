@@ -20,52 +20,56 @@ export function HomeDashboard({ role, content }: HomeDashboardProps) {
     const [isRole, setIsRole] = useState(role);
 
     return (
-        <section className="page-container relative flex flex-col pt-5">
+        <section className="page-container relative flex h-full min-h-0 flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col h-full transition duration-200  ${
-                    isConsentOpen ? "pointer-events-none blur-sm" : ""
-                }`}
+                className={`flex min-h-0 flex-1 flex-col transition duration-200 ${isConsentOpen ? "pointer-events-none blur-sm" : ""
+                    }`}
                 aria-hidden={isConsentOpen}
             >
-                <HomeHeader
-                    name={content.name}
-                    headline={content.headline}
-                    role={role}
-                />
-
-                <section className="mt-12">
-                    <SectionTitle accent>진행중인 배송</SectionTitle>
-                    <ActiveDeliveryCard
-                        delivery={content.activeDelivery}
-                        role={isRole}
+                <div className="shrink-0">
+                    <HomeHeader
+                        name={content.name}
+                        headline={content.headline}
+                        role={role}
                     />
-                </section>
+                </div>
 
-                {isRole == "sender" ? (
-                    <section className="mt-10">
-                        <SectionTitle>최근 내역</SectionTitle>
-                        <RecentHistoryList
-                            histories={content.recentHistories}
+                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                    <section className="mt-12">
+                        <SectionTitle accent>진행중인 배송</SectionTitle>
+                        <ActiveDeliveryCard
+                            delivery={content.activeDelivery}
+                            role={isRole}
                         />
                     </section>
-                ) : (
-                    <section className="mt-10">
-                        <SectionTitle>매칭 요청</SectionTitle>
-                        <MatchingRequestList
-                            requests={content.matchingRequests}
-                        />
-                    </section>
-                )}
+
+                    {isRole == "sender" ? (
+                        <section className="mt-10">
+                            <SectionTitle>최근 내역</SectionTitle>
+                            <RecentHistoryList
+                                histories={content.recentHistories}
+                            />
+                        </section>
+                    ) : (
+                        <section className="mt-10">
+                            <SectionTitle>매칭 요청</SectionTitle>
+                            <MatchingRequestList
+                                requests={content.matchingRequests}
+                            />
+                        </section>
+                    )}
+                </div>
+
+                {content.actionLabel ? (
+                    <button
+                        type="button"
+                        onClick={() => setIsConsentOpen(true)}
+                        className="w-full shrink-0 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
+                    >
+                        {content.actionLabel}
+                    </button>
+                ) : null}
             </div>
-            {content.actionLabel ? (
-                <button
-                    type="button"
-                    onClick={() => setIsConsentOpen(true)}
-                    className="absolute bottom-5 left-5 right-5 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
-                >
-                    {content.actionLabel}
-                </button>
-            ) : null}
 
             {isConsentOpen ? (
                 <DeliveryConsentSheet

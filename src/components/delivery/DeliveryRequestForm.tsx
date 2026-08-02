@@ -248,7 +248,7 @@ function ErrorDeliveryRequestForm({
                 {onRetry ? (
                     <button
                         type="button"
-                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-700 focus:ring-offset-2"
+                        className="mt-4 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus:outline-none"
                         onClick={onRetry}
                     >
                         다시 시도
@@ -483,7 +483,7 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        className="absolute bottom-5 left-5 right-5 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
                         매칭 요청
                     </button>

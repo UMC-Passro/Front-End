@@ -1,27 +1,49 @@
+import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-import DeliveryRequestPage from "../pages/DeliveryRequestPage";
-import DeliveryStatusPage from "../pages/DeliveryStatusPage";
-import LoginPage from "../pages/LoginPage";
-import MyPage from "../pages/MyPage";
-import SignupPage from "../pages/SignupPage";
-import PointPage from "../pages/PointPage";
-import { HistoryStatsPage } from "../pages/HistoryStatsPage";
-import UserStateChoice from "../pages/UserStateChoice";
-import HomePage from "../pages/HomePage";
-import DeliveryMatchingPage from "../pages/DeliveryMatchingPage";
-import DeliveryTrackingPage from "../pages/DeliveryTrackingPage";
-import EditProfile from "../pages/EditProfile";
-import ChatPage from "../pages/ChatPage";
 import MainLayout from "../layouts/MainLayout";
-import FindIdPage from "../pages/FindIdPage";
-import FindPasswordPage from "../pages/FindPasswordPage";
+import NotFoundPage from "../pages/NotFoundPage";
+import RouteErrorPage from "../pages/RouteErrorPage";
+
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+const SignupPage = lazy(() => import("../pages/SignupPage"));
+const FindIdPage = lazy(() => import("../pages/FindIdPage"));
+const FindPasswordPage = lazy(() => import("../pages/FindPasswordPage"));
+const UserStateChoice = lazy(() => import("../pages/UserStateChoice"));
+const HomePage = lazy(() => import("../pages/HomePage"));
+const MyPage = lazy(() => import("../pages/MyPage"));
+const EditProfile = lazy(() => import("../pages/EditProfile"));
+const InquiryPage = lazy(() => import("../pages/InquiryPage"));
+const ChangePasswordPage = lazy(
+    () => import("../pages/ChangePasswordPage"),
+);
+const PointPage = lazy(() => import("../pages/PointPage"));
+const HistoryStatsPage = lazy(() =>
+    import("../pages/HistoryStatsPage").then((module) => ({
+        default: module.HistoryStatsPage,
+    })),
+);
+const DeliveryMatchingPage = lazy(
+    () => import("../pages/DeliveryMatchingPage"),
+);
+const DeliveryRequestPage = lazy(
+    () => import("../pages/DeliveryRequestPage"),
+);
+const DeliveryTrackingPage = lazy(
+    () => import("../pages/DeliveryTrackingPage"),
+);
+const DeliveryStatusPage = lazy(
+    () => import("../pages/DeliveryStatusPage"),
+);
+const ChatListPage = lazy(() => import("../pages/ChatListPage"));
+const ChatPage = lazy(() => import("../pages/ChatPage"));
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
+        errorElement: <RouteErrorPage />,
         children: [
             {
                 index: true,
@@ -53,12 +75,13 @@ export const router = createBrowserRouter([
             },
             {
                 path: "*",
-                element: <Navigate to="/login" replace />,
+                element: <NotFoundPage />,
             },
         ],
     },
     {
         element: <ProtectedRoute />,
+        errorElement: <RouteErrorPage />,
         children: [
             {
                 element: <MainLayout />,
@@ -72,8 +95,16 @@ export const router = createBrowserRouter([
                         children: [
                             { index: true, element: <MyPage /> },
                             { path: "edit", element: <EditProfile /> },
+                            { path: "inquiry", element: <InquiryPage /> },
+                            {
+                                path: "edit/password",
+                                element: <ChangePasswordPage />,
+                            },
                             { path: "point", element: <PointPage /> },
-                            { path: "history", element: <HistoryStatsPage /> },
+                            {
+                                path: "history",
+                                element: <HistoryStatsPage />,
+                            },
                         ],
                     },
                     {
@@ -97,6 +128,10 @@ export const router = createBrowserRouter([
                             },
                             {
                                 path: "chat",
+                                element: <ChatListPage />,
+                            },
+                            {
+                                path: "chat/:chatRoomId",
                                 element: <ChatPage />,
                             },
                         ],

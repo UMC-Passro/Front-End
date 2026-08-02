@@ -17,6 +17,12 @@ export type SignupStation = {
   region: string;
 };
 
+export type SignupRouteStations = {
+  origin: SignupStation | null;
+  destination: SignupStation | null;
+  wayPoints: SignupStation[];
+};
+
 export type SignupDetailValidationMessages = {
   name: string;
   phone: string;
@@ -36,8 +42,9 @@ export type SignupFormData = {
   birthDate: string;
   gender: SignupGender;
   address: string;
-  originStation: SignupStation | null;
-  destinationStation: SignupStation | null;
+  originStationId: number;
+  destinationStationId: number;
+  wayPoints: Array<number>;
 };
 
 export type SignupFieldUpdater = <K extends keyof SignupFormData>(

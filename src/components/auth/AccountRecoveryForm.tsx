@@ -38,7 +38,7 @@ const recoveryConfig = {
 } as const;
 
 const inputClassName =
-    "w-full rounded-[10px] bg-gray-50 px-5 py-[15px] text-[15px] font-medium leading-[22px] text-gray-900 outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-purple-200";
+    "w-full rounded-[10px] bg-gray-50 px-5 py-[15px] text-[15px] font-medium leading-[22px] text-gray-900 outline-none placeholder:text-gray-500";
 
 export default function AccountRecoveryForm({
     type,
@@ -89,7 +89,7 @@ export default function AccountRecoveryForm({
             if (type === "id") {
                 await authApi.findId({
                     name: values.name.trim(),
-                    phone: values.phone,
+                    phoneNumber: values.phone,
                 });
                 setModalMessage(
                     "입력한 정보와 일치하는 계정이 있다면 가입 이메일로 아이디를 발송했습니다.",
@@ -97,8 +97,8 @@ export default function AccountRecoveryForm({
             } else {
                 await authApi.findPassword({
                     name: values.name.trim(),
-                    phone: values.phone,
-                    email: values.email.trim(),
+                    phoneNumber: values.phone,
+                    mail: values.email.trim(),
                 });
                 setModalMessage(
                     "입력한 정보와 일치하는 계정이 있다면 이메일로 임시 비밀번호를 발송했습니다.",
@@ -117,15 +117,19 @@ export default function AccountRecoveryForm({
     };
 
     return (
-        <main className="page-container flex min-h-[100dvh] flex-col">
-            <PageHeader title={config.title} onBack={() => navigate(-1)} />
+        <main className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
+            <PageHeader
+                title={config.title}
+                onBack={() => navigate(-1)}
+                className="shrink-0"
+            />
 
             <form
-                className="flex min-h-0 flex-1 flex-col px-1 pt-12"
+                className="flex min-h-0 flex-1 flex-col px-1"
                 onSubmit={handleSubmit}
                 noValidate
             >
-                <div className="space-y-6">
+                <div className="scrollbar-hidden flex-1 space-y-6 overflow-y-auto pb-6 pt-12">
                     <label className="block">
                         <span className="mb-1 block text-sm font-semibold leading-[22px] text-gray-700">
                             이름
@@ -188,14 +192,14 @@ export default function AccountRecoveryForm({
                     ) : null}
                 </div>
 
-                <div className="mt-auto pb-6 text-center">
+                <div className="shrink-0 pt-4 text-center">
                     <p className="mb-4 text-[13px] font-medium leading-[22px] text-purple-600">
                         {config.description}
                     </p>
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full rounded-[10px] bg-purple-500 px-2.5 py-3.5 text-base font-bold leading-[22px] text-white transition-colors hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="w-full rounded-[10px] bg-purple-500 px-2.5 py-3.5 text-base font-bold leading-[22px] text-white transition-colors hover:bg-purple-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {isSubmitting ? "전송 중..." : config.buttonLabel}
                     </button>
