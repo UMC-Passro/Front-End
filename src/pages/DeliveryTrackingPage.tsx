@@ -45,7 +45,10 @@ export default function DeliveryTrackingPage() {
                 )}
                 <div className="flex flex-col mt-8 gap-3">
                     <span className="text-gray-900 font-bold">발송자 정보</span>
-                    <DeliveryPersonCard />
+                    <DeliveryPersonCard
+                        name="감자튀김"
+                        place="반포 4동"
+                    />
                 </div>
             </div>
             <button

@@ -124,6 +124,10 @@ export const router = createBrowserRouter([
                             },
                             {
                                 path: "status",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "status/:deliveryId",
                                 element: <DeliveryStatusPage />,
                             },
                             {

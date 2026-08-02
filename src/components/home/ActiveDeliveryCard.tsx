@@ -14,7 +14,7 @@ export function ActiveDeliveryCard({
     const navigate = useNavigate();
     const handleButton = () => {
         if (role == "sender") {
-            navigate("/delivery/status");
+            navigate(`/delivery/status/${delivery.id}`);
             return;
         } else {
             navigate("/delivery/tracking");
