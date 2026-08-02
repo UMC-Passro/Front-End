@@ -108,7 +108,7 @@ export default function BasicSignupForm({
     setNicknameCheckStatus("idle");
   };
 
-  const handleNicknameCheck = () => {
+  const handleNicknameCheck = async () => {
     const nickname = formData.nickname.trim();
 
     if (!nickname) {
@@ -118,10 +118,18 @@ export default function BasicSignupForm({
       return;
     }
 
+    const available = await authApi.checkNicknameAvailable(nickname);
+
+    if (!available) {
+      setShowValidation(true);
+      setNicknameCheckStatus("duplicate");
+      return;
+    }
+
     setNicknameCheckStatus("available");
-    setModalMessage(
-      "최종 회원가입 단계에서 닉네임 중복 여부를 확인합니다.",
-    );
+    // setModalMessage(
+    //   "최종 회원가입 단계에서 닉네임 중복 여부를 확인합니다.",
+    // );
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

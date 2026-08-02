@@ -35,8 +35,8 @@ export default function NicknameField({
           onChange={(event) => onChange(event.target.value)}
           className={BASIC_FIELD_CLASS}
         />
-        <button type="button" onClick={onCheck} className={BASIC_ACTION_BUTTON_CLASS}>
-          중복 확인
+        <button type="button" onClick={onCheck} className={status === "idle" ? "rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]" : BASIC_ACTION_BUTTON_CLASS}>
+          {status === "available" ? "확인 완료" : "중복 확인"}
         </button>
       </div>
       <ValidationMessage

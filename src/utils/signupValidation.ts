@@ -73,8 +73,8 @@ export function getDetailValidationMessages(
         ? ""
         : "전화번호 형식을 확인해주세요",
     birthDate: formData.birthDate ? "" : "생년월일을 선택해주세요",
-    originStation: formData.originStation ? "" : "출발역을 선택해주세요",
-    destinationStation: formData.destinationStation
+    originStation: formData.originStationId > 0 ? "" : "출발역을 선택해주세요",
+    destinationStation: formData.destinationStationId > 0
       ? ""
       : "도착역을 선택해주세요",
   };
