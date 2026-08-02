@@ -92,11 +92,11 @@ export default function SignupPage() {
 
         try {
             await authApi.signup({
-                email: formData.email.trim(),
+                mail: formData.email.trim(),
                 password: formData.password,
                 nickname: formData.nickname.trim(),
                 name: formData.name.trim(),
-                phone: formData.phone,
+                phoneNumber: formData.phone,
                 birth: formData.birthDate,
                 sourceStationId: formData.originStationId,
                 destinationStationId: formData.destinationStationId,
