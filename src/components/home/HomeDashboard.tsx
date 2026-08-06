@@ -15,6 +15,9 @@ type HomeDashboardProps = {
     isLoading?: boolean;
     errorMessage?: string;
     onRetry?: () => void;
+    avatarUrl?: string | null;
+    isRoleChanging?: boolean;
+    onRoleChange: (role: UserRole) => void;
 };
 
 export function HomeDashboard({
@@ -23,10 +26,12 @@ export function HomeDashboard({
     isLoading = false,
     errorMessage,
     onRetry,
+    avatarUrl,
+    isRoleChanging = false,
+    onRoleChange,
 }: HomeDashboardProps) {
     const navigate = useNavigate();
     const [isConsentOpen, setIsConsentOpen] = useState(false);
-    const [isRole, setIsRole] = useState(role);
 
     return (
         <section className="page-container relative flex h-full min-h-0 flex-col overflow-hidden pt-5">
@@ -40,6 +45,9 @@ export function HomeDashboard({
                         name={content.name}
                         headline={content.headline}
                         role={role}
+                        avatarUrl={avatarUrl}
+                        isRoleChanging={isRoleChanging}
+                        onRoleChange={onRoleChange}
                     />
                 </div>
 
@@ -75,7 +83,7 @@ export function HomeDashboard({
                                     <ActiveDeliveryCard
                                         key={delivery.id}
                                         delivery={delivery}
-                                        role={isRole}
+                                        role={role}
                                     />
                                 ))}
                             </div>
@@ -86,7 +94,7 @@ export function HomeDashboard({
                         )}
                     </section>
 
-                    {isRole == "sender" ? (
+                    {role === "sender" ? (
                         <section className="mt-10">
                             <SectionTitle>배송 내역</SectionTitle>
                             {isLoading ? (

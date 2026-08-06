@@ -5,9 +5,19 @@ type HomeHeaderProps = {
     name: string;
     headline: string;
     role: UserRole;
+    avatarUrl?: string | null;
+    isRoleChanging?: boolean;
+    onRoleChange: (role: UserRole) => void;
 };
 
-export function HomeHeader({ name, headline, role }: HomeHeaderProps) {
+export function HomeHeader({
+    name,
+    headline,
+    role,
+    avatarUrl,
+    isRoleChanging = false,
+    onRoleChange,
+}: HomeHeaderProps) {
     return (
         <div>
             <div className="flex items-center justify-between gap-4">
@@ -16,7 +26,12 @@ export function HomeHeader({ name, headline, role }: HomeHeaderProps) {
                     <br />
                     {headline}
                 </p>
-                <RoleAvatar role={role} />
+                <RoleAvatar
+                    role={role}
+                    avatarUrl={avatarUrl}
+                    disabled={isRoleChanging}
+                    onRoleChange={onRoleChange}
+                />
             </div>
         </div>
     );
