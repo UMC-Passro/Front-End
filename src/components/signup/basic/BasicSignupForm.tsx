@@ -36,9 +36,13 @@ export default function BasicSignupForm({
   onEmailVerificationStatusChange,
 }: BasicSignupFormProps) {
   const [showValidation, setShowValidation] = useState(false);
-  const [emailAction, setEmailAction] = useState<"send" | "confirm" | null>(
-    null,
-  );
+  const [emailAction, setEmailAction] = useState<
+    "check" | "send" | "confirm" | null
+  >(null);
+  const [emailAvailabilityStatus, setEmailAvailabilityStatus] = useState<
+    "idle" | "available" | "duplicate"
+  >(emailVerificationStatus === "idle" ? "idle" : "available");
+  const [emailError, setEmailError] = useState("");
   const [nicknameCheckStatus, setNicknameCheckStatus] =
     useState<SignupNicknameCheckStatus>("idle");
   const [modalMessage, setModalMessage] = useState("");
@@ -46,31 +50,69 @@ export default function BasicSignupForm({
   const handleEmailChange = (value: string) => {
     updateField("email", value);
     updateField("emailCode", "");
+    setEmailAvailabilityStatus("idle");
+    setEmailError("");
     onEmailVerificationStatusChange("idle");
   };
 
   const handleEmailRequest = async () => {
     if (!isEmailValid(formData.email)) {
-      setShowValidation(true);
+      setEmailAvailabilityStatus("idle");
+      setEmailError(
+        getEmailValidationMessage(formData.email, true),
+      );
       return;
     }
 
-    setEmailAction("send");
+    const mail = formData.email.trim();
+    let requestPhase: "check" | "send" = "check";
+
+    setEmailAction("check");
+    setEmailError("");
     setModalMessage("");
 
     try {
+      const available = await authApi.checkEmailAvailable(mail);
+
+      if (!available) {
+        setEmailAvailabilityStatus("duplicate");
+        setEmailError("이미 사용 중인 이메일입니다.");
+        updateField("emailCode", "");
+        onEmailVerificationStatusChange("idle");
+        return;
+      }
+
+      setEmailAvailabilityStatus("available");
+      requestPhase = "send";
+      setEmailAction("send");
+
       await authApi.sendMail({
-        mail: formData.email.trim(),
+        mail,
         student: false,
       });
       onEmailVerificationStatusChange("sent");
       setModalMessage("인증번호를 이메일로 발송했습니다.");
     } catch (error) {
-      setModalMessage(
-        error instanceof ApiError
-          ? error.message
-          : "인증 메일 발송 중 오류가 발생했습니다.",
-      );
+      if (error instanceof ApiError && error.code === "ACCOUNT400_4") {
+        setEmailAvailabilityStatus("duplicate");
+        setEmailError("이미 사용 중인 이메일입니다.");
+        updateField("emailCode", "");
+        onEmailVerificationStatusChange("idle");
+      } else if (
+        !(error instanceof ApiError) ||
+        error.status === undefined ||
+        error.status >= 500
+      ) {
+        setModalMessage(
+          "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+        );
+      } else {
+        setModalMessage(
+          requestPhase === "check"
+            ? "이메일 중복 확인에 실패했습니다. 다시 시도해주세요."
+            : "인증번호를 전송하지 못했습니다. 다시 시도해주세요.",
+        );
+      }
     } finally {
       setEmailAction(null);
     }
@@ -141,6 +183,7 @@ export default function BasicSignupForm({
         formData.email,
         emailVerificationStatus === "verified",
       ) &&
+      emailAvailabilityStatus === "available" &&
       getPasswordValidation(formData.password) &&
       formData.passwordCheck.length > 0 &&
       formData.password === formData.passwordCheck &&
@@ -154,12 +197,18 @@ export default function BasicSignupForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="flex min-h-0 flex-1 flex-col"
+    >
       <div className="scrollbar-hidden flex flex-1 flex-col gap-[27px] overflow-y-auto pb-6 pt-[38px]">
         <EmailField
           value={formData.email}
           code={formData.emailCode}
           status={emailVerificationStatus}
+          errorMessage={emailError}
+          isChecking={emailAction === "check"}
           isSending={emailAction === "send"}
           isConfirming={emailAction === "confirm"}
           showValidation={showValidation}
