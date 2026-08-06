@@ -187,6 +187,7 @@ export default function DeliveryTrackingPage() {
                     lastLocationUpdatedAt={
                         locationTracking.lastSyncedLocation?.updatedAt
                     }
+                    overviewTimeMode="elapsed"
                     trackingStatusMessage={getShipperTrackingMessage(
                         detail.deliveryState,
                     )}

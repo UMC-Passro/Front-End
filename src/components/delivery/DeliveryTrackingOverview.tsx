@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import type { BackendDeliveryState, BackendPlace } from "../../types/backend";
 import {
     formatTrackingDateTime,
+    formatTrackingTime,
+    getDeliveryElapsedMinutes,
     type DeliveryRouteProgress,
 } from "../../utils/deliveryTracking";
 import { getDeliveryStatusLabel } from "../../utils/deliveryStatus";
@@ -14,6 +17,9 @@ interface DeliveryTrackingOverviewProps {
     completedAt?: string | null;
     lastLocationUpdatedAt?: string | null;
     estimatedTimeMinutes?: number | null;
+    timeMode?: "estimated" | "elapsed";
+    deliveryStartedAt?: string | null;
+    deliveryHandedOffAt?: string | null;
 }
 
 interface InformationCardProps {
@@ -64,9 +70,37 @@ export function DeliveryTrackingOverview({
     completedAt,
     lastLocationUpdatedAt,
     estimatedTimeMinutes,
+    timeMode = "estimated",
+    deliveryStartedAt,
+    deliveryHandedOffAt,
 }: DeliveryTrackingOverviewProps) {
+    const [currentTime, setCurrentTime] = useState(() => Date.now());
     const isCompleted = status === "DELIVERED";
     const isConfirmationPending = status === "CONFIRM_REQUESTED";
+    const showsElapsedTime = !isCompleted && timeMode === "elapsed";
+
+    useEffect(() => {
+        if (
+            !showsElapsedTime ||
+            !deliveryStartedAt ||
+            deliveryHandedOffAt
+        ) {
+            return;
+        }
+
+        const timer = window.setInterval(
+            () => setCurrentTime(Date.now()),
+            30_000,
+        );
+
+        return () => window.clearInterval(timer);
+    }, [deliveryHandedOffAt, deliveryStartedAt, showsElapsedTime]);
+
+    const elapsedMinutes = getDeliveryElapsedMinutes(
+        deliveryStartedAt,
+        deliveryHandedOffAt,
+        currentTime,
+    );
     const locationUpdatedLabel = formatTrackingDateTime(
         lastLocationUpdatedAt,
     );
@@ -103,9 +137,30 @@ export function DeliveryTrackingOverview({
     const nextStationDescription = routeProgress.nextStation?.routeName;
     const timeLabel = isCompleted
         ? formatTrackingDateTime(completedAt) ?? "완료 시각 정보 없음"
-        : estimatedTimeMinutes != null
-          ? `${estimatedTimeMinutes}분`
-          : "정보 없음";
+        : showsElapsedTime
+          ? elapsedMinutes == null
+              ? "아직 시작되지 않음"
+              : elapsedMinutes < 1
+                ? deliveryHandedOffAt
+                    ? "1분 미만 소요"
+                    : "1분 미만 경과"
+                : elapsedMinutes >= 60
+                  ? `${Math.floor(elapsedMinutes / 60)}시간 ${elapsedMinutes % 60}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
+                  : `${elapsedMinutes}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
+          : estimatedTimeMinutes != null
+            ? `${estimatedTimeMinutes}분`
+            : "정보 없음";
+    const timeDescription = isCompleted
+        ? undefined
+        : showsElapsedTime
+          ? deliveryStartedAt
+              ? deliveryHandedOffAt
+                  ? "물품 인수부터 전달 완료 요청까지"
+                  : `${formatTrackingTime(deliveryStartedAt) ?? "처리 시각 미상"} 배송 시작`
+              : "물품 인수 후 자동으로 계산됩니다"
+          : estimatedTimeMinutes != null
+            ? "현재 역에서 도착역까지 예상 소요 시간"
+            : "배송자 위치가 갱신되면 표시됩니다";
 
     return (
         <section
@@ -168,15 +223,15 @@ export function DeliveryTrackingOverview({
                     description={nextStationDescription}
                 />
                 <InformationCard
-                    label={isCompleted ? "완료 시각" : "도착 예상 시간"}
-                    value={timeLabel}
-                    description={
-                        !isCompleted
-                            ? estimatedTimeMinutes != null
-                                ? "현재 역에서 도착역까지 예상 소요 시간"
-                                : "배송자 위치가 갱신되면 표시됩니다"
-                            : undefined
+                    label={
+                        isCompleted
+                            ? "완료 시각"
+                            : showsElapsedTime
+                              ? "배송 경과 시간"
+                              : "도착 예상 시간"
                     }
+                    value={timeLabel}
+                    description={timeDescription}
                 />
                 <InformationCard
                     label="현재 배송 상태"

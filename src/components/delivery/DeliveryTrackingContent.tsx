@@ -9,7 +9,9 @@ import type {
 } from "../../types/backend";
 import {
     getDeliveryCompletedAt,
+    getDeliveryHandedOffAt,
     getDeliveryRouteProgress,
+    getDeliveryStartedAt,
 } from "../../utils/deliveryTracking";
 import type { GeographicCoordinates } from "../../utils/subwayLocation";
 import { DeliveryPersonCard } from "./DeliveryPersonCard";
@@ -34,6 +36,7 @@ interface DeliveryTrackingContentProps {
     trackingError?: string | null;
     lastLocationUpdatedAt?: string | null;
     estimatedTimeMinutes?: number | null;
+    overviewTimeMode?: "estimated" | "elapsed";
     trackingStatusMessage?: string;
     partyTitle: string;
     party: BackendDeliveryPartyInfo | null;
@@ -74,6 +77,7 @@ export function DeliveryTrackingContent({
     trackingError,
     lastLocationUpdatedAt,
     estimatedTimeMinutes,
+    overviewTimeMode = "estimated",
     trackingStatusMessage,
     partyTitle,
     party,
@@ -87,6 +91,8 @@ export function DeliveryTrackingContent({
         status,
     );
     const completedAt = getDeliveryCompletedAt(logs);
+    const deliveryStartedAt = getDeliveryStartedAt(logs);
+    const deliveryHandedOffAt = getDeliveryHandedOffAt(logs);
     const liveStationLabel =
         currentPlaceId !== undefined && routeProgress.currentStation
             ? `${routeProgress.currentStation.stationName} · ${routeProgress.currentStation.routeName}`
@@ -116,6 +122,9 @@ export function DeliveryTrackingContent({
                 completedAt={completedAt}
                 lastLocationUpdatedAt={lastLocationUpdatedAt}
                 estimatedTimeMinutes={estimatedTimeMinutes}
+                timeMode={overviewTimeMode}
+                deliveryStartedAt={deliveryStartedAt}
+                deliveryHandedOffAt={deliveryHandedOffAt}
             />
 
             {isCompleted ? (
