@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { deliveryApi, type SenderDeliveryListItem } from "../apis/deliveryApi";
+import {
+    deliveryApi,
+    type SenderDeliveryListItem,
+} from "../apis/deliveryApi";
+import {
+    matchingApi,
+    type ShipperDeliveryListItem,
+} from "../apis/matchingApi";
 import { HomeDashboard } from "../components/home/HomeDashboard";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type {
@@ -12,42 +19,28 @@ import type { UserRole } from "../types/user";
 import { getCurrentUser, getSelectedUserRole } from "../utils/auth";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 
-const shipperActiveDelivery: ActiveDelivery = {
-    id: 1,
-    title: "무인양품 티셔츠",
-    route: "안양 → 정왕역",
-    status: "배송중",
-};
+type DeliveryRouteInfo = Pick<
+    SenderDeliveryListItem,
+    "originPlace" | "destPlace"
+>;
 
-const matchingRequests: MatchingRequest[] = [
-    {
-        id: 1,
-        title: "전공 페이퍼",
-        route: "안양 → 정왕역",
-        timeLeft: "10분",
-    },
-    {
-        id: 2,
-        title: "오렌지 한 박스",
-        route: "안양 → 정왕역",
-        timeLeft: "8분",
-    },
-];
-
-function getPlaceLabel(delivery: SenderDeliveryListItem, key: "originPlace" | "destPlace") {
+function getPlaceLabel(
+    delivery: DeliveryRouteInfo,
+    key: "originPlace" | "destPlace",
+) {
     const place = delivery[key];
     return `${place.subwayStationName}(${place.subwayRouteName})`;
 }
 
-function getRouteLabel(delivery: SenderDeliveryListItem) {
+function getRouteLabel(delivery: DeliveryRouteInfo) {
     return `${getPlaceLabel(delivery, "originPlace")} → ${getPlaceLabel(delivery, "destPlace")}`;
 }
 
-function isActiveDelivery(delivery: SenderDeliveryListItem) {
+function isSenderActiveDelivery(delivery: SenderDeliveryListItem) {
     return delivery.status !== "DELIVERED" && delivery.status !== "CANCEL";
 }
 
-function toActiveDelivery(
+function toSenderActiveDelivery(
     delivery: SenderDeliveryListItem,
 ): ActiveDelivery {
     return {
@@ -71,26 +64,65 @@ function createSenderContent(
     name: string,
     deliveries: SenderDeliveryListItem[],
 ): HomeContent {
-    const active = deliveries.find(isActiveDelivery) ?? null;
+    const activeDeliveries = deliveries.filter(isSenderActiveDelivery);
 
     return {
         name,
         headline: "배송을 요청해보세요!",
-        activeDelivery: active ? toActiveDelivery(active) : null,
+        activeDeliveries: activeDeliveries.map(toSenderActiveDelivery),
         matchingRequests: [],
         recentHistories: deliveries
-            .filter((delivery) => delivery.deliveryId !== active?.deliveryId)
+            .filter((delivery) => !isSenderActiveDelivery(delivery))
             .map(toHistory),
         actionLabel: "배송 요청하기",
     };
 }
 
-function createShipperContent(name: string): HomeContent {
+function isShipperActiveDelivery(delivery: ShipperDeliveryListItem) {
+    return (
+        delivery.deliveryState === "MATCHED" ||
+        delivery.deliveryState === "DELIVERING" ||
+        delivery.deliveryState === "CONFIRM_REQUESTED"
+    );
+}
+
+function toShipperActiveDelivery(
+    delivery: ShipperDeliveryListItem,
+): ActiveDelivery {
+    return {
+        id: delivery.id,
+        title: delivery.name ?? "이름 없는 물품",
+        route: getRouteLabel(delivery),
+        status: getDeliveryStatusLabel(delivery.deliveryState),
+    };
+}
+
+function toMatchingRequest(
+    delivery: ShipperDeliveryListItem,
+): MatchingRequest {
+    return {
+        id: delivery.id,
+        title: delivery.name ?? "이름 없는 물품",
+        route: getRouteLabel(delivery),
+        timeLeft:
+            delivery.estimatedTimeMinutes != null
+                ? `예상 ${delivery.estimatedTimeMinutes}분`
+                : "매칭 요청",
+    };
+}
+
+function createShipperContent(
+    name: string,
+    deliveries: ShipperDeliveryListItem[],
+    requests: ShipperDeliveryListItem[],
+): HomeContent {
+    const activeDeliveries = deliveries.filter(isShipperActiveDelivery);
+
     return {
         name,
         headline: "배송을 시작해보세요!",
-        activeDelivery: shipperActiveDelivery,
-        matchingRequests,
+        activeDeliveries: activeDeliveries.map(toShipperActiveDelivery),
+        matchingRequests: requests.map(toMatchingRequest),
         recentHistories: [],
     };
 }
@@ -105,41 +137,60 @@ export default function HomePage() {
         () => deliveryApi.getSenderDeliveries(),
         [],
     );
-    const {
-        data: senderDeliveries,
-        error,
-        isLoading,
-        execute,
-    } = useApiRequest(loadSenderDeliveries);
+    const loadShipperHomeData = useCallback(
+        () =>
+            Promise.all([
+                matchingApi.getMyDeliveries(),
+                matchingApi.getMatchRequests(),
+            ]),
+        [],
+    );
+    const senderRequest = useApiRequest(loadSenderDeliveries);
+    const shipperRequest = useApiRequest(loadShipperHomeData);
 
     useEffect(() => {
         if (userRole === "sender") {
-            void execute().catch(() => undefined);
+            void senderRequest.execute().catch(() => undefined);
+        } else {
+            void shipperRequest.execute().catch(() => undefined);
         }
-    }, [execute, userRole]);
+    }, [senderRequest.execute, shipperRequest.execute, userRole]);
 
     const content = useMemo(
         () =>
             userRole === "sender"
-                ? createSenderContent(displayName, senderDeliveries ?? [])
-                : createShipperContent(displayName),
-        [displayName, senderDeliveries, userRole],
+                ? createSenderContent(
+                      displayName,
+                      senderRequest.data ?? [],
+                  )
+                : createShipperContent(
+                      displayName,
+                      shipperRequest.data?.[0] ?? [],
+                      shipperRequest.data?.[1] ?? [],
+                  ),
+        [
+            displayName,
+            senderRequest.data,
+            shipperRequest.data,
+            userRole,
+        ],
     );
+    const activeRequest =
+        userRole === "sender" ? senderRequest : shipperRequest;
 
     return (
         <HomeDashboard
             role={userRole}
             content={content}
-            isLoading={userRole === "sender" && isLoading}
+            isLoading={activeRequest.isLoading}
             errorMessage={
-                userRole === "sender" && error
-                    ? error.message || "배송 목록을 불러오지 못했습니다."
+                activeRequest.error
+                    ? activeRequest.error.message ||
+                      "배송 목록을 불러오지 못했습니다."
                     : undefined
             }
-            onRetry={
-                userRole === "sender"
-                    ? () => void execute().catch(() => undefined)
-                    : undefined
+            onRetry={() =>
+                void activeRequest.execute().catch(() => undefined)
             }
         />
     );

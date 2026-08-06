@@ -22,7 +22,7 @@ export type RecentHistory = {
 export type HomeContent = {
   name: string;
   headline: string;
-  activeDelivery: ActiveDelivery | null;
+  activeDeliveries: ActiveDelivery[];
   matchingRequests: MatchingRequest[];
   recentHistories: RecentHistory[];
   actionLabel?: string;

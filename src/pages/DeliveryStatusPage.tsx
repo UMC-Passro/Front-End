@@ -1,67 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deliveryApi } from "../apis/deliveryApi";
+import { inquiryApi } from "../apis/inquiryApi";
+import { subwayApi, type SubwayPathItem } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
-import { DeliveryPersonCard } from "../components/delivery/DeliveryPersonCard";
-import { DeliveryProgress } from "../components/delivery/DeliveryProgress";
+import { DeliveryCancelSheet } from "../components/delivery/DeliveryCancelSheet";
+import { DeliveryTrackingContent } from "../components/delivery/DeliveryTrackingContent";
+import { MissingDeliveryReportSheet } from "../components/delivery/MissingDeliveryReportSheet";
 import { useApiRequest } from "../hooks/useApiRequest";
-import type { BackendDeliveryLogType, BackendPlace } from "../types/backend";
+import { useSenderRouteTracking } from "../hooks/useSenderRouteTracking";
 import { ApiError } from "../types/api";
-import {
-    getDeliveryStatusLabel,
-    toDeliveryViewStatus,
-} from "../utils/deliveryStatus";
+import type { BackendDeliveryState } from "../types/backend";
 
-const TIMELINE_LABELS: Record<BackendDeliveryLogType, string> = {
-    SEND_REQUEST: "배송 요청",
-    MATCHED: "배송자 매칭",
-    PICKED_UP: "물품 픽업",
-    DELIVERED: "전달 완료 요청",
-    DONE: "배송 완료",
-    CANCELED: "배송 취소",
-};
-
-function formatTimelineDate(value: string) {
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    return new Intl.DateTimeFormat("ko-KR", {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-    }).format(date);
-}
-
-function getPlaceLabel(place: BackendPlace | null) {
-    if (!place) {
-        return null;
-    }
-
-    return `${place.subwayStationName}(${place.subwayRouteName})`;
-}
-
-function getActionLabel(status: string) {
+function getSenderTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
         case "WAIT":
-            return "매칭 대기 중";
+            return "배송자가 매칭되면 경로 추적을 시작할 수 있습니다.";
         case "MATCHED":
-            return "물품 픽업 대기";
+            return "배송자가 물품을 인수하면 위치 추적이 시작됩니다.";
         case "DELIVERING":
-            return "배송 중";
+            return "배송자의 위치를 15초마다 갱신하고 있습니다.";
         case "CONFIRM_REQUESTED":
-            return "완료 확인";
+            return "전달 완료 확인을 기다리고 있습니다.";
         case "DELIVERED":
-            return "배송 완료";
+            return "배송이 최종 완료되었습니다.";
         case "CANCEL":
-            return "취소된 배송";
-        default:
-            return "현재 상태 확인";
+            return "취소된 배송입니다.";
     }
 }
 
@@ -72,7 +36,17 @@ export default function DeliveryStatusPage() {
     }>();
     const deliveryId = Number(deliveryIdParam);
     const [isCompleting, setIsCompleting] = useState(false);
+    const [isCancelOpen, setIsCancelOpen] = useState(false);
+    const [isCanceling, setIsCanceling] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
+    const [isReportSubmitted, setIsReportSubmitted] = useState(false);
     const [actionError, setActionError] = useState("");
+    const [cancelError, setCancelError] = useState("");
+    const [reportError, setReportError] = useState("");
+    const [route, setRoute] = useState<SubwayPathItem | null>(null);
+    const [isRouteLoading, setIsRouteLoading] = useState(false);
+    const [routeError, setRouteError] = useState<string | null>(null);
     const loadDelivery = useCallback(() => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
             return Promise.reject(
@@ -83,10 +57,63 @@ export default function DeliveryStatusPage() {
         return deliveryApi.getSenderDelivery(deliveryId);
     }, [deliveryId]);
     const { data, error, isLoading, execute } = useApiRequest(loadDelivery);
+    const senderTracking = useSenderRouteTracking({
+        deliveryId,
+        enabled: data?.status === "DELIVERING",
+        stations: route?.stations ?? [],
+    });
 
     useEffect(() => {
         void execute().catch(() => undefined);
     }, [execute]);
+
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+
+        if (data.status === "DELIVERED") {
+            setRoute(null);
+            setRouteError(null);
+            setIsRouteLoading(false);
+            return;
+        }
+
+        let isActive = true;
+        setIsRouteLoading(true);
+        setRouteError(null);
+
+        void subwayApi
+            .path({
+                originPlaceId: data.originPlace.id,
+                destinationPlaceId: data.destPlace.id,
+                waypointPlaceIds: [],
+            })
+            .then((nextRoute) => {
+                if (isActive) {
+                    setRoute(nextRoute);
+                }
+            })
+            .catch((caughtError: unknown) => {
+                if (isActive) {
+                    setRoute(null);
+                    setRouteError(
+                        caughtError instanceof Error
+                            ? caughtError.message
+                            : "지하철 경로를 불러오지 못했습니다.",
+                    );
+                }
+            })
+            .finally(() => {
+                if (isActive) {
+                    setIsRouteLoading(false);
+                }
+            });
+
+        return () => {
+            isActive = false;
+        };
+    }, [data?.destPlace.id, data?.originPlace.id, data?.status]);
 
     const handleComplete = async () => {
         if (!data || data.status !== "CONFIRM_REQUESTED" || isCompleting) {
@@ -110,6 +137,62 @@ export default function DeliveryStatusPage() {
         }
     };
 
+    const handleCancel = async () => {
+        if (!data || data.status !== "WAIT" || isCanceling) {
+            return;
+        }
+
+        setIsCanceling(true);
+        setCancelError("");
+
+        try {
+            await deliveryApi.cancel(deliveryId);
+            setIsCancelOpen(false);
+            navigate("/home", { replace: true });
+        } catch (caughtError) {
+            setCancelError(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "배송 요청을 취소하지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsCanceling(false);
+        }
+    };
+
+    const handleMissingDeliveryReport = async (content: string) => {
+        if (
+            !data ||
+            data.status !== "CONFIRM_REQUESTED" ||
+            isReporting ||
+            !content
+        ) {
+            return;
+        }
+
+        setIsReporting(true);
+        setReportError("");
+
+        try {
+            await inquiryApi.createDelivery({
+                deliveryId,
+                category: "LOST",
+                title: "물품 미도착 신고",
+                content,
+            });
+            setIsReportSubmitted(true);
+            setIsReportOpen(false);
+        } catch (caughtError) {
+            setReportError(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "미도착 신고를 접수하지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
     if (isLoading || (!data && !error)) {
         return (
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
@@ -118,10 +201,12 @@ export default function DeliveryStatusPage() {
                     onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
-                <div className="flex flex-1 flex-col gap-5 pt-10" aria-busy="true">
-                    <div className="h-20 animate-pulse rounded-xl bg-gray-100" />
-                    <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
-                    <div className="h-40 animate-pulse rounded-xl bg-gray-100" />
+                <div
+                    className="flex flex-1 flex-col gap-5 pt-8"
+                    aria-busy="true"
+                >
+                    <div className="h-52 animate-pulse rounded-3xl bg-gray-100" />
+                    <div className="h-96 animate-pulse rounded-3xl bg-gray-100" />
                 </div>
             </div>
         );
@@ -137,7 +222,7 @@ export default function DeliveryStatusPage() {
                 />
                 <div className="flex flex-1 items-center justify-center">
                     <div
-                        className="w-full rounded-xl border border-rose-200 bg-rose-50 p-5 text-center"
+                        className="w-full rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center"
                         role="alert"
                     >
                         <p className="text-sm font-medium text-rose-700">
@@ -157,98 +242,132 @@ export default function DeliveryStatusPage() {
         );
     }
 
-    const viewStatus = toDeliveryViewStatus(data.status);
-    const shipper = data.shipperInfo;
+    const canCancel = data.status === "WAIT";
     const canComplete = data.status === "CONFIRM_REQUESTED";
 
     return (
-        <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
-            <PageHeader
-                title="배송 추적"
-                onBack={() => navigate(-1)}
-                className="shrink-0"
-            />
-            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                <section className="mt-7 rounded-xl bg-gray-50 px-5 py-4">
-                    <h1 className="truncate text-lg font-bold text-gray-900">
-                        {data.name ?? "이름 없는 물품"}
-                    </h1>
-                    <p className="mt-1 text-sm font-semibold text-purple-600">
-                        {getDeliveryStatusLabel(data.status)}
-                    </p>
-                </section>
+        <>
+            <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+                <PageHeader
+                    title="배송 추적"
+                    onBack={() => navigate(-1)}
+                    className="shrink-0"
+                />
 
-                {viewStatus ? (
-                    <DeliveryProgress status={viewStatus} />
-                ) : (
-                    <p className="mt-8 rounded-xl bg-gray-50 px-5 py-5 text-center text-sm font-medium text-gray-500">
-                        취소된 배송입니다.
-                    </p>
-                )}
-
-                <section className="mt-8 flex flex-col gap-3">
-                    <h2 className="font-bold text-gray-900">전달자 정보</h2>
-                    <DeliveryPersonCard
-                        name={shipper?.name ?? null}
-                        picture={shipper?.picture}
-                        place={getPlaceLabel(shipper?.place ?? null)}
-                        emptyMessage="아직 배송자가 매칭되지 않았습니다."
+                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                    <DeliveryTrackingContent
+                        itemName={data.name}
+                        status={data.status}
+                        originPlace={data.originPlace}
+                        destinationPlace={data.destPlace}
+                        logs={data.deliveryTimeLine}
+                        route={route}
+                        isRouteLoading={isRouteLoading}
+                        routeError={routeError}
+                        currentPlaceId={senderTracking.location?.placeId}
+                        currentCoordinates={
+                            senderTracking.location ?? undefined
+                        }
+                        currentDistanceMeters={
+                            senderTracking.nearestStation?.distanceMeters
+                        }
+                        trackingStatus={senderTracking.status}
+                        trackingError={senderTracking.errorMessage}
+                        lastLocationUpdatedAt={
+                            senderTracking.location?.updatedAt
+                        }
+                        estimatedTimeMinutes={
+                            senderTracking.location?.estimatedTimeMinutes
+                        }
+                        trackingStatusMessage={getSenderTrackingMessage(
+                            data.status,
+                        )}
+                        partyTitle="전달자 정보"
+                        party={data.shipperInfo}
+                        partyEmptyMessage="아직 배송자가 매칭되지 않았습니다."
                     />
-                </section>
+                </div>
 
-                <section className="mt-12">
-                    <h2 className="text-[17px] font-bold">전달 타임라인</h2>
-
-                    {data.deliveryTimeLine.length === 0 ? (
-                        <p className="mt-5 rounded-xl bg-gray-50 px-5 py-5 text-center text-sm font-medium text-gray-500">
-                            배송 진행 내역이 없습니다.
-                        </p>
-                    ) : (
-                        <ol className="relative ml-[18px] mt-[23px] flex flex-col gap-[23px]">
-                            <span
-                                className="absolute bottom-[11px] left-[4.5px] top-[11px] border border-dashed border-gray-100"
-                                aria-hidden="true"
-                            />
-
-                            {data.deliveryTimeLine.map((item) => (
-                                <li
-                                    key={item.id}
-                                    className="relative flex items-center"
+                {canCancel || canComplete ? (
+                    <div className="shrink-0 border-t border-gray-100 bg-white pt-3">
+                        {actionError ? (
+                            <p
+                                className="mb-2 text-center text-xs font-medium text-rose-600"
+                                role="alert"
+                            >
+                                {actionError}
+                            </p>
+                        ) : null}
+                        {isReportSubmitted ? (
+                            <p
+                                className="mb-2 rounded-lg bg-rose-50 px-3 py-2 text-center text-xs font-semibold text-rose-700"
+                                role="status"
+                            >
+                                물품 미도착 신고가 접수되었습니다.
+                            </p>
+                        ) : null}
+                        {canCancel ? (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setCancelError("");
+                                    setIsCancelOpen(true);
+                                }}
+                                className="w-full rounded-xl border border-rose-200 bg-white py-3.5 font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+                            >
+                                배송 요청 취소
+                            </button>
+                        ) : null}
+                        {canComplete ? (
+                            <div className="grid grid-cols-2 gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setReportError("");
+                                        setIsReportOpen(true);
+                                    }}
+                                    disabled={isReportSubmitted}
+                                    className="rounded-xl border border-rose-200 bg-white px-2 py-3.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50 disabled:border-gray-200 disabled:text-gray-400"
                                 >
-                                    <span className="relative z-10 mr-[15px] h-2.5 w-2.5 shrink-0 rounded-full bg-purple-500" />
-                                    <span className="mr-7 min-w-0 flex-1 text-[15px] font-semibold">
-                                        {TIMELINE_LABELS[item.type]}
-                                    </span>
-                                    <time className="shrink-0 text-xs font-semibold text-gray-500">
-                                        {formatTimelineDate(item.createdAt)}
-                                    </time>
-                                </li>
-                            ))}
-                        </ol>
-                    )}
-                </section>
+                                    {isReportSubmitted
+                                        ? "미도착 신고 접수됨"
+                                        : "물건을 받지 못했어요"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleComplete}
+                                    disabled={isCompleting}
+                                    className="rounded-xl bg-purple-600 px-2 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                                >
+                                    {isCompleting
+                                        ? "완료 처리 중..."
+                                        : "배송 완료 승인"}
+                                </button>
+                            </div>
+                        ) : null}
+                    </div>
+                ) : null}
             </div>
 
-            <div className="shrink-0 pt-3">
-                {actionError ? (
-                    <p
-                        className="mb-2 text-center text-xs font-medium text-rose-600"
-                        role="alert"
-                    >
-                        {actionError}
-                    </p>
-                ) : null}
-                <button
-                    type="button"
-                    onClick={handleComplete}
-                    disabled={!canComplete || isCompleting}
-                    className="w-full rounded-lg bg-purple-500 py-3.5 font-semibold text-white transition-colors hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
-                >
-                    {isCompleting
-                        ? "완료 처리 중..."
-                        : getActionLabel(data.status)}
-                </button>
-            </div>
-        </div>
+            {isCancelOpen ? (
+                <DeliveryCancelSheet
+                    isSubmitting={isCanceling}
+                    errorMessage={cancelError}
+                    onClose={() => setIsCancelOpen(false)}
+                    onConfirm={() => void handleCancel()}
+                />
+            ) : null}
+
+            {isReportOpen ? (
+                <MissingDeliveryReportSheet
+                    isSubmitting={isReporting}
+                    errorMessage={reportError}
+                    onClose={() => setIsReportOpen(false)}
+                    onSubmit={(content) =>
+                        void handleMissingDeliveryReport(content)
+                    }
+                />
+            ) : null}
+        </>
     );
 }

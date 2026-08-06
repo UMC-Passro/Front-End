@@ -18,7 +18,9 @@ export const API_ENDPOINTS = {
     sender: {
         root: "/sender",
         detail: (deliveryId: number) => `/sender/${deliveryId}`,
-        payment: (deliveryId: number) => `/sender/${deliveryId}/payment`,
+        shipperLocation: (deliveryId: number) =>
+            `/sender/${deliveryId}/shipper-location`,
+        payment: "/sender/payment",
         complete: (deliveryId: number) => `/sender/${deliveryId}/complete`,
         terms: (deliveryId: number) => `/sender/${deliveryId}/terms`,
         cancel: (deliveryId: number) => `/sender/${deliveryId}/cancel`,
@@ -26,6 +28,7 @@ export const API_ENDPOINTS = {
     shipper: {
         matched: "/shipper/matched",
         root: "/shipper/",
+        location: "/shipper/location",
         detail: (deliveryId: number) => `/shipper/${deliveryId}/`,
         acceptMatch: (deliveryId: number) =>
             `/shipper/${deliveryId}/matched`,
