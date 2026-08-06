@@ -11,6 +11,7 @@ import { ApiError } from "../../types/api";
 import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
 const MAX_ITEM_PRICE_WON = 5_000_000;
@@ -45,17 +46,6 @@ function getItemPriceValidationMessage(value: string) {
 
 function getApiErrorMessage(error: unknown, fallback: string) {
     return error instanceof ApiError ? error.message : fallback;
-}
-
-function useDebouncedValue<T>(value: T, delayMs: number) {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setDebouncedValue(value), delayMs);
-        return () => clearTimeout(timer);
-    }, [value, delayMs]);
-
-    return debouncedValue;
 }
 
 interface DeliveryRequestFormProps {

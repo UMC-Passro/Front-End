@@ -62,6 +62,18 @@ export function getDeliveryCompletedAt(logs: BackendDeliveryLogInfo[]) {
     return [...logs].reverse().find((log) => log.type === "DONE")?.createdAt ?? null;
 }
 
+export function getDeliveryStartedAt(logs: BackendDeliveryLogInfo[]) {
+    return [...logs]
+        .reverse()
+        .find((log) => log.type === "PICKED_UP")?.createdAt ?? null;
+}
+
+export function getDeliveryHandedOffAt(logs: BackendDeliveryLogInfo[]) {
+    return [...logs]
+        .reverse()
+        .find((log) => log.type === "DELIVERED")?.createdAt ?? null;
+}
+
 const TIME_ZONE_SUFFIX_PATTERN = /(?:Z|[+-]\d{2}:?\d{2})$/u;
 
 function parseBackendDateTime(value: string) {
@@ -70,6 +82,27 @@ function parseBackendDateTime(value: string) {
         : `${value}Z`;
 
     return new Date(normalizedValue);
+}
+
+export function getDeliveryElapsedMinutes(
+    startedAt: string | null | undefined,
+    endedAt: string | null | undefined,
+    now = Date.now(),
+) {
+    if (!startedAt) {
+        return null;
+    }
+
+    const startedTime = parseBackendDateTime(startedAt).getTime();
+    const endedTime = endedAt
+        ? parseBackendDateTime(endedAt).getTime()
+        : now;
+
+    if (Number.isNaN(startedTime) || Number.isNaN(endedTime)) {
+        return null;
+    }
+
+    return Math.max(0, Math.floor((endedTime - startedTime) / 60_000));
 }
 
 export function formatTrackingDateTime(value: string | null | undefined) {
