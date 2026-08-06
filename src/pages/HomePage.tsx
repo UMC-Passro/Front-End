@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { accountApi } from "../apis/accountApi";
 import {
     deliveryApi,
     type SenderDeliveryListItem,
@@ -16,7 +17,11 @@ import type {
     RecentHistory,
 } from "../types/home";
 import type { UserRole } from "../types/user";
-import { getCurrentUser, getSelectedUserRole } from "../utils/auth";
+import {
+    getCurrentUser,
+    getSelectedUserRole,
+    setCurrentUserRole,
+} from "../utils/auth";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 
 type DeliveryRouteInfo = Pick<
@@ -129,10 +134,22 @@ function createShipperContent(
 
 export default function HomePage() {
     const currentUser = getCurrentUser();
-    const userRole: UserRole =
-        getSelectedUserRole() ?? currentUser?.role ?? "shipper";
+    const [userRole, setUserRole] = useState<UserRole>(
+        () => getSelectedUserRole() ?? currentUser?.role ?? "shipper",
+    );
+    const loadProfile = useCallback(
+        (role: UserRole) =>
+            role === "sender"
+                ? accountApi.getSenderMyPage()
+                : accountApi.getShipperMyPage(),
+        [],
+    );
+    const profileRequest = useApiRequest(loadProfile);
     const displayName =
-        currentUser?.nickname || currentUser?.name || "패스로 사용자";
+        profileRequest.data?.nickname ||
+        currentUser?.nickname ||
+        currentUser?.name ||
+        "패스로 사용자";
     const loadSenderDeliveries = useCallback(
         () => deliveryApi.getSenderDeliveries(),
         [],
@@ -149,12 +166,24 @@ export default function HomePage() {
     const shipperRequest = useApiRequest(loadShipperHomeData);
 
     useEffect(() => {
+        void profileRequest.execute(userRole).catch(() => undefined);
+
         if (userRole === "sender") {
             void senderRequest.execute().catch(() => undefined);
         } else {
             void shipperRequest.execute().catch(() => undefined);
         }
-    }, [senderRequest.execute, shipperRequest.execute, userRole]);
+    }, [
+        profileRequest.execute,
+        senderRequest.execute,
+        shipperRequest.execute,
+        userRole,
+    ]);
+
+    const handleRoleChange = useCallback((nextRole: UserRole) => {
+        setCurrentUserRole(nextRole);
+        setUserRole(nextRole);
+    }, []);
 
     const content = useMemo(
         () =>
@@ -182,6 +211,9 @@ export default function HomePage() {
         <HomeDashboard
             role={userRole}
             content={content}
+            avatarUrl={profileRequest.data?.picture}
+            isRoleChanging={activeRequest.isLoading}
+            onRoleChange={handleRoleChange}
             isLoading={activeRequest.isLoading}
             errorMessage={
                 activeRequest.error

@@ -12,6 +12,7 @@ const FindIdPage = lazy(() => import("../pages/FindIdPage"));
 const FindPasswordPage = lazy(() => import("../pages/FindPasswordPage"));
 const UserStateChoice = lazy(() => import("../pages/UserStateChoice"));
 const HomePage = lazy(() => import("../pages/HomePage"));
+const MarketPage = lazy(() => import("../pages/MarketPage"));
 const MyPage = lazy(() => import("../pages/MyPage"));
 const EditProfile = lazy(() => import("../pages/EditProfile"));
 const InquiryPage = lazy(() => import("../pages/InquiryPage"));
@@ -92,6 +93,10 @@ export const router = createBrowserRouter([
                     {
                         path: "/home",
                         element: <HomePage />,
+                    },
+                    {
+                        path: "/market",
+                        element: <MarketPage />,
                     },
                     {
                         path: "/mypage",
