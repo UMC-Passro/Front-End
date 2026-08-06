@@ -25,3 +25,10 @@ export interface BackendDeliveryPartyInfo {
     picture: string | null;
     place: BackendPlace | null;
 }
+
+export interface BackendDeliveryLogInfo {
+    id: number;
+    type: BackendDeliveryLogType;
+    image: string | null;
+    createdAt: string;
+}

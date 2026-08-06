@@ -1,5 +1,5 @@
 import type {
-    BackendDeliveryLogType,
+    BackendDeliveryLogInfo,
     BackendDeliveryPartyInfo,
     BackendDeliveryState,
     BackendPlace,
@@ -10,21 +10,26 @@ import { API_ENDPOINTS } from "./endpoints";
 export interface ShipperDeliveryListItem {
     id: number;
     name: string | null;
-    senderInfo: BackendDeliveryPartyInfo;
+    senderInfo: BackendDeliveryPartyInfo | null;
     shipperInfo: BackendDeliveryPartyInfo | null;
     originPlace: BackendPlace;
     destPlace: BackendPlace;
     deliveryState: BackendDeliveryState;
     memo: string | null;
+    createdAt: string;
+    estimatedTimeMinutes: number | null;
 }
 
-export interface ShipperDeliveryDetail extends ShipperDeliveryListItem {
-    deliveryTimeLine: Array<{
-        id: number;
-        type: BackendDeliveryLogType;
-        image: string | null;
-        createdAt: string;
-    }>;
+export interface ShipperDeliveryDetail {
+    id: number;
+    name: string | null;
+    senderInfo: BackendDeliveryPartyInfo | null;
+    shipperInfo: BackendDeliveryPartyInfo | null;
+    originPlace: BackendPlace;
+    destPlace: BackendPlace;
+    deliveryState: BackendDeliveryState;
+    memo: string | null;
+    deliveryTimeLine: BackendDeliveryLogInfo[];
 }
 
 export interface DeliveryStatusUpdateRequest {

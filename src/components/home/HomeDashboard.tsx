@@ -69,11 +69,16 @@ export function HomeDashboard({
                                     </button>
                                 ) : null}
                             </div>
-                        ) : content.activeDelivery ? (
-                            <ActiveDeliveryCard
-                                delivery={content.activeDelivery}
-                                role={isRole}
-                            />
+                        ) : content.activeDeliveries.length > 0 ? (
+                            <div className="mt-3 flex flex-col gap-2.5">
+                                {content.activeDeliveries.map((delivery) => (
+                                    <ActiveDeliveryCard
+                                        key={delivery.id}
+                                        delivery={delivery}
+                                        role={isRole}
+                                    />
+                                ))}
+                            </div>
                         ) : (
                             <p className="mt-3 rounded-lg bg-purple-50 px-5 py-5 text-center text-sm font-medium text-purple-500">
                                 진행 중인 배송이 없습니다.

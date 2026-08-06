@@ -279,6 +279,8 @@ function DeliveryRequestFormContent({
     const [createdDeliveryId, setCreatedDeliveryId] = useState<number | null>(
         null,
     );
+    const [pendingRequest, setPendingRequest] =
+        useState<CreateDeliveryRequest | null>(null);
     const [payment, setPayment] = useState<DeliveryPayment | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
@@ -434,32 +436,24 @@ function DeliveryRequestFormContent({
             return;
         }
 
+        const request: CreateDeliveryRequest = {
+            sourceStationId: originStation.id,
+            destinationStationId: destinationStation.id,
+            name: itemName.trim(),
+            price: priceInWon,
+            size: itemSize,
+            memo: memo.trim() || undefined,
+        };
+
         setIsSubmitting(true);
-        let deliveryId = createdDeliveryId;
-        let requestStage: "create" | "payment" =
-            deliveryId === null ? "create" : "payment";
 
         try {
-            if (deliveryId === null) {
-                const createdId = await deliveryApi.create({
-                    sourceStationId: originStation.id,
-                    destinationStationId: destinationStation.id,
-                    name: itemName.trim(),
-                    price: priceInWon,
-                    size: itemSize,
-                    memo: memo.trim() || undefined,
-                });
-                deliveryId = Number(createdId);
-
-                if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
-                    throw new Error("Invalid delivery ID response");
-                }
-
-                setCreatedDeliveryId(deliveryId);
-                requestStage = "payment";
-            }
-
-            const paymentResult = await deliveryApi.getPayment(deliveryId);
+            const paymentResult = await deliveryApi.getPayment({
+                sourceStationId: request.sourceStationId,
+                destinationStationId: request.destinationStationId,
+                size: request.size,
+            });
+            setPendingRequest(request);
             setPayment(paymentResult);
             setPaymentError("");
             setIsPaymentOpen(true);
@@ -467,9 +461,7 @@ function DeliveryRequestFormContent({
             setRequestError(
                 getApiErrorMessage(
                     error,
-                    requestStage === "create"
-                        ? "배송 요청을 등록하지 못했습니다. 다시 시도해주세요."
-                        : "결제 정보를 불러오지 못했습니다. 다시 시도해주세요.",
+                    "결제 정보를 불러오지 못했습니다. 다시 시도해주세요.",
                 ),
             );
         } finally {
@@ -478,7 +470,7 @@ function DeliveryRequestFormContent({
     };
 
     const handlePaymentConfirm = async () => {
-        if (createdDeliveryId === null || isConfirming) {
+        if (!pendingRequest || isConfirming) {
             return;
         }
 
@@ -486,8 +478,21 @@ function DeliveryRequestFormContent({
         setPaymentError("");
 
         try {
-            await deliveryApi.agreeTerms(createdDeliveryId);
-            onComplete?.(createdDeliveryId);
+            let deliveryId = createdDeliveryId;
+
+            if (deliveryId === null) {
+                const createdId = await deliveryApi.create(pendingRequest);
+                deliveryId = Number(createdId);
+
+                if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
+                    throw new Error("Invalid delivery ID response");
+                }
+
+                setCreatedDeliveryId(deliveryId);
+            }
+
+            await deliveryApi.agreeTerms(deliveryId);
+            onComplete?.(deliveryId);
         } catch (error) {
             setPaymentError(
                 getApiErrorMessage(

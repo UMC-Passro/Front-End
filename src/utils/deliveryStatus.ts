@@ -1,5 +1,4 @@
 import type { BackendDeliveryState } from "../types/backend";
-import type { DeliveryStatus } from "../types/delivery/delivery";
 
 const DELIVERY_STATUS_LABELS: Record<BackendDeliveryState, string> = {
     WAIT: "매칭 대기",
@@ -12,21 +11,4 @@ const DELIVERY_STATUS_LABELS: Record<BackendDeliveryState, string> = {
 
 export function getDeliveryStatusLabel(status: BackendDeliveryState) {
     return DELIVERY_STATUS_LABELS[status];
-}
-
-export function toDeliveryViewStatus(
-    status: BackendDeliveryState,
-): DeliveryStatus | null {
-    switch (status) {
-        case "WAIT":
-        case "MATCHED":
-            return "WAITING_PICKUP";
-        case "DELIVERING":
-        case "CONFIRM_REQUESTED":
-            return "DELIVERING";
-        case "DELIVERED":
-            return "COMPLETED";
-        case "CANCEL":
-            return null;
-    }
 }

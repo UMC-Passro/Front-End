@@ -1,6 +1,6 @@
 import type {
+    BackendDeliveryLogInfo,
     BackendDeliveryPartyInfo,
-    BackendDeliveryLogType,
     BackendDeliveryState,
     BackendPlace,
 } from "../types/backend";
@@ -23,19 +23,17 @@ export interface SenderDeliveryListItem {
     originPlace: BackendPlace;
     destPlace: BackendPlace;
     status: BackendDeliveryState;
+    createdAt: string;
 }
 
 export interface SenderDeliveryDetail {
     id: number;
     name: string | null;
+    originPlace: BackendPlace;
+    destPlace: BackendPlace;
     status: BackendDeliveryState;
     shipperInfo: BackendDeliveryPartyInfo | null;
-    deliveryTimeLine: Array<{
-        id: number;
-        type: BackendDeliveryLogType;
-        image: string | null;
-        createdAt: string;
-    }>;
+    deliveryTimeLine: BackendDeliveryLogInfo[];
 }
 
 export interface DeliveryStatusUpdateRequest {
@@ -43,11 +41,17 @@ export interface DeliveryStatusUpdateRequest {
 }
 
 export interface DeliveryPayment {
-    id: number;
+    id?: number | null;
     basePoint: number;
     distancePoint: number;
     weightPoint: number;
     totalPoint: number;
+}
+
+export interface DeliveryPaymentRequest {
+    sourceStationId: number;
+    destinationStationId: number;
+    size: CreateDeliveryRequest["size"];
 }
 
 export const deliveryApi = {
@@ -65,10 +69,11 @@ export const deliveryApi = {
         });
     },
 
-    getPayment(deliveryId: number) {
+    getPayment(request: DeliveryPaymentRequest) {
         return apiRequest<DeliveryPayment>({
             method: "GET",
-            url: API_ENDPOINTS.sender.payment(deliveryId),
+            url: API_ENDPOINTS.sender.payment,
+            params: request,
         });
     },
 

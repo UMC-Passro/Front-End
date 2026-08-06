@@ -115,6 +115,10 @@ export const router = createBrowserRouter([
                         children: [
                             {
                                 path: "matching",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "matching/:deliveryId",
                                 element: <DeliveryMatchingPage />,
                             },
                             {
@@ -127,6 +131,10 @@ export const router = createBrowserRouter([
                             },
                             {
                                 path: "tracking",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "tracking/:deliveryId",
                                 element: <DeliveryTrackingPage />,
                             },
                             {
