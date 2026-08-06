@@ -13,7 +13,35 @@ import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
-const WON_PER_TEN_THOUSAND = 10_000;
+const MAX_ITEM_PRICE_WON = 5_000_000;
+
+function sanitizeItemPrice(value: string) {
+    return value.replace(/\D/g, "");
+}
+
+function getItemPriceValidationMessage(value: string) {
+    const trimmedPrice = value.trim();
+
+    if (trimmedPrice === "") {
+        return "물품 가액을 입력해주세요.";
+    }
+
+    if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
+        return "0 이상의 정수만 입력해주세요.";
+    }
+
+    const priceInWon = Number(trimmedPrice);
+
+    if (!Number.isSafeInteger(priceInWon)) {
+        return "입력할 수 있는 물품 가액을 초과했습니다.";
+    }
+
+    if (priceInWon > MAX_ITEM_PRICE_WON) {
+        return "물품 가액은 최대 500만원까지 입력할 수 있습니다.";
+    }
+
+    return "";
+}
 
 function getApiErrorMessage(error: unknown, fallback: string) {
     return error instanceof ApiError ? error.message : fallback;
@@ -196,12 +224,16 @@ function PriceField({
                 <input
                     type="text"
                     inputMode="numeric"
+                    pattern="[0-9]*"
                     value={value}
-                    onChange={(event) => onChange(event.target.value)}
+                    onChange={(event) =>
+                        onChange(sanitizeItemPrice(event.target.value))
+                    }
                     placeholder="물품가액을 입력해주세요"
+                    aria-invalid={Boolean(error)}
                     className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
                 />
-                <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+                <span className="shrink-0 text-[15px] text-gray-800">원</span>
             </div>
             {error ? (
                 <p className="text-xs font-medium text-rose-600">{error}</p>
@@ -351,21 +383,9 @@ function DeliveryRequestFormContent({
             return;
         }
 
-        const trimmedPrice = debouncedItemPrice.trim();
-
-        if (trimmedPrice === "") {
-            setItemPriceError("물품 가액을 입력해주세요.");
-        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
-            setItemPriceError("숫자만 입력해주세요.");
-        } else if (
-            !Number.isSafeInteger(
-                Number(trimmedPrice) * WON_PER_TEN_THOUSAND,
-            )
-        ) {
-            setItemPriceError("입력할 수 있는 물품 가액을 초과했습니다.");
-        } else {
-            setItemPriceError("");
-        }
+        setItemPriceError(
+            getItemPriceValidationMessage(debouncedItemPrice),
+        );
     }, [debouncedItemPrice, hasSubmitted]);
 
     const handleMatchingRequest = async () => {
@@ -400,16 +420,12 @@ function DeliveryRequestFormContent({
 
         const trimmedPrice = itemPrice.trim();
 
-        const priceInWon = Number(trimmedPrice) * WON_PER_TEN_THOUSAND;
+        const priceInWon = Number(trimmedPrice);
 
-        if (trimmedPrice === "") {
-            setItemPriceError("물품 가액을 입력해주세요.");
-            hasError = true;
-        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
-            setItemPriceError("숫자만 입력해주세요.");
-            hasError = true;
-        } else if (!Number.isSafeInteger(priceInWon)) {
-            setItemPriceError("입력할 수 있는 물품 가액을 초과했습니다.");
+        const priceError = getItemPriceValidationMessage(trimmedPrice);
+
+        if (priceError) {
+            setItemPriceError(priceError);
             hasError = true;
         } else {
             setItemPriceError("");

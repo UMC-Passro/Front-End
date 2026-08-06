@@ -8,6 +8,8 @@ type EmailFieldProps = {
     value: string;
     code: string;
     status: SignupEmailVerificationStatus;
+    errorMessage?: string;
+    isChecking: boolean;
     isSending: boolean;
     isConfirming: boolean;
     showValidation: boolean;
@@ -21,6 +23,8 @@ export default function EmailField({
     value,
     code,
     status,
+    errorMessage = "",
+    isChecking,
     isSending,
     isConfirming,
     showValidation,
@@ -30,7 +34,8 @@ export default function EmailField({
     onConfirm,
 }: EmailFieldProps) {
     const isVerified = status === "verified";
-    const validationMessage = getEmailValidationMessage(value, isVerified);
+    const validationMessage =
+        errorMessage || getEmailValidationMessage(value, isVerified);
     const requestButtonClass = status === "idle"
         ? "rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]"
         : BASIC_ACTION_BUTTON_CLASS;
@@ -47,7 +52,7 @@ export default function EmailField({
                     type="email"
                     placeholder="이메일을 입력해주세요"
                     value={value}
-                    readOnly={status === "verified"}
+                    readOnly={isChecking || isSending || isConfirming}
                     onChange={(event) => onChange(event.target.value)}
                     className={
                         status === "verified" ? "w-full rounded-lg bg-gray-500 px-5 py-4 text-[15px] text-gray-200 outline-none" :
@@ -56,10 +61,14 @@ export default function EmailField({
                 <button
                     type="button"
                     onClick={onRequest}
-                    disabled={isSending || isVerified}
+                    disabled={
+                        isChecking || isSending || isConfirming || isVerified
+                    }
                     className={requestButtonClass}
                 >
-                    {isSending
+                    {isChecking
+                        ? "확인 중..."
+                        : isSending
                         ? "발송 중..."
                         : status === "sent"
                             ? "재전송"
@@ -108,7 +117,8 @@ export default function EmailField({
                 colorClass={isVerified ? "text-[#24A148]" : "text-[#E5484D]"}
                 visible={
                     isVerified ||
-                    (showValidation && Boolean(validationMessage))
+                    ((showValidation || Boolean(errorMessage)) &&
+                        Boolean(validationMessage))
                 }
             />
         </section>

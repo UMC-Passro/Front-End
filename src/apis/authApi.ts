@@ -121,8 +121,18 @@ export const authApi = {
             method: "GET",
             url: API_ENDPOINTS.auth.availableNickname,
             params: {
-                nickname
-            }
-        })
-    }
+                nickname,
+            },
+        });
+    },
+
+    checkEmailAvailable(mail: string) {
+        return apiRequest<boolean>({
+            method: "GET",
+            url: API_ENDPOINTS.auth.availableMail,
+            params: {
+                mail,
+            },
+        });
+    },
 };
