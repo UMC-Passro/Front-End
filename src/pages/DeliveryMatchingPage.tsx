@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { matchingApi } from "../apis/matchingApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryInfo } from "../components/delivery/DeliveryInfo";
 import { DeliveryRoute } from "../components/delivery/DeliveryRoute";
+import { shipperDeliveryApi } from "../apis";
 
 export default function DeliveryMatchingPage() {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function DeliveryMatchingPage() {
         setAcceptError(null);
 
         try {
-            await matchingApi.accept(deliveryId);
+            await shipperDeliveryApi.accept(deliveryId);
             navigate(`/delivery/tracking/${deliveryId}`);
         } catch (error) {
             setAcceptError(

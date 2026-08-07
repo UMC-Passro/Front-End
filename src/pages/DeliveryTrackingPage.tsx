@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { matchingApi } from "../apis/matchingApi";
 import { subwayApi } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryTrackingContent } from "../components/delivery/DeliveryTrackingContent";
@@ -8,6 +7,7 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { useShipperRouteTracking } from "../hooks/useShipperRouteTracking";
 import { ApiError } from "../types/api";
 import type { BackendDeliveryState } from "../types/backend";
+import { shipperDeliveryApi } from "../apis";
 
 function getShipperTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
@@ -43,7 +43,7 @@ export default function DeliveryTrackingPage() {
             throw new ApiError({ message: "올바르지 않은 배송 ID입니다." });
         }
 
-        const detail = await matchingApi.getDelivery(deliveryId);
+        const detail = await shipperDeliveryApi.getDeliveryDetail(deliveryId);
         if (detail.deliveryState === "DELIVERED") {
             return { detail, route: null };
         }
@@ -81,9 +81,9 @@ export default function DeliveryTrackingPage() {
 
         try {
             if (status === "MATCHED") {
-                await matchingApi.acquire(deliveryId);
+                await shipperDeliveryApi.acquire(deliveryId);
             } else {
-                await matchingApi.requestConfirmation(deliveryId);
+                await shipperDeliveryApi.requestConfirmation(deliveryId);
             }
 
             await execute();
