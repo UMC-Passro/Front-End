@@ -53,8 +53,7 @@ export const API_ENDPOINTS = {
         byDelivery: (deliveryId: number) => `/delivery-inquiry/${deliveryId}`,
     },
     account: {
-        senderMyPage: "/mypage/sender",
-        shipperMyPage: "/mypage/shipper",
+        profile: "/mypage/shipper",
         editMyInfo: "/mypage/edit/myInfo",
         sendPasswordEditMail: "/mypage/edit/password/mail",
         editPassword: "/mypage/edit/password",

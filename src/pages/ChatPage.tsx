@@ -6,10 +6,8 @@ import {
     type FormEvent,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { chatApi } from "../apis";
+import { chatApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
-import { deliveryApi } from "../apis/deliveryApi";
-import { matchingApi } from "../apis/matchingApi";
 import PageHeader from "../components/common/PageHeader";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
@@ -64,8 +62,8 @@ export default function ChatPage() {
             await Promise.all([
                 chatApi.getMessages(deliveryId),
                 chatApi.getRoomInfo(deliveryId),
-                deliveryApi.getSenderDeliveries().catch(() => []),
-                matchingApi.getMyDeliveries().catch(() => []),
+                senderDeliveryApi.getDeliveryList().catch(() => []),
+                shipperDeliveryApi.getDeliveryList().catch(() => []),
             ]);
 
         const deliveryRole = senderDeliveries.some(
@@ -235,7 +233,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex page-container w-full flex-col overflow-hidden bg-white">
+        <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
             {/* 상단바 영역 */}
             <div className="z-40 w-full shrink-0 border-b border-gray-100 bg-white px-4 pb-4 pt-3">
                 <PageHeader

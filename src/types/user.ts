@@ -40,3 +40,24 @@ export interface ProfilePageData {
     primaryRoute?: CommuteRouteSummary;
     stats: ProfileStats;
 }
+
+export type Profile = {
+    picture?: string;
+    nickname: string;
+    deliveryCount: number;
+    point: number;
+    rating: number;
+};
+
+export type EditProfile = {
+    nickname: string;
+    phoneNumber: string;
+    startPlaceId: number;
+    destinationPlaceId: number;
+    wayPoints?: number[];
+};
+
+export type EditPassword = {
+    password: string;
+    code: string;
+};
