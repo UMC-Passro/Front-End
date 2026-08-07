@@ -1,40 +1,10 @@
+import { DeliveryStatusUpdateRequest } from "../../types/delivery/sender";
 import {
-    BackendDeliveryLogInfo,
-    BackendDeliveryPartyInfo,
-    BackendDeliveryState,
-    BackendPlace,
-} from "../../types/backend";
+    ShipperDeliveryListItem,
+    ShipperDeliveryDetail,
+} from "../../types/delivery/shipper";
 import { apiRequest } from "../client";
 import { API_ENDPOINTS } from "../endpoints";
-
-export interface ShipperDeliveryListItem {
-    id: number;
-    name: string | null;
-    senderInfo: BackendDeliveryPartyInfo | null;
-    shipperInfo: BackendDeliveryPartyInfo | null;
-    originPlace: BackendPlace;
-    destPlace: BackendPlace;
-    deliveryState: BackendDeliveryState;
-    memo: string | null;
-    createdAt: string;
-    estimatedTimeMinutes: number | null;
-}
-
-export interface ShipperDeliveryDetail {
-    id: number;
-    name: string | null;
-    senderInfo: BackendDeliveryPartyInfo | null;
-    shipperInfo: BackendDeliveryPartyInfo | null;
-    originPlace: BackendPlace;
-    destPlace: BackendPlace;
-    deliveryState: BackendDeliveryState;
-    memo: string | null;
-    deliveryTimeLine: BackendDeliveryLogInfo[];
-}
-
-export interface DeliveryStatusUpdateRequest {
-    imageKey?: string;
-}
 
 export const shipperDeliveryApi = {
     getMatchRequests() {
@@ -44,14 +14,14 @@ export const shipperDeliveryApi = {
         });
     },
 
-    getMyDeliveries() {
+    getDeliveryList() {
         return apiRequest<ShipperDeliveryListItem[]>({
             method: "GET",
             url: API_ENDPOINTS.shipper.root,
         });
     },
 
-    getDelivery(deliveryId: number) {
+    getDeliveryDetail(deliveryId: number) {
         return apiRequest<ShipperDeliveryDetail>({
             method: "GET",
             url: API_ENDPOINTS.shipper.detail(deliveryId),
@@ -81,6 +51,13 @@ export const shipperDeliveryApi = {
             method: "PATCH",
             url: API_ENDPOINTS.shipper.confirm(deliveryId),
             data: request,
+        });
+    },
+
+    shipperLocation() {
+        return apiRequest<null>({
+            method: "PUT",
+            url: API_ENDPOINTS.shipper.location,
         });
     },
 };
