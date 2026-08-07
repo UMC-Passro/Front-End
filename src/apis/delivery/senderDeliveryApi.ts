@@ -1,6 +1,7 @@
 import {
     CreateDeliveryRequest,
     DeliveryPayment,
+    DeliveryPaymentRequest,
     SenderDeliveryDetail,
     SenderDeliveryListItem,
 } from "../../types/delivery/sender";
@@ -22,10 +23,11 @@ export const senderDeliveryApi = {
         });
     },
 
-    getPayment() {
+    getPayment(request: DeliveryPaymentRequest) {
         return apiRequest<DeliveryPayment>({
             method: "GET",
             url: API_ENDPOINTS.sender.payment,
+            params: request,
         });
     },
 

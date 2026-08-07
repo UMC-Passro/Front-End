@@ -1,9 +1,4 @@
 import { memo, useEffect, useState } from "react";
-import {
-    deliveryApi,
-    type CreateDeliveryRequest,
-    type DeliveryPayment,
-} from "../../apis/deliveryApi";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
@@ -12,6 +7,11 @@ import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import {
+    CreateDeliveryRequest,
+    DeliveryPayment,
+} from "../../types/delivery/sender";
+import { senderDeliveryApi } from "../../apis";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
 const MAX_ITEM_PRICE_WON = 5_000_000;
@@ -452,7 +452,7 @@ function DeliveryRequestFormContent({
         setIsSubmitting(true);
 
         try {
-            const paymentResult = await deliveryApi.getPayment({
+            const paymentResult = await senderDeliveryApi.getPayment({
                 sourceStationId: request.sourceStationId,
                 destinationStationId: request.destinationStationId,
                 size: request.size,
@@ -485,7 +485,8 @@ function DeliveryRequestFormContent({
             let deliveryId = createdDeliveryId;
 
             if (deliveryId === null) {
-                const createdId = await deliveryApi.create(pendingRequest);
+                const createdId =
+                    await senderDeliveryApi.create(pendingRequest);
                 deliveryId = Number(createdId);
 
                 if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
@@ -495,7 +496,7 @@ function DeliveryRequestFormContent({
                 setCreatedDeliveryId(deliveryId);
             }
 
-            await deliveryApi.agreeTerms(deliveryId);
+            await senderDeliveryApi.agreeTerms(deliveryId);
             onComplete?.(deliveryId);
         } catch (error) {
             setPaymentError(
@@ -525,7 +526,7 @@ function DeliveryRequestFormContent({
 
                 <fieldset
                     disabled={createdDeliveryId !== null}
-                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 px-5 pb-6 pt-4"
+                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 pb-6 pt-4"
                 >
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">

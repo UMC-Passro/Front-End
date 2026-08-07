@@ -8,10 +8,9 @@ import type { TokenResponse } from "./authApi";
 import { API_ENDPOINTS } from "./endpoints";
 import { tokenStorage } from "./tokenStorage";
 
-const DEFAULT_API_BASE_URL = "http://localhost:8080";
+const DEFAULT_API_BASE_URL = "https://passro.suplitter.com";
 const DEFAULT_TIMEOUT_MS = 10_000;
-const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
 function getTimeout() {
     const configuredTimeout = Number(import.meta.env.VITE_API_TIMEOUT_MS);
@@ -28,17 +27,15 @@ export const apiClient = axios.create({
     },
 });
 
-apiClient.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-        const accessToken = tokenStorage.getAccessToken();
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const accessToken = tokenStorage.getAccessToken();
 
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
-        }
+    if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
-        return config;
-    },
-);
+    return config;
+});
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
@@ -105,8 +102,7 @@ apiClient.interceptors.response.use(
         try {
             const tokens = await reissueTokens(refreshToken);
             tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
-            originalRequest.headers.Authorization =
-                `Bearer ${tokens.accessToken}`;
+            originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
             return apiClient.request(originalRequest);
         } catch {
             tokenStorage.clearTokens();
@@ -162,9 +158,7 @@ function unwrapResponse<T>(body: ApiResponse<T>): T {
     return body.result;
 }
 
-export async function apiRequest<T>(
-    config: AxiosRequestConfig,
-): Promise<T> {
+export async function apiRequest<T>(config: AxiosRequestConfig): Promise<T> {
     try {
         const response = await apiClient.request<ApiResponse<T>>(config);
         return unwrapResponse(response.data);

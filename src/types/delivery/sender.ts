@@ -38,6 +38,12 @@ export type DeliveryStatusUpdateRequest = {
     imageKey?: string;
 };
 
+export type DeliveryPaymentRequest = {
+    sourceStationId: number;
+    destinationStationId: number;
+    size: "S" | "M" | "L";
+};
+
 export type DeliveryPayment = {
     id: number;
     basePoint: number;

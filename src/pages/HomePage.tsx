@@ -16,11 +16,9 @@ import {
 } from "../utils/auth";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import { SenderDeliveryListItem } from "../types/delivery/sender";
-import {
-    shipperDeliveryApi,
-    ShipperDeliveryListItem,
-} from "../apis/delivery/shipperDeliveryApi";
+import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
 import { senderDeliveryApi } from "../apis";
+import { ShipperDeliveryListItem } from "../types/delivery/shipper";
 
 type DeliveryRouteInfo = Pick<
     SenderDeliveryListItem,
@@ -153,7 +151,7 @@ export default function HomePage() {
     const loadShipperHomeData = useCallback(
         () =>
             Promise.all([
-                shipperDeliveryApi.getMyDeliveries(),
+                shipperDeliveryApi.getDeliveryList(),
                 shipperDeliveryApi.getMatchRequests(),
             ]),
         [],
