@@ -21,6 +21,12 @@ export type ShipperDeliveryListItem = {
 export type ShipperDeliveryDetail = {
     id: number;
     name: string;
+    price: number;
+    size: "S" | "M" | "L";
+    basePoint: number;
+    distancePoint: number;
+    weightPoint: number;
+    totalPoint: number;
     senderInfo: BackendDeliveryPartyInfo | null;
     shipperInfo: BackendDeliveryPartyInfo | null;
     originPlace: BackendPlace;

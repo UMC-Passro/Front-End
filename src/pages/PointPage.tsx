@@ -1,47 +1,43 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import PageHeader from "../components/common/PageHeader";
 import { PointFilterButton } from "../components/points/PointFilterButton";
 import { PointList } from "../components/points/PointList";
 import { TotalPoint } from "../components/points/TotalPoint";
-import { POINT_FILTER, PointFilter, PointFilterLabel } from "../types/point";
+import {
+    POINT_FILTER,
+    PointFilter,
+    PointFilterLabel,
+    PointIncrementReason,
+} from "../types/point";
 import { useNavigate } from "react-router-dom";
-
-interface PointItem {
-    id: number;
-    name: string;
-    date: string;
-    amount: number;
-    type: PointFilter;
-}
-
-const POINT_ITEMS: PointItem[] = [
-    {
-        id: 1,
-        name: "코알라 티셔츠",
-        date: "26.06.26",
-        amount: 3000,
-        type: "SAVING",
-    },
-    {
-        id: 2,
-        name: "프로그래밍 전공책",
-        date: "26.06.20",
-        amount: 1000,
-        type: "SAVING",
-    },
-    {
-        id: 3,
-        name: "선러브 모자",
-        date: "26.04.06",
-        amount: 2000,
-        type: "USE",
-    },
-    { id: 4, name: "오렌지", date: "26.04.01", amount: 1000, type: "EXPIRE" },
-];
+import { pointApi } from "../apis";
+import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function PointPage() {
     const navigate = useNavigate();
     const [selected, setSelected] = useState<PointFilterLabel>("전체");
+
+    const loadPoint = useCallback(() => pointApi.getHistory(), []);
+
+    const pointRequest = useApiRequest(loadPoint);
+
+    useEffect(() => {
+        void pointRequest.execute().catch(() => undefined);
+    }, [pointRequest.execute]);
+
+    const pointItems = useMemo(() => {
+        return (pointRequest.data?.pointLogs ?? []).map((log) => ({
+            id: log.pointLogId,
+            name:
+                log.delivery.name ??
+                log.market.name ??
+                log.incrementReasonMemo ??
+                "포인트 내역",
+            date: formatPointDate(log.createdAt),
+            amount: Math.abs(log.deltaPoint),
+            type: getPointFilterType(log.incrementReason),
+        }));
+    }, [pointRequest.data]);
 
     const currentFilter: PointFilter | null =
         Object.values(POINT_FILTER).find((c) => c.label === selected)?.code ??
@@ -49,14 +45,10 @@ export default function PointPage() {
 
     const filteredItems =
         currentFilter === null
-            ? POINT_ITEMS
-            : POINT_ITEMS.filter((item) => item.type === currentFilter);
+            ? pointItems
+            : pointItems.filter((item) => item.type === currentFilter);
 
-    const totalPoint = POINT_ITEMS.reduce(
-        (sum, item) =>
-            sum + (item.type === "SAVING" ? item.amount : -item.amount),
-        0,
-    );
+    const totalPoint = pointRequest.data?.currentPoint ?? 0;
 
     return (
         <div className="page-container">
@@ -67,4 +59,25 @@ export default function PointPage() {
             <PointList items={filteredItems} />
         </div>
     );
+}
+
+function formatPointDate(createdAt: string) {
+    const date = new Date(createdAt);
+
+    const year = String(date.getFullYear()).slice(2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}.${month}.${day}`;
+}
+
+function getPointFilterType(reason: PointIncrementReason): PointFilter {
+    switch (reason) {
+        case "DELIVERY_REFUND":
+        case "DELIVERY_SETTLEMENT":
+            return "SAVING";
+        case "DELIVERY_PAYMENT":
+        case "MARKET_PURCHASE":
+            return "USE";
+    }
 }
