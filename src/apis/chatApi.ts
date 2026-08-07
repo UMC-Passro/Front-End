@@ -24,6 +24,19 @@ export interface ChatRoomInfo {
     deliveryStatus: BackendDeliveryState;
 }
 
+export interface ChatRoomListElement {
+    deliveryId: number;
+    partner: {
+        id: number,
+        nickname: string,
+        picture: string
+    };
+    itemName: string,
+    lastMessage: string,
+    lastMessageAt: string,
+    unreadCount: number
+}
+
 export const chatApi = {
     getMessages(deliveryId: number, afterId?: number) {
         return apiRequest<ChatMessage[]>({
@@ -52,6 +65,13 @@ export const chatApi = {
         return apiRequest<number>({
             method: "GET",
             url: API_ENDPOINTS.chat.unreadCount(deliveryId),
+        });
+    },
+
+    getRooms() {
+        return apiRequest<ChatRoomListElement[]>({
+            method: "GET",
+            url: API_ENDPOINTS.chat.rooms,
         });
     },
 };
