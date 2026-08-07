@@ -15,6 +15,8 @@ export type BackendDeliveryLogType =
     | "CANCELED";
 
 export interface BackendPlace {
+    createdAt: string;
+    updatedAt: string;
     id: number;
     subwayRouteName: string;
     subwayStationName: string;
