@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { deliveryApi } from "../apis/deliveryApi";
 import { inquiryApi } from "../apis/inquiryApi";
 import { subwayApi, type SubwayPathItem } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
@@ -11,6 +10,7 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { useSenderRouteTracking } from "../hooks/useSenderRouteTracking";
 import { ApiError } from "../types/api";
 import type { BackendDeliveryState } from "../types/backend";
+import { senderDeliveryApi } from "../apis";
 
 function getSenderTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
@@ -54,7 +54,7 @@ export default function DeliveryStatusPage() {
             );
         }
 
-        return deliveryApi.getSenderDelivery(deliveryId);
+        return senderDeliveryApi.getDeliveryItem(deliveryId);
     }, [deliveryId]);
     const { data, error, isLoading, execute } = useApiRequest(loadDelivery);
     const senderTracking = useSenderRouteTracking({
@@ -124,7 +124,7 @@ export default function DeliveryStatusPage() {
         setActionError("");
 
         try {
-            await deliveryApi.complete(deliveryId);
+            await senderDeliveryApi.complete(deliveryId);
             await execute();
         } catch (caughtError) {
             setActionError(
@@ -146,7 +146,7 @@ export default function DeliveryStatusPage() {
         setCancelError("");
 
         try {
-            await deliveryApi.cancel(deliveryId);
+            await senderDeliveryApi.cancel(deliveryId);
             setIsCancelOpen(false);
             navigate("/home", { replace: true });
         } catch (caughtError) {
@@ -231,7 +231,9 @@ export default function DeliveryStatusPage() {
                         </p>
                         <button
                             type="button"
-                            onClick={() => void execute().catch(() => undefined)}
+                            onClick={() =>
+                                void execute().catch(() => undefined)
+                            }
                             className="mt-4 text-sm font-bold text-rose-700 underline"
                         >
                             다시 시도
@@ -247,7 +249,7 @@ export default function DeliveryStatusPage() {
 
     return (
         <>
-            <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+            <div className="page-container relative flex flex-col overflow-hidden">
                 <PageHeader
                     title="배송 추적"
                     onBack={() => navigate(-1)}

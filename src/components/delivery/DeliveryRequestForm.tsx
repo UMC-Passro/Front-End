@@ -1,9 +1,4 @@
 import { memo, useEffect, useState } from "react";
-import {
-    deliveryApi,
-    type CreateDeliveryRequest,
-    type DeliveryPayment,
-} from "../../apis/deliveryApi";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
@@ -12,6 +7,11 @@ import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import {
+    CreateDeliveryRequest,
+    DeliveryPayment,
+} from "../../types/delivery/sender";
+import { senderDeliveryApi } from "../../apis";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
 const MAX_ITEM_PRICE_WON = 5_000_000;
@@ -373,9 +373,7 @@ function DeliveryRequestFormContent({
             return;
         }
 
-        setItemPriceError(
-            getItemPriceValidationMessage(debouncedItemPrice),
-        );
+        setItemPriceError(getItemPriceValidationMessage(debouncedItemPrice));
     }, [debouncedItemPrice, hasSubmitted]);
 
     const handleMatchingRequest = async () => {
@@ -454,7 +452,7 @@ function DeliveryRequestFormContent({
         setIsSubmitting(true);
 
         try {
-            const paymentResult = await deliveryApi.getPayment({
+            const paymentResult = await senderDeliveryApi.getPayment({
                 sourceStationId: request.sourceStationId,
                 destinationStationId: request.destinationStationId,
                 size: request.size,
@@ -487,7 +485,8 @@ function DeliveryRequestFormContent({
             let deliveryId = createdDeliveryId;
 
             if (deliveryId === null) {
-                const createdId = await deliveryApi.create(pendingRequest);
+                const createdId =
+                    await senderDeliveryApi.create(pendingRequest);
                 deliveryId = Number(createdId);
 
                 if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
@@ -497,7 +496,7 @@ function DeliveryRequestFormContent({
                 setCreatedDeliveryId(deliveryId);
             }
 
-            await deliveryApi.agreeTerms(deliveryId);
+            await senderDeliveryApi.agreeTerms(deliveryId);
             onComplete?.(deliveryId);
         } catch (error) {
             setPaymentError(
@@ -512,7 +511,7 @@ function DeliveryRequestFormContent({
     };
 
     return (
-        <div className="relative flex page-container flex-col bg-white">
+        <div className="relative flex page-container page-container-bottom-button flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
                     isOverlayOpen ? "pointer-events-none blur-sm" : ""
@@ -527,7 +526,7 @@ function DeliveryRequestFormContent({
 
                 <fieldset
                     disabled={createdDeliveryId !== null}
-                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 px-5 pb-6 pt-4"
+                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 pb-6 pt-4"
                 >
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
@@ -606,7 +605,7 @@ function DeliveryRequestFormContent({
                     </div>
                 </fieldset>
 
-                <div className="shrink-0 px-5 py-[14px]">
+                <div className="flex">
                     {createdDeliveryId !== null ? (
                         <p className="mb-2 text-center text-xs font-medium text-purple-600">
                             배송 요청이 생성되었습니다. 결제를 완료해주세요.
@@ -623,8 +622,7 @@ function DeliveryRequestFormContent({
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        disabled={isSubmitting}
-                        className="flex h-[50px] w-full items-center justify-center rounded-[10px] bg-purple-500 text-[16px] font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none disabled:cursor-not-allowed disabled:bg-purple-300"
+                        className="absolute bottom-5 left-5 right-5 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
                         {isSubmitting
                             ? "결제 정보 확인 중..."
@@ -676,10 +674,7 @@ function DeliveryRequestForm({
     }
 
     return (
-        <DeliveryRequestFormContent
-            onBack={onBack}
-            onComplete={onComplete}
-        />
+        <DeliveryRequestFormContent onBack={onBack} onComplete={onComplete} />
     );
 }
 

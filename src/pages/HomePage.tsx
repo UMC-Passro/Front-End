@@ -1,13 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { accountApi } from "../apis/accountApi";
-import {
-    deliveryApi,
-    type SenderDeliveryListItem,
-} from "../apis/deliveryApi";
-import {
-    matchingApi,
-    type ShipperDeliveryListItem,
-} from "../apis/matchingApi";
 import { HomeDashboard } from "../components/home/HomeDashboard";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type {
@@ -23,6 +15,10 @@ import {
     setCurrentUserRole,
 } from "../utils/auth";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
+import { SenderDeliveryListItem } from "../types/delivery/sender";
+import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
+import { senderDeliveryApi } from "../apis";
+import { ShipperDeliveryListItem } from "../types/delivery/shipper";
 
 type DeliveryRouteInfo = Pick<
     SenderDeliveryListItem,
@@ -102,9 +98,7 @@ function toShipperActiveDelivery(
     };
 }
 
-function toMatchingRequest(
-    delivery: ShipperDeliveryListItem,
-): MatchingRequest {
+function toMatchingRequest(delivery: ShipperDeliveryListItem): MatchingRequest {
     return {
         id: delivery.id,
         title: delivery.name ?? "이름 없는 물품",
@@ -151,14 +145,14 @@ export default function HomePage() {
         currentUser?.name ||
         "패스로 사용자";
     const loadSenderDeliveries = useCallback(
-        () => deliveryApi.getSenderDeliveries(),
+        () => senderDeliveryApi.getDeliveryList(),
         [],
     );
     const loadShipperHomeData = useCallback(
         () =>
             Promise.all([
-                matchingApi.getMyDeliveries(),
-                matchingApi.getMatchRequests(),
+                shipperDeliveryApi.getDeliveryList(),
+                shipperDeliveryApi.getMatchRequests(),
             ]),
         [],
     );
@@ -188,21 +182,13 @@ export default function HomePage() {
     const content = useMemo(
         () =>
             userRole === "sender"
-                ? createSenderContent(
-                      displayName,
-                      senderRequest.data ?? [],
-                  )
+                ? createSenderContent(displayName, senderRequest.data ?? [])
                 : createShipperContent(
                       displayName,
                       shipperRequest.data?.[0] ?? [],
                       shipperRequest.data?.[1] ?? [],
                   ),
-        [
-            displayName,
-            senderRequest.data,
-            shipperRequest.data,
-            userRole,
-        ],
+        [displayName, senderRequest.data, shipperRequest.data, userRole],
     );
     const activeRequest =
         userRole === "sender" ? senderRequest : shipperRequest;
@@ -221,9 +207,7 @@ export default function HomePage() {
                       "배송 목록을 불러오지 못했습니다."
                     : undefined
             }
-            onRetry={() =>
-                void activeRequest.execute().catch(() => undefined)
-            }
+            onRetry={() => void activeRequest.execute().catch(() => undefined)}
         />
     );
 }

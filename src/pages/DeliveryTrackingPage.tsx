@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { matchingApi } from "../apis/matchingApi";
 import { subwayApi } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryTrackingContent } from "../components/delivery/DeliveryTrackingContent";
@@ -8,6 +7,7 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { useShipperRouteTracking } from "../hooks/useShipperRouteTracking";
 import { ApiError } from "../types/api";
 import type { BackendDeliveryState } from "../types/backend";
+import { shipperDeliveryApi } from "../apis";
 
 function getShipperTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
@@ -43,7 +43,7 @@ export default function DeliveryTrackingPage() {
             throw new ApiError({ message: "올바르지 않은 배송 ID입니다." });
         }
 
-        const detail = await matchingApi.getDelivery(deliveryId);
+        const detail = await shipperDeliveryApi.getDeliveryDetail(deliveryId);
         if (detail.deliveryState === "DELIVERED") {
             return { detail, route: null };
         }
@@ -56,8 +56,7 @@ export default function DeliveryTrackingPage() {
 
         return { detail, route };
     }, [deliveryId]);
-    const { data, error, isLoading, execute } =
-        useApiRequest(loadTrackingData);
+    const { data, error, isLoading, execute } = useApiRequest(loadTrackingData);
     const locationTracking = useShipperRouteTracking({
         enabled: data?.detail.deliveryState === "DELIVERING",
         stations: data?.route?.stations ?? [],
@@ -82,9 +81,9 @@ export default function DeliveryTrackingPage() {
 
         try {
             if (status === "MATCHED") {
-                await matchingApi.acquire(deliveryId);
+                await shipperDeliveryApi.acquire(deliveryId);
             } else {
-                await matchingApi.requestConfirmation(deliveryId);
+                await shipperDeliveryApi.requestConfirmation(deliveryId);
             }
 
             await execute();
@@ -123,7 +122,7 @@ export default function DeliveryTrackingPage() {
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
                     title="전달 추적"
-                    onBack={() => navigate(-1)}
+                    onBack={() => navigate("/home")}
                     className="shrink-0"
                 />
                 <div className="flex flex-1 items-center justify-center">
@@ -137,7 +136,9 @@ export default function DeliveryTrackingPage() {
                         </p>
                         <button
                             type="button"
-                            onClick={() => void execute().catch(() => undefined)}
+                            onClick={() =>
+                                void execute().catch(() => undefined)
+                            }
                             className="mt-4 text-sm font-bold text-rose-700 underline"
                         >
                             다시 시도
@@ -154,7 +155,7 @@ export default function DeliveryTrackingPage() {
         detail.deliveryState === "DELIVERING";
 
     return (
-        <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="page-container relative flex flex-col overflow-hidden">
             <PageHeader
                 title="전달 추적"
                 onBack={() => navigate(-1)}
@@ -170,12 +171,8 @@ export default function DeliveryTrackingPage() {
                     logs={detail.deliveryTimeLine}
                     route={route}
                     isRouteLoading={false}
-                    currentPlaceId={
-                        locationTracking.nearestStation?.station.id
-                    }
-                    currentCoordinates={
-                        locationTracking.position ?? undefined
-                    }
+                    currentPlaceId={locationTracking.nearestStation?.station.id}
+                    currentCoordinates={locationTracking.position ?? undefined}
                     currentDistanceMeters={
                         locationTracking.nearestStation?.distanceMeters
                     }

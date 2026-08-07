@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { matchingApi } from "../apis/matchingApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryInfo } from "../components/delivery/DeliveryInfo";
 import { DeliveryRoute } from "../components/delivery/DeliveryRoute";
+import { shipperDeliveryApi } from "../apis";
 
 export default function DeliveryMatchingPage() {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function DeliveryMatchingPage() {
         setAcceptError(null);
 
         try {
-            await matchingApi.accept(deliveryId);
+            await shipperDeliveryApi.accept(deliveryId);
             navigate(`/delivery/tracking/${deliveryId}`);
         } catch (error) {
             setAcceptError(
@@ -42,21 +42,15 @@ export default function DeliveryMatchingPage() {
     };
 
     return (
-        <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
-            <PageHeader
-                title="매칭 요청"
-                onBack={() => navigate(-1)}
-                className="shrink-0"
+        <div className="page-container page-container-bottom-button relative flex flex-col">
+            <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
+            <DeliveryRoute departure="안양역" destination="정자역" />
+            <DeliveryInfo
+                itemName="무인양품 셔츠"
+                itemPrice="3만 원"
+                itemSize="S"
+                settlementPoint="3,200P"
             />
-            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                <DeliveryRoute departure="안양역" destination="정자역" />
-                <DeliveryInfo
-                    itemName="무인양품 셔츠"
-                    itemPrice="3만 원"
-                    itemSize="S"
-                    settlementPoint="3,200P"
-                />
-            </div>
             {acceptError ? (
                 <p
                     className="mb-2 text-center text-xs font-medium text-rose-600"
@@ -65,7 +59,7 @@ export default function DeliveryMatchingPage() {
                     {acceptError}
                 </p>
             ) : null}
-            <div className="flex w-full shrink-0 gap-3.5 pt-4">
+            <div className="absolute bottom-5 left-5 right-5 flex gap-3.5">
                 <button
                     type="button"
                     onClick={() => navigate(-1)}

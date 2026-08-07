@@ -14,7 +14,7 @@ export const API_ENDPOINTS = {
     },
     subway: {
         search: "/subway/search",
-        path: "/subway/routes/shortest"
+        path: "/subway/routes/shortest",
     },
     sender: {
         root: "/sender",
@@ -25,14 +25,15 @@ export const API_ENDPOINTS = {
         complete: (deliveryId: number) => `/sender/${deliveryId}/complete`,
         terms: (deliveryId: number) => `/sender/${deliveryId}/terms`,
         cancel: (deliveryId: number) => `/sender/${deliveryId}/cancel`,
+        location: (deliveryId: number) =>
+            `/sender/${deliveryId}/shipper-location`,
     },
     shipper: {
         matched: "/shipper/matched",
         root: "/shipper/",
         location: "/shipper/location",
         detail: (deliveryId: number) => `/shipper/${deliveryId}/`,
-        acceptMatch: (deliveryId: number) =>
-            `/shipper/${deliveryId}/matched`,
+        acceptMatch: (deliveryId: number) => `/shipper/${deliveryId}/matched`,
         acquire: (deliveryId: number) => `/shipper/${deliveryId}/acquire`,
         confirm: (deliveryId: number) => `/shipper/${deliveryId}/confirm`,
     },
@@ -49,8 +50,7 @@ export const API_ENDPOINTS = {
     },
     deliveryInquiry: {
         root: "/delivery-inquiry",
-        byDelivery: (deliveryId: number) =>
-            `/delivery-inquiry/${deliveryId}`,
+        byDelivery: (deliveryId: number) => `/delivery-inquiry/${deliveryId}`,
     },
     account: {
         senderMyPage: "/mypage/sender",
@@ -61,8 +61,7 @@ export const API_ENDPOINTS = {
         points: "/account/points",
     },
     chat: {
-        messages: (deliveryId: number) =>
-            `/chat/${deliveryId}/messages`,
+        messages: (deliveryId: number) => `/chat/${deliveryId}/messages`,
         info: (deliveryId: number) => `/chat/${deliveryId}/info`,
         unreadCount: (deliveryId: number) =>
             `/chat/${deliveryId}/unread-count`,

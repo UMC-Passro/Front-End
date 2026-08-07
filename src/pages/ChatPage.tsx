@@ -8,8 +8,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { chatApi } from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
-import { deliveryApi } from "../apis/deliveryApi";
-import { matchingApi } from "../apis/matchingApi";
+import { senderDeliveryApi } from "../apis/delivery/senderDeliveryApi";
+import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
 import PageHeader from "../components/common/PageHeader";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
@@ -78,8 +78,8 @@ export default function ChatPage() {
             await Promise.all([
                 chatApi.getMessages(deliveryId),
                 chatApi.getRoomInfo(deliveryId),
-                deliveryApi.getSenderDeliveries().catch(() => []),
-                matchingApi.getMyDeliveries().catch(() => []),
+                senderDeliveryApi.getDeliveryList().catch(() => []),
+                shipperDeliveryApi.getDeliveryList().catch(() => []),
             ]);
 
         const deliveryRole = senderDeliveries.some(
@@ -304,7 +304,7 @@ export default function ChatPage() {
                         {getDeliveryStatusLabel(roomInfo.deliveryStatus)}
                     </span>
                 </button>
-            </div>
+            </div >
 
             <div className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto bg-white px-4 py-6">
                 {messages.length === 0 ? (
@@ -418,7 +418,7 @@ export default function ChatPage() {
                         </svg>
                     </button>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

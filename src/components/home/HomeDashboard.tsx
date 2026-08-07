@@ -34,10 +34,11 @@ export function HomeDashboard({
     const [isConsentOpen, setIsConsentOpen] = useState(false);
 
     return (
-        <section className="page-container relative flex h-full min-h-0 flex-col overflow-hidden pt-5">
+        <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
             <div
-                className={`flex min-h-0 flex-1 flex-col transition duration-200 ${isConsentOpen ? "pointer-events-none blur-sm" : ""
-                    }`}
+                className={`flex flex-col h-full transition duration-200  ${
+                    isConsentOpen ? "pointer-events-none blur-sm" : ""
+                }`}
                 aria-hidden={isConsentOpen}
             >
                 <div className="shrink-0">
@@ -121,17 +122,16 @@ export function HomeDashboard({
                         </section>
                     )}
                 </div>
-
-                {content.actionLabel ? (
-                    <button
-                        type="button"
-                        onClick={() => setIsConsentOpen(true)}
-                        className="w-full shrink-0 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
-                    >
-                        {content.actionLabel}
-                    </button>
-                ) : null}
             </div>
+            {content.actionLabel ? (
+                <button
+                    type="button"
+                    onClick={() => setIsConsentOpen(true)}
+                    className="absolute bottom-5 left-5 right-5 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
+                >
+                    {content.actionLabel}
+                </button>
+            ) : null}
 
             {isConsentOpen ? (
                 <DeliveryConsentSheet
