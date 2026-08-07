@@ -15,6 +15,20 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 
+function formatMessageTimestamp(createdAt: string) {
+    const createdDate = new Date(createdAt);
+    if (Number.isNaN(createdDate.getTime())) {
+        return "";
+    }
+
+    const time = new Intl.DateTimeFormat("ko-KR", {
+        hour: "numeric",
+        minute: "2-digit",
+    }).format(createdDate);
+
+    return time;
+}
+
 export default function ChatPage() {
     const navigate = useNavigate();
     const { chatRoomId } = useParams<{ chatRoomId: string }>();
@@ -115,7 +129,7 @@ export default function ChatPage() {
                     (message) =>
                         !message.isRead &&
                         message.senderNickname !==
-                            data.roomInfo.partnerNickname,
+                        data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -301,6 +315,9 @@ export default function ChatPage() {
                     messages.map((message) => {
                         const isMine =
                             message.senderNickname !== roomInfo.partnerNickname;
+                        const timestamp = formatMessageTimestamp(
+                            message.createdAt,
+                        );
 
                         return (
                             <div
@@ -308,22 +325,45 @@ export default function ChatPage() {
                                 className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                             >
                                 <div
-                                    className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
+                                    className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
                                         }`}
                                 >
+                                    {isMine && timestamp ? (
+                                        <time
+                                            dateTime={message.createdAt}
+                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                        >
+                                            {timestamp}
+                                        </time>
+                                    ) : null}
+
                                     <div
-                                        className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
-                                            ? "bg-[#6366F1] text-white"
-                                            : "bg-[#EFEFEF] text-gray-800"
+                                        className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
                                             }`}
                                     >
-                                        {message.content}
+                                        <div
+                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
+                                                ? "bg-[#6366F1] text-white"
+                                                : "bg-[#EFEFEF] text-gray-800"
+                                                }`}
+                                        >
+                                            {message.content}
+                                        </div>
+
+                                        {isMine && !message.isRead ? (
+                                            <span className="mr-[8px] mt-[2px] px-1 text-[12px] font-normal text-gray-400">
+                                                읽지 않음
+                                            </span>
+                                        ) : null}
                                     </div>
 
-                                    {isMine && !message.isRead ? (
-                                        <span className="mt-[2px] px-1 mr-[8px] text-[12px] font-normal text-gray-400">
-                                            읽지 않음
-                                        </span>
+                                    {!isMine && timestamp ? (
+                                        <time
+                                            dateTime={message.createdAt}
+                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                        >
+                                            {timestamp}
+                                        </time>
                                     ) : null}
                                 </div>
                             </div>
