@@ -2,6 +2,7 @@ import { DeliveryStatusUpdateRequest } from "../../types/delivery/sender";
 import {
     ShipperDeliveryListItem,
     ShipperDeliveryDetail,
+    DeliveryLocation,
 } from "../../types/delivery/shipper";
 import { apiRequest } from "../client";
 import { API_ENDPOINTS } from "../endpoints";
@@ -54,10 +55,11 @@ export const shipperDeliveryApi = {
         });
     },
 
-    shipperLocation() {
+    shipperLocation(request: DeliveryLocation) {
         return apiRequest<null>({
             method: "PUT",
             url: API_ENDPOINTS.shipper.location,
+            data: request,
         });
     },
 };

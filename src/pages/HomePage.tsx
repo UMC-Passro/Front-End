@@ -140,8 +140,8 @@ export default function HomePage() {
     const loadProfile = useCallback(
         (role: UserRole) =>
             role === "sender"
-                ? accountApi.getSenderMyPage()
-                : accountApi.getShipperMyPage(),
+                ? accountApi.getProfile()
+                : accountApi.getProfile(),
         [],
     );
     const profileRequest = useApiRequest(loadProfile);

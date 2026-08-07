@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryInfo } from "../components/delivery/DeliveryInfo";
 import { DeliveryRoute } from "../components/delivery/DeliveryRoute";
 import { shipperDeliveryApi } from "../apis";
+import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function DeliveryMatchingPage() {
     const navigate = useNavigate();
@@ -13,6 +14,19 @@ export default function DeliveryMatchingPage() {
     const deliveryId = Number(deliveryIdParam);
     const [isAccepting, setIsAccepting] = useState(false);
     const [acceptError, setAcceptError] = useState<string | null>(null);
+
+    const loadDeliveryDetail = useCallback(() => {
+        if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
+            return Promise.reject(new Error("올바르지 않은 배송 ID입니다."));
+        }
+        return shipperDeliveryApi.getDeliveryDetail(deliveryId);
+    }, [deliveryId]);
+
+    const detailRequest = useApiRequest(loadDeliveryDetail);
+
+    useEffect(() => {
+        void detailRequest.execute().catch(() => undefined);
+    }, [detailRequest.execute]);
 
     const handleAccept = async () => {
         if (
@@ -41,15 +55,32 @@ export default function DeliveryMatchingPage() {
         }
     };
 
+    if (detailRequest.isLoading) {
+        return <div>배송 정보를 불러오는 중...</div>;
+    }
+
+    if (detailRequest.error) {
+        return <div>배송 정보를 불러오는 중 오류가 발생했습니다.</div>;
+    }
+
+    const delivery = detailRequest.data;
+
+    if (!delivery) {
+        return null;
+    }
+
     return (
         <div className="page-container page-container-bottom-button relative flex flex-col">
             <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
-            <DeliveryRoute departure="안양역" destination="정자역" />
+            <DeliveryRoute
+                departure={delivery.originPlace.subwayStationName}
+                destination={delivery.destPlace.subwayStationName}
+            />
             <DeliveryInfo
-                itemName="무인양품 셔츠"
-                itemPrice="3만 원"
-                itemSize="S"
-                settlementPoint="3,200P"
+                itemName={delivery.name}
+                itemPrice={`${delivery.price.toLocaleString()}원`}
+                itemSize={delivery.size}
+                settlementPoint={`${delivery.totalPoint.toLocaleString()} P`}
             />
             {acceptError ? (
                 <p

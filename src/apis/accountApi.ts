@@ -1,46 +1,16 @@
+import { Profile, EditProfile, EditPassword } from "../types/user";
 import { apiRequest } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 
-export interface UpdateProfileRequest {
-    nickname: string;
-    phoneNumber: string;
-    startPlaceId: number;
-    destinationPlaceId: number;
-    wayPoints?: number[];
-}
-
-export interface ChangePasswordRequest {
-    password: string;
-    code: string;
-}
-
-export interface SenderMyPage {
-    picture: string | null;
-    nickname: string;
-    deliveryCount: number;
-    point: number;
-}
-
-export interface ShipperMyPage extends SenderMyPage {
-    rating: number;
-}
-
 export const accountApi = {
-    getSenderMyPage() {
-        return apiRequest<SenderMyPage>({
+    getProfile() {
+        return apiRequest<Profile>({
             method: "GET",
-            url: API_ENDPOINTS.account.senderMyPage,
+            url: API_ENDPOINTS.account.profile,
         });
     },
 
-    getShipperMyPage() {
-        return apiRequest<ShipperMyPage>({
-            method: "GET",
-            url: API_ENDPOINTS.account.shipperMyPage,
-        });
-    },
-
-    updateProfile(request: UpdateProfileRequest) {
+    editProfile(request: EditProfile) {
         return apiRequest<null>({
             method: "PATCH",
             url: API_ENDPOINTS.account.editMyInfo,
@@ -55,7 +25,7 @@ export const accountApi = {
         });
     },
 
-    changePassword(request: ChangePasswordRequest) {
+    changePassword(request: EditPassword) {
         return apiRequest<null>({
             method: "PATCH",
             url: API_ENDPOINTS.account.editPassword,
