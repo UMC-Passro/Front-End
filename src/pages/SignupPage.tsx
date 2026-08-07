@@ -42,9 +42,8 @@ export default function SignupPage() {
     const [formData, setFormData] = useState<SignupFormData>(
         initialSignupFormData,
     );
-    const [routeStations, setRouteStations] = useState<SignupRouteStations>(
-        initialRouteStations,
-    );
+    const [routeStations, setRouteStations] =
+        useState<SignupRouteStations>(initialRouteStations);
     const [emailVerificationStatus, setEmailVerificationStatus] =
         useState<SignupEmailVerificationStatus>("idle");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +65,10 @@ export default function SignupPage() {
     const handleFinalSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (formData.originStationId <= 0 || formData.destinationStationId <= 0) {
+        if (
+            formData.originStationId <= 0 ||
+            formData.destinationStationId <= 0
+        ) {
             setModalMessage("출발역과 도착역을 선택해주세요.");
             return;
         }
@@ -125,7 +127,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="page-container relative flex h-dvh min-h-0 flex-col overflow-hidden">
+        <div className="page-container relative flex flex-col overflow-hidden pb-5">
             <PageHeader
                 title={step === "basic" ? "회원가입" : "상세정보"}
                 onBack={handleBack}
@@ -138,9 +140,7 @@ export default function SignupPage() {
                     updateField={updateField}
                     onSubmit={handleBasicSubmit}
                     emailVerificationStatus={emailVerificationStatus}
-                    onEmailVerificationStatusChange={
-                        setEmailVerificationStatus
-                    }
+                    onEmailVerificationStatusChange={setEmailVerificationStatus}
                 />
             ) : (
                 <DetailSignupForm

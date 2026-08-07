@@ -42,7 +42,7 @@ export default function DeliveryMatchingPage() {
     };
 
     return (
-        <div className="page-container relative flex flex-col">
+        <div className="page-container page-container-bottom-button relative flex flex-col">
             <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
             <DeliveryRoute departure="안양역" destination="정자역" />
             <DeliveryInfo

@@ -511,7 +511,7 @@ function DeliveryRequestFormContent({
     };
 
     return (
-        <div className="relative flex page-container flex-col bg-white">
+        <div className="relative flex page-container page-container-bottom-button flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
                     isOverlayOpen ? "pointer-events-none blur-sm" : ""

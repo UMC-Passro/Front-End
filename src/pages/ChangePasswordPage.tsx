@@ -37,7 +37,7 @@ export default function ChangePasswordPage() {
     };
 
     return (
-        <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
+        <main className="page-container flex flex-col overflow-hidden">
             <PageHeader
                 title="비밀번호 변경"
                 onBack={() => navigate(-1)}
@@ -69,8 +69,7 @@ export default function ChangePasswordPage() {
                                 message="현재 비밀번호를 입력해주세요"
                                 fallback=""
                                 visible={
-                                    showValidation &&
-                                    !currentPassword.trim()
+                                    showValidation && !currentPassword.trim()
                                 }
                             />
                         </label>
@@ -98,7 +97,8 @@ export default function ChangePasswordPage() {
                                 }`}
                                 aria-live="polite"
                             >
-                                6~20자 영문 대문자, 소문자, 숫자, 특수문자 중 2가지 이상 조합
+                                6~20자 영문 대문자, 소문자, 숫자, 특수문자 중
+                                2가지 이상 조합
                             </p>
                         </label>
 

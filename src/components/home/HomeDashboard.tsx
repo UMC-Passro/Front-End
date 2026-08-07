@@ -34,7 +34,7 @@ export function HomeDashboard({
     const [isConsentOpen, setIsConsentOpen] = useState(false);
 
     return (
-        <section className="page-container relative flex flex-col overflow-hidden pt-5">
+        <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
             <div
                 className={`flex flex-col h-full transition duration-200  ${
                     isConsentOpen ? "pointer-events-none blur-sm" : ""
