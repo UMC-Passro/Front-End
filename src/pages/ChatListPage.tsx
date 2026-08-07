@@ -1,9 +1,81 @@
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
-import { chatRooms } from "../data/chatRooms";
+import { useCallback, useEffect, useState } from "react";
+import { chatApi } from "../apis";
+import { useApiRequest } from "../hooks/useApiRequest";
+import type { ChatRoom } from "../data/chatRooms";
 
 export default function ChatListPage() {
     const navigate = useNavigate();
+
+    const loadChatList = useCallback(() => {
+        return chatApi.getRooms();
+    }, []);
+
+    const { data, error, isLoading, execute } = useApiRequest(loadChatList);
+    const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+
+    useEffect(() => {
+        let isStopped = false;
+        let timerId: number;
+
+        const pollChatRooms = async () => {
+            try {
+                await execute();
+            } catch {
+                // 일시적인 폴링 실패는 다음 주기에 다시 시도한다.
+            } finally {
+                if (!isStopped) {
+                    timerId = window.setTimeout(pollChatRooms, 1_000);
+                }
+            }
+        };
+
+        void pollChatRooms();
+
+        return () => {
+            isStopped = true;
+            window.clearTimeout(timerId);
+        };
+    }, [execute]);
+
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+
+        const tempChatRooms: ChatRoom[] = [];
+
+        data.forEach(datum => {
+            if (!datum.lastMessage) return;
+
+            const date = new Date(datum.lastMessageAt);
+
+            let dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} `;
+
+            if (date.getHours() < 12) {
+                dateString += `오후 ${date.getHours() - 12}:${date.getMinutes()}`
+            } else if (date.getHours() == 12) {
+                dateString += `오후 ${date.getHours()}:${date.getMinutes()}`
+            } else if (date.getHours() > 12) {
+                dateString += `오후 ${date.getHours() - 12}:${date.getMinutes()}`
+            }
+
+            tempChatRooms.push({
+                id: datum.deliveryId.toString(),
+                participantName: datum.partner.nickname,
+                itemName: datum.itemName,
+                route: "",
+                status: "",
+                lastMessage: datum.lastMessage,
+                updatedAt: dateString,
+                unreadCount: datum.unreadCount,
+                messages: []
+            })
+        });
+
+        setChatRooms(tempChatRooms);
+    }, [data]);
 
     return (
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">

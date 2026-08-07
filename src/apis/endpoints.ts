@@ -64,5 +64,6 @@ export const API_ENDPOINTS = {
         messages: (deliveryId: number) => `/chat/${deliveryId}/messages`,
         info: (deliveryId: number) => `/chat/${deliveryId}/info`,
         unreadCount: (deliveryId: number) => `/chat/${deliveryId}/unread-count`,
+        rooms: "/chat/rooms",
     },
 } as const;
