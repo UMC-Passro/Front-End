@@ -17,8 +17,7 @@ export type DeliveryInquiryCategory =
     | "POINT"
     | "ETC";
 
-// InquiryPage (/mypage/inquiry) submits general inquiries, not delivery-specific ones.
-export type InquiryCategory = GeneralInquiryCategory;
+export type InquiryCategory = DeliveryInquiryCategory;
 
 export interface CreateGeneralInquiryRequest {
     category: GeneralInquiryCategory;
