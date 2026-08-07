@@ -59,6 +59,7 @@ export const API_ENDPOINTS = {
         sendPasswordEditMail: "/mypage/edit/password/mail",
         editPassword: "/mypage/edit/password",
         points: "/account/points",
+        checkStudent: "/mypage/student-certification"
     },
     chat: {
         messages: (deliveryId: number) => `/chat/${deliveryId}/messages`,
