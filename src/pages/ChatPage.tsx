@@ -8,6 +8,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { chatApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
+// import { senderDeliveryApi } from "../apis/delivery/senderDeliveryApi";
+// import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
 import PageHeader from "../components/common/PageHeader";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
@@ -303,7 +305,7 @@ export default function ChatPage() {
                         {getDeliveryStatusLabel(roomInfo.deliveryStatus)}
                     </span>
                 </button>
-            </div>
+            </div >
 
             <div className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto bg-white px-4 py-6">
                 {messages.length === 0 ? (
@@ -417,7 +419,7 @@ export default function ChatPage() {
                         </svg>
                     </button>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
