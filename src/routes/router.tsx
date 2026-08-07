@@ -12,6 +12,7 @@ const FindIdPage = lazy(() => import("../pages/FindIdPage"));
 const FindPasswordPage = lazy(() => import("../pages/FindPasswordPage"));
 const UserStateChoice = lazy(() => import("../pages/UserStateChoice"));
 const HomePage = lazy(() => import("../pages/HomePage"));
+const MarketPage = lazy(() => import("../pages/MarketPage"));
 const MyPage = lazy(() => import("../pages/MyPage"));
 const EditProfile = lazy(() => import("../pages/EditProfile"));
 const InquiryPage = lazy(() => import("../pages/InquiryPage"));
@@ -29,6 +30,9 @@ const DeliveryMatchingPage = lazy(
 );
 const DeliveryRequestPage = lazy(
     () => import("../pages/DeliveryRequestPage"),
+);
+const RequestCompletePage = lazy(
+    () => import("../pages/RequestCompletePage"),
 );
 const DeliveryTrackingPage = lazy(
     () => import("../pages/DeliveryTrackingPage"),
@@ -91,6 +95,10 @@ export const router = createBrowserRouter([
                         element: <HomePage />,
                     },
                     {
+                        path: "/market",
+                        element: <MarketPage />,
+                    },
+                    {
                         path: "/mypage",
                         children: [
                             { index: true, element: <MyPage /> },
@@ -112,6 +120,10 @@ export const router = createBrowserRouter([
                         children: [
                             {
                                 path: "matching",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "matching/:deliveryId",
                                 element: <DeliveryMatchingPage />,
                             },
                             {
@@ -119,11 +131,23 @@ export const router = createBrowserRouter([
                                 element: <DeliveryRequestPage />,
                             },
                             {
+                                path: "request/complete",
+                                element: <RequestCompletePage />,
+                            },
+                            {
                                 path: "tracking",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "tracking/:deliveryId",
                                 element: <DeliveryTrackingPage />,
                             },
                             {
                                 path: "status",
+                                element: <Navigate to="/home" replace />,
+                            },
+                            {
+                                path: "status/:deliveryId",
                                 element: <DeliveryStatusPage />,
                             },
                             {

@@ -89,7 +89,7 @@ export default function AccountRecoveryForm({
             if (type === "id") {
                 await authApi.findId({
                     name: values.name.trim(),
-                    phone: values.phone,
+                    phoneNumber: values.phone,
                 });
                 setModalMessage(
                     "입력한 정보와 일치하는 계정이 있다면 가입 이메일로 아이디를 발송했습니다.",
@@ -97,8 +97,8 @@ export default function AccountRecoveryForm({
             } else {
                 await authApi.findPassword({
                     name: values.name.trim(),
-                    phone: values.phone,
-                    email: values.email.trim(),
+                    phoneNumber: values.phone,
+                    mail: values.email.trim(),
                 });
                 setModalMessage(
                     "입력한 정보와 일치하는 계정이 있다면 이메일로 임시 비밀번호를 발송했습니다.",

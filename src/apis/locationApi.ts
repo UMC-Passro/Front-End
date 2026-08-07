@@ -1,17 +1,33 @@
+import { apiRequest } from "./client";
+import { API_ENDPOINTS } from "./endpoints";
+
 export interface LiveLocation {
     latitude: number;
     longitude: number;
-    recordedAt: string;
+    placeId: number;
+    updatedAt: string;
+    estimatedTimeMinutes: number | null;
 }
 
-/**
- * 위치 전송 주기와 REST/Socket 명세가 확정되면 이 계약을 구현합니다.
- */
-export interface LocationApiContract {
-    sendLocation(
-        deliveryId: number,
-        location: Omit<LiveLocation, "recordedAt">,
-    ): Promise<void>;
-    getLocation(deliveryId: number): Promise<LiveLocation>;
-    setSharing(deliveryId: number, enabled: boolean): Promise<void>;
+export interface ShipperLocationUpdateRequest {
+    latitude: number;
+    longitude: number;
+    placeId: number;
 }
+
+export const locationApi = {
+    updateShipperLocation(request: ShipperLocationUpdateRequest) {
+        return apiRequest<LiveLocation>({
+            method: "PUT",
+            url: API_ENDPOINTS.shipper.location,
+            data: request,
+        });
+    },
+
+    getShipperLocation(deliveryId: number) {
+        return apiRequest<LiveLocation>({
+            method: "GET",
+            url: API_ENDPOINTS.sender.shipperLocation(deliveryId),
+        });
+    },
+};

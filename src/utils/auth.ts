@@ -59,7 +59,7 @@ function clearLocalSession() {
 
 export async function login(email: string, password: string): Promise<AuthUser> {
   const tokens = await authApi.login({
-    email: email.trim(),
+    mail: email.trim(),
     password,
   });
 

@@ -1,22 +1,51 @@
 import { memo, useEffect, useState } from "react";
+import {
+    deliveryApi,
+    type CreateDeliveryRequest,
+    type DeliveryPayment,
+} from "../../apis/deliveryApi";
 import DeliveryPaymentSheet from "./DeliveryPaymentSheet";
 import { CameraIcon } from "../../assets/icons/CameraIcon";
 import StationSelectModal, { type Station } from "./StationSelectModal";
+import { ApiError } from "../../types/api";
 import PageHeader from "../common/PageHeader";
 import { SizeInfo } from "./SizeInfo";
 import { DeliveryImageUploader } from "./DeliveryImageUploader";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const ITEM_PRICE_PATTERN = /^[0-9]+$/;
+const MAX_ITEM_PRICE_WON = 5_000_000;
 
-function useDebouncedValue<T>(value: T, delayMs: number) {
-    const [debouncedValue, setDebouncedValue] = useState(value);
+function sanitizeItemPrice(value: string) {
+    return value.replace(/\D/g, "");
+}
 
-    useEffect(() => {
-        const timer = setTimeout(() => setDebouncedValue(value), delayMs);
-        return () => clearTimeout(timer);
-    }, [value, delayMs]);
+function getItemPriceValidationMessage(value: string) {
+    const trimmedPrice = value.trim();
 
-    return debouncedValue;
+    if (trimmedPrice === "") {
+        return "물품 가액을 입력해주세요.";
+    }
+
+    if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
+        return "0 이상의 정수만 입력해주세요.";
+    }
+
+    const priceInWon = Number(trimmedPrice);
+
+    if (!Number.isSafeInteger(priceInWon)) {
+        return "입력할 수 있는 물품 가액을 초과했습니다.";
+    }
+
+    if (priceInWon > MAX_ITEM_PRICE_WON) {
+        return "물품 가액은 최대 500만원까지 입력할 수 있습니다.";
+    }
+
+    return "";
+}
+
+function getApiErrorMessage(error: unknown, fallback: string) {
+    return error instanceof ApiError ? error.message : fallback;
 }
 
 interface DeliveryRequestFormProps {
@@ -24,6 +53,7 @@ interface DeliveryRequestFormProps {
     error?: string | null;
     onRetry?: () => void;
     onBack?: () => void;
+    onComplete?: (deliveryId: number) => void;
 }
 
 function ChevronDownIcon() {
@@ -90,12 +120,12 @@ function SizeSelectField({
     onSelect,
     error,
 }: {
-    selected: string | null;
-    onSelect: (value: string) => void;
+    selected: CreateDeliveryRequest["size"] | null;
+    onSelect: (value: CreateDeliveryRequest["size"]) => void;
     error?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const options = ["S", "M", "L"];
+    const options: CreateDeliveryRequest["size"][] = ["S", "M", "L"];
 
     return (
         <div className="flex flex-col gap-1">
@@ -184,12 +214,16 @@ function PriceField({
                 <input
                     type="text"
                     inputMode="numeric"
+                    pattern="[0-9]*"
                     value={value}
-                    onChange={(event) => onChange(event.target.value)}
+                    onChange={(event) =>
+                        onChange(sanitizeItemPrice(event.target.value))
+                    }
                     placeholder="물품가액을 입력해주세요"
+                    aria-invalid={Boolean(error)}
                     className="w-full bg-transparent text-[15px] text-gray-800 placeholder:text-gray-500 focus:outline-none"
                 />
-                <span className="shrink-0 text-[15px] text-gray-800">만원</span>
+                <span className="shrink-0 text-[15px] text-gray-800">원</span>
             </div>
             {error ? (
                 <p className="text-xs font-medium text-rose-600">{error}</p>
@@ -259,8 +293,21 @@ function ErrorDeliveryRequestForm({
     );
 }
 
-function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
+function DeliveryRequestFormContent({
+    onBack,
+    onComplete,
+}: Pick<DeliveryRequestFormProps, "onBack" | "onComplete">) {
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const [createdDeliveryId, setCreatedDeliveryId] = useState<number | null>(
+        null,
+    );
+    const [pendingRequest, setPendingRequest] =
+        useState<CreateDeliveryRequest | null>(null);
+    const [payment, setPayment] = useState<DeliveryPayment | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [requestError, setRequestError] = useState("");
+    const [paymentError, setPaymentError] = useState("");
     const [stationField, setStationField] = useState<
         "origin" | "destination" | null
     >(null);
@@ -301,7 +348,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
     const [itemNameError, setItemNameError] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [itemPriceError, setItemPriceError] = useState("");
-    const [itemSize, setItemSize] = useState<string | null>(null);
+    const [itemSize, setItemSize] = useState<
+        CreateDeliveryRequest["size"] | null
+    >(null);
     const [itemSizeError, setItemSizeError] = useState("");
     const [memo, setMemo] = useState("");
     const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -324,19 +373,12 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
             return;
         }
 
-        const trimmedPrice = debouncedItemPrice.trim();
-
-        if (trimmedPrice === "") {
-            setItemPriceError("물품 가액을 입력해주세요.");
-        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
-            setItemPriceError("숫자만 입력해주세요.");
-        } else {
-            setItemPriceError("");
-        }
+        setItemPriceError(getItemPriceValidationMessage(debouncedItemPrice));
     }, [debouncedItemPrice, hasSubmitted]);
 
-    const handleMatchingRequest = () => {
+    const handleMatchingRequest = async () => {
         setHasSubmitted(true);
+        setRequestError("");
 
         let hasError = false;
 
@@ -349,6 +391,9 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
         if (!destinationStation) {
             setDestinationError("도착지를 선택해주세요.");
+            hasError = true;
+        } else if (destinationStation.id === originStation?.id) {
+            setDestinationError("출발지와 도착지는 같을 수 없습니다.");
             hasError = true;
         } else {
             setDestinationError("");
@@ -363,11 +408,12 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
 
         const trimmedPrice = itemPrice.trim();
 
-        if (trimmedPrice === "") {
-            setItemPriceError("물품 가액을 입력해주세요.");
-            hasError = true;
-        } else if (!ITEM_PRICE_PATTERN.test(trimmedPrice)) {
-            setItemPriceError("숫자만 입력해주세요.");
+        const priceInWon = Number(trimmedPrice);
+
+        const priceError = getItemPriceValidationMessage(trimmedPrice);
+
+        if (priceError) {
+            setItemPriceError(priceError);
             hasError = true;
         } else {
             setItemPriceError("");
@@ -384,7 +430,83 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
             return;
         }
 
-        setIsPaymentOpen(true);
+        if (!originStation || !destinationStation || !itemSize) {
+            return;
+        }
+
+        if (createdDeliveryId !== null && payment) {
+            setPaymentError("");
+            setIsPaymentOpen(true);
+            return;
+        }
+
+        const request: CreateDeliveryRequest = {
+            sourceStationId: originStation.id,
+            destinationStationId: destinationStation.id,
+            name: itemName.trim(),
+            price: priceInWon,
+            size: itemSize,
+            memo: memo.trim() || undefined,
+        };
+
+        setIsSubmitting(true);
+
+        try {
+            const paymentResult = await deliveryApi.getPayment({
+                sourceStationId: request.sourceStationId,
+                destinationStationId: request.destinationStationId,
+                size: request.size,
+            });
+            setPendingRequest(request);
+            setPayment(paymentResult);
+            setPaymentError("");
+            setIsPaymentOpen(true);
+        } catch (error) {
+            setRequestError(
+                getApiErrorMessage(
+                    error,
+                    "결제 정보를 불러오지 못했습니다. 다시 시도해주세요.",
+                ),
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handlePaymentConfirm = async () => {
+        if (!pendingRequest || isConfirming) {
+            return;
+        }
+
+        setIsConfirming(true);
+        setPaymentError("");
+
+        try {
+            let deliveryId = createdDeliveryId;
+
+            if (deliveryId === null) {
+                const createdId = await deliveryApi.create(pendingRequest);
+                deliveryId = Number(createdId);
+
+                if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
+                    throw new Error("Invalid delivery ID response");
+                }
+
+                setCreatedDeliveryId(deliveryId);
+            }
+
+            await deliveryApi.agreeTerms(deliveryId);
+            onComplete?.(deliveryId);
+        } catch (error) {
+            setPaymentError(
+                getApiErrorMessage(
+                    error,
+                    "결제를 완료하지 못했습니다. 다시 시도해주세요.",
+                ),
+            );
+        } finally {
+            setIsConfirming(false);
+        }
     };
 
     return (
@@ -401,7 +523,10 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                     className="shrink-0"
                 />
 
-                <div className="scrollbar-hidden flex-1 overflow-x-hidden overflow-y-auto pb-6 pt-4">
+                <fieldset
+                    disabled={createdDeliveryId !== null}
+                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 px-5 pb-6 pt-4"
+                >
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
                             <FieldLabel>출발지</FieldLabel>
@@ -477,23 +602,43 @@ function DeliveryRequestFormContent({ onBack }: { onBack?: () => void }) {
                             />
                         </div>
                     </div>
-                </div>
+                </fieldset>
 
                 <div className="flex">
+                    {createdDeliveryId !== null ? (
+                        <p className="mb-2 text-center text-xs font-medium text-purple-600">
+                            배송 요청이 생성되었습니다. 결제를 완료해주세요.
+                        </p>
+                    ) : null}
+                    {requestError ? (
+                        <p
+                            className="mb-2 text-center text-xs font-medium text-rose-600"
+                            role="alert"
+                        >
+                            {requestError}
+                        </p>
+                    ) : null}
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
                         className="absolute bottom-5 left-5 right-5 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
-                        매칭 요청
+                        {isSubmitting
+                            ? "결제 정보 확인 중..."
+                            : createdDeliveryId !== null
+                              ? "결제 계속하기"
+                              : "매칭 요청"}
                     </button>
                 </div>
             </div>
 
-            {isPaymentOpen ? (
+            {isPaymentOpen && payment ? (
                 <DeliveryPaymentSheet
+                    payment={payment}
+                    isConfirming={isConfirming}
+                    errorMessage={paymentError}
                     onClose={() => setIsPaymentOpen(false)}
-                    onConfirm={() => setIsPaymentOpen(false)}
+                    onConfirm={handlePaymentConfirm}
                 />
             ) : null}
 
@@ -517,6 +662,7 @@ function DeliveryRequestForm({
     error = null,
     onRetry,
     onBack,
+    onComplete,
 }: DeliveryRequestFormProps) {
     if (isLoading) {
         return <LoadingDeliveryRequestForm />;
@@ -526,7 +672,9 @@ function DeliveryRequestForm({
         return <ErrorDeliveryRequestForm message={error} onRetry={onRetry} />;
     }
 
-    return <DeliveryRequestFormContent onBack={onBack} />;
+    return (
+        <DeliveryRequestFormContent onBack={onBack} onComplete={onComplete} />
+    );
 }
 
 export default memo(DeliveryRequestForm);

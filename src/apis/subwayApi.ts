@@ -3,8 +3,21 @@ import { API_ENDPOINTS } from "./endpoints";
 
 export interface SubwayStationItem {
     id: number;
-    subwayStationName: string;
-    subwayRouteName: string;
+    region?: string;
+    stationName: string;
+    routeName: string;
+}
+
+export interface SubwayPathRequest {
+    originPlaceId: number;
+    destinationPlaceId: number;
+    waypointPlaceIds: Array<number>;
+}
+
+export interface SubwayPathItem {
+    shortestDistance: number;
+    transferCount: number;
+    stations: Array<SubwayStationItem>;
 }
 
 export const subwayApi = {
@@ -13,6 +26,14 @@ export const subwayApi = {
             method: "GET",
             url: API_ENDPOINTS.subway.search,
             params: { keyword },
+        });
+    },
+
+    path(request: SubwayPathRequest) {
+        return apiRequest<SubwayPathItem>({
+            method: "POST",
+            url: API_ENDPOINTS.subway.path,
+            data: request,
         });
     },
 };

@@ -1,4 +1,5 @@
 export type ActiveDelivery = {
+  id: number;
   title: string;
   route: string;
   status: string;
@@ -14,14 +15,14 @@ export type MatchingRequest = {
 export type RecentHistory = {
   id: number;
   title: string;
-  date: string;
+  route: string;
   status: string;
 };
 
 export type HomeContent = {
   name: string;
   headline: string;
-  activeDelivery: ActiveDelivery;
+  activeDeliveries: ActiveDelivery[];
   matchingRequests: MatchingRequest[];
   recentHistories: RecentHistory[];
   actionLabel?: string;
