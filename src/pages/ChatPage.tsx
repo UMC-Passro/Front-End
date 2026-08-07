@@ -8,6 +8,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { chatApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
+// import { senderDeliveryApi } from "../apis/delivery/senderDeliveryApi";
+// import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
 import PageHeader from "../components/common/PageHeader";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
