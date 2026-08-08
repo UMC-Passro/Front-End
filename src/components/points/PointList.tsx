@@ -20,12 +20,16 @@ export const PointList = ({ items }: PointListProps) => {
                 return (
                     <div className="flex justify-between px-5 py-4 rounded-lg bg-gray-50">
                         <div className="flex flex-col gap-1">
-                            <div className="font-bold text-gray-800">{item.name}</div>
+                            <div className="font-bold text-gray-800">
+                                {item.name}
+                            </div>
                             <div className="font-semibold text-sm text-gray-500">
                                 {item.date}
                             </div>
                         </div>
-                        <div className="font-bold text-purple-600">
+                        <div
+                            className={`font-bold ${item.type === "SAVING" ? "text-purple-600" : "text-[#E86C6C]"}`}
+                        >
                             {sign} {item.amount.toLocaleString()}p
                         </div>
                     </div>

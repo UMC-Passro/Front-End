@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { accountApi } from "../apis/accountApi";
+import { fileApi } from "../apis/fileApi";
 import { subwayApi, type SubwayStationItem } from "../apis/subwayApi";
 import { CameraIcon } from "../assets/icons/CameraIcon";
 import PageHeader from "../components/common/PageHeader";
@@ -182,6 +183,7 @@ function EditableProfileField({
 export default function EditProfile() {
     const navigate = useNavigate();
     const currentUser = getCurrentUser();
+    const pictureInputRef = useRef<HTMLInputElement>(null);
     const [nickname, setNickname] = useState("");
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
@@ -200,6 +202,11 @@ export default function EditProfile() {
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState("");
     const [saveHasError, setSaveHasError] = useState(false);
+    const [picturePreview, setPicturePreview] = useState<string | null>(null);
+    const [pictureKey, setPictureKey] = useState<string | null>(null);
+    const [isPictureUploading, setIsPictureUploading] = useState(false);
+    const [pictureMessage, setPictureMessage] = useState("");
+    const [pictureHasError, setPictureHasError] = useState(false);
     const loadProfile = useCallback(() => accountApi.getProfile(), []);
     const profileRequest = useApiRequest(loadProfile);
 
@@ -227,6 +234,63 @@ export default function EditProfile() {
             region: profileRequest.data.destinationPlace.routeName,
         });
     }, [profileRequest.data]);
+
+    useEffect(() => {
+        return () => {
+            if (picturePreview) {
+                URL.revokeObjectURL(picturePreview);
+            }
+        };
+    }, [picturePreview]);
+
+    const handlePictureChange = async (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            setPictureHasError(true);
+            setPictureMessage("이미지 파일만 선택할 수 있습니다.");
+            return;
+        }
+
+        const nextPreview = URL.createObjectURL(file);
+        setPicturePreview(nextPreview);
+        setPictureKey(null);
+        setIsPictureUploading(true);
+        setPictureMessage("이미지를 업로드하는 중입니다...");
+        setPictureHasError(false);
+
+        try {
+            const { imageKey, uploadUrl } = await fileApi.getImageUploadUrl({
+                fileName: file.name,
+                contentType: file.type || "application/octet-stream",
+                fileSize: file.size,
+            });
+            await fileApi.uploadToPresignedUrl(uploadUrl, file);
+
+            setPictureKey(imageKey);
+            setPictureMessage(
+                "이미지를 업로드했습니다. 변경사항을 저장해주세요.",
+            );
+        } catch (error) {
+            setPicturePreview(null);
+            setPictureKey(null);
+            setPictureHasError(true);
+            setPictureMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "이미지를 업로드하지 못했습니다.",
+            );
+        } finally {
+            setIsPictureUploading(false);
+        }
+    };
 
     const handleStationSelect = (station: Station) => {
         if (stationField === "origin") {
@@ -296,6 +360,12 @@ export default function EditProfile() {
     };
 
     const handleSave = async () => {
+        if (isPictureUploading) {
+            setSaveHasError(true);
+            setSaveMessage("이미지 업로드가 끝날 때까지 기다려주세요.");
+            return;
+        }
+
         if (
             !nickname.trim() ||
             !name.trim() ||
@@ -337,6 +407,7 @@ export default function EditProfile() {
                 wayPoints: wayPoints.map((wayPoint) => wayPoint.id),
                 name: name.trim(),
                 birth: birthDate,
+                ...(pictureKey ? { picture: pictureKey } : {}),
             });
             updateCurrentUserProfile({
                 nickname: nickname.trim(),
@@ -397,9 +468,12 @@ export default function EditProfile() {
                 <section className="flex flex-col items-center pb-8 pt-8">
                     <div className="relative">
                         <div className="flex h-[110px] w-[110px] items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-700">
-                            {profileRequest.data?.picture ? (
+                            {picturePreview || profileRequest.data?.picture ? (
                                 <img
-                                    src={profileRequest.data.picture}
+                                    src={
+                                        picturePreview ??
+                                        profileRequest.data?.picture
+                                    }
                                     alt="프로필"
                                     className="h-full w-full rounded-full object-cover"
                                 />
@@ -411,14 +485,40 @@ export default function EditProfile() {
                         </div>
                         <button
                             type="button"
+                            onClick={() => pictureInputRef.current?.click()}
+                            disabled={isPictureUploading}
                             className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
                             aria-label="프로필 사진 변경"
+                            aria-busy={isPictureUploading}
                         >
                             <CameraIcon />
                         </button>
+                        <input
+                            ref={pictureInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => void handlePictureChange(event)}
+                            className="sr-only"
+                            aria-label="프로필 이미지 선택"
+                        />
                     </div>
 
-                    <div className="mt-8 flex items-center gap-1">
+                    {pictureMessage ? (
+                        <p
+                            className={`mt-3 text-xs ${
+                                pictureHasError
+                                    ? "text-red-500"
+                                    : "text-purple-600"
+                            }`}
+                            role={pictureHasError ? "alert" : "status"}
+                        >
+                            {pictureMessage}
+                        </p>
+                    ) : null}
+
+                    <div
+                        className={`${pictureMessage ? "mt-4" : "mt-8"} flex items-center gap-1`}
+                    >
                         {isNicknameEditing ? (
                             <input
                                 type="text"
@@ -609,7 +709,8 @@ export default function EditProfile() {
                         profileRequest.isLoading ||
                         Boolean(profileRequest.error) ||
                         isSaving ||
-                        isSettingTransfers
+                        isSettingTransfers ||
+                        isPictureUploading
                     }
                     className="w-full rounded-lg bg-purple-500 py-3.5 font-bold text-white transition-colors hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
                 >

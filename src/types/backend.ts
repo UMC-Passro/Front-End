@@ -20,12 +20,15 @@ export interface BackendPlace {
     id: number;
     subwayRouteName: string;
     subwayStationName: string;
+    lotitude: number;
+    longtitud: number;
 }
 
 export interface BackendDeliveryPartyInfo {
     name: string;
     picture: string | null;
-    place: BackendPlace | null;
+    originPlace: BackendPlace | null;
+    destPlace: BackendPlace | null;
 }
 
 export interface BackendDeliveryLogInfo {
