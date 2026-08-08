@@ -17,11 +17,6 @@ interface ProfilePageProps {
     onLogout?: () => void;
 }
 
-const roleLabels: Record<UserRole, string> = {
-    sender: "발송자",
-    shipper: "배송자",
-};
-
 const numberFormatter = new Intl.NumberFormat("ko-KR");
 
 function formatPoint(value: number) {
@@ -182,7 +177,6 @@ function ProfilePageContent({
     >) {
     const { profile, stats } = data;
     const name = profile.name || "이름 없음";
-    const role = profile.role ?? "sender";
     const rating = typeof profile.rating === "number" ? profile.rating : 0;
     const pointBalance =
         typeof profile.pointBalance === "number" ? profile.pointBalance : 0;
@@ -255,7 +249,7 @@ function ProfilePageContent({
                 >
                     <p className="text-2xl font-bold text-gray-900">{name}</p>
                     <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
-                        {roleLabels[role]}
+                        패스로와 함께 한 지 10일
                     </span>
                 </div>
             </section>
