@@ -103,7 +103,7 @@ export function DeliveryTrackingContent({
                 {partyTitle}
             </h2>
             <DeliveryPersonCard
-                name={party?.name ?? null}
+                name={party?.nickname ?? null}
                 picture={party?.picture}
                 place={
                     isCompleted

@@ -26,6 +26,7 @@ export interface BackendPlace {
 
 export interface BackendDeliveryPartyInfo {
     name: string;
+    nickname: string;
     picture: string | null;
     originPlace: BackendPlace | null;
     destPlace: BackendPlace | null;
