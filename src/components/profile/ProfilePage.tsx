@@ -206,7 +206,7 @@ function ProfilePageContent({
     const statItems = useMemo(() => {
         const items = [
             {
-                label: "전달 내역",
+                label: "활동 내역",
                 value: numberFormatter.format(completedDeliveries),
                 onClick: onViewHistory,
             },
@@ -241,86 +241,85 @@ function ProfilePageContent({
             />
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pb-6">
-
-            <section
-                className="flex flex-col items-center gap-6 pt-8 pb-6"
-                aria-labelledby="profile-title"
-            >
-                {profile.avatarUrl ? (
-                    <img
-                        src={profile.avatarUrl}
-                        alt={`${name} 프로필 사진`}
-                        className="h-[110px] w-[110px] rounded-full object-cover"
-                        loading="lazy"
-                    />
-                ) : (
-                    <div
-                        className="flex h-[110px] w-[110px] shrink-0 items-center justify-center rounded-full bg-slate-100 text-3xl font-bold text-slate-700"
-                        aria-hidden="true"
-                    >
-                        {getInitial(name)}
-                    </div>
-                )}
-
-                <div
-                    className="flex flex-col items-center gap-[11px]"
-                    id="profile-title"
+                <section
+                    className="flex flex-col items-center gap-6 pt-8 pb-6"
+                    aria-labelledby="profile-title"
                 >
-                    <p className="text-2xl font-bold text-gray-900">{name}</p>
-                    {daysSinceJoin !== null ? (
-                        <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
-                            패스로와 함께 한 지 {daysSinceJoin}일
-                        </span>
-                    ) : null}
-                </div>
-            </section>
-
-            <section
-                className="flex w-full"
-                aria-labelledby="profile-stats-title"
-            >
-                <h2 id="profile-stats-title" className="sr-only">
-                    프로필 활동 요약
-                </h2>
-                <dl
-                    className="flex w-full items-center justify-between rounded-xl py-5 divide-x divide-gray-300"
-                    style={{
-                        background:
-                            "linear-gradient(92.52deg, #4541EB -3.06%, #636DFF 110.78%)",
-                    }}
-                >
-                    {statItems.map((item, index) => (
+                    {profile.avatarUrl ? (
+                        <img
+                            src={profile.avatarUrl}
+                            alt={`${name} 프로필 사진`}
+                            className="h-[110px] w-[110px] rounded-full object-cover"
+                            loading="lazy"
+                        />
+                    ) : (
                         <div
-                            key={item.label}
-                            className="flex flex-1 items-center justify-center"
+                            className="flex h-[110px] w-[110px] shrink-0 items-center justify-center rounded-full bg-slate-100 text-3xl font-bold text-slate-700"
+                            aria-hidden="true"
                         >
-                            <StatItem
-                                label={item.label}
-                                value={item.value}
-                                onClick={item.onClick}
-                            />
+                            {getInitial(name)}
                         </div>
-                    ))}
-                </dl>
-            </section>
+                    )}
 
-            <section
-                className="flex w-full mt-12"
-                aria-labelledby="profile-menu-title"
-            >
-                <h2 id="profile-menu-title" className="sr-only">
-                    프로필 설정 메뉴
-                </h2>
-                <div className="flex w-full flex-col gap-6">
-                    <MenuRow
-                        label="프로필 설정"
-                        onClick={onEditProfile}
-                        showArrow
-                    />
-                    <MenuRow label="문의하기" onClick={onInquiry} />
-                    <MenuRow label="로그아웃" onClick={onLogout} />
-                </div>
-            </section>
+                    <div
+                        className="flex flex-col items-center gap-[11px]"
+                        id="profile-title"
+                    >
+                        <p className="text-2xl font-bold text-gray-900">{name}</p>
+                        {daysSinceJoin !== null ? (
+                            <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
+                                패스로와 함께 한 지 {daysSinceJoin}일
+                            </span>
+                        ) : null}
+                    </div>
+                </section>
+
+                <section
+                    className="flex w-full"
+                    aria-labelledby="profile-stats-title"
+                >
+                    <h2 id="profile-stats-title" className="sr-only">
+                        프로필 활동 요약
+                    </h2>
+                    <dl
+                        className="flex w-full items-center justify-between rounded-xl py-5 divide-x divide-gray-300"
+                        style={{
+                            background:
+                                "linear-gradient(92.52deg, #4541EB -3.06%, #636DFF 110.78%)",
+                        }}
+                    >
+                        {statItems.map((item, index) => (
+                            <div
+                                key={item.label}
+                                className="flex flex-1 items-center justify-center"
+                            >
+                                <StatItem
+                                    label={item.label}
+                                    value={item.value}
+                                    onClick={item.onClick}
+                                />
+                            </div>
+                        ))}
+                    </dl>
+                </section>
+
+                <section
+                    className="flex w-full mt-12"
+                    aria-labelledby="profile-menu-title"
+                >
+                    <h2 id="profile-menu-title" className="sr-only">
+                        프로필 설정 메뉴
+                    </h2>
+                    <div className="flex w-full flex-col gap-6">
+                        <MenuRow
+                            label="프로필 설정"
+                            onClick={onEditProfile}
+                            showArrow
+                        />
+                        <MenuRow label="문의하기" onClick={onInquiry} />
+                        <MenuRow label="로그아웃" onClick={onLogout} />
+                    </div>
+                </section>
             </div>
         </main>
     );
