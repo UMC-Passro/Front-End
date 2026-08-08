@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import type { ProfilePageData, UserRole } from "../../types/user";
+import type { ProfilePageData } from "../../types/user";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../common/PageHeader";
 
@@ -17,11 +17,6 @@ interface ProfilePageProps {
     onLogout?: () => void;
 }
 
-const roleLabels: Record<UserRole, string> = {
-    sender: "발송자",
-    shipper: "배송자",
-};
-
 const numberFormatter = new Intl.NumberFormat("ko-KR");
 
 function formatPoint(value: number) {
@@ -30,6 +25,22 @@ function formatPoint(value: number) {
 
 function getInitial(name: string) {
     return name.trim().charAt(0).toUpperCase() || "?";
+}
+
+function getDaysSince(dateString: string) {
+    const joinedDate = new Date(dateString);
+
+    if (Number.isNaN(joinedDate.getTime())) {
+        return null;
+    }
+
+    const startOfDay = (date: Date) =>
+        new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const diffDays = Math.round(
+        (startOfDay(new Date()) - startOfDay(joinedDate)) / (1000 * 60 * 60 * 24),
+    );
+
+    return Math.max(diffDays, 0) + 1;
 }
 
 function MoveIcon() {
@@ -182,7 +193,6 @@ function ProfilePageContent({
     >) {
     const { profile, stats } = data;
     const name = profile.name || "이름 없음";
-    const role = profile.role ?? "sender";
     const rating = typeof profile.rating === "number" ? profile.rating : 0;
     const pointBalance =
         typeof profile.pointBalance === "number" ? profile.pointBalance : 0;
@@ -190,10 +200,13 @@ function ProfilePageContent({
         typeof stats?.completedDeliveries === "number"
             ? stats.completedDeliveries
             : 0;
+    const daysSinceJoin = profile.joinedAt
+        ? getDaysSince(profile.joinedAt)
+        : null;
     const statItems = useMemo(() => {
         const items = [
             {
-                label: "활동 내역",
+                label: "전달 내역",
                 value: numberFormatter.format(completedDeliveries),
                 onClick: onViewHistory,
             },
@@ -254,9 +267,11 @@ function ProfilePageContent({
                         id="profile-title"
                     >
                         <p className="text-2xl font-bold text-gray-900">{name}</p>
-                        <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
-                            {roleLabels[role]}
-                        </span>
+                        {daysSinceJoin !== null ? (
+                            <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
+                                패스로와 함께 한 지 {daysSinceJoin}일
+                            </span>
+                        ) : null}
                     </div>
                 </section>
 
