@@ -51,3 +51,13 @@ export type DeliveryPayment = {
     weightPoint: number;
     totalPoint: number;
 };
+
+export type CreateReview = {
+    deliveryId: number;
+    rating: number;
+    content?: string;
+};
+
+export type ReviewRequest = {
+    averageRating: number;
+};
