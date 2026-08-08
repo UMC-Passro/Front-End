@@ -5,6 +5,8 @@ interface DeliveryPersonCardProps {
     picture?: string | null;
     place?: string | null;
     emptyMessage?: string;
+    actionLabel?: string;
+    onAction?: () => void;
 }
 
 export const DeliveryPersonCard = ({
@@ -12,6 +14,8 @@ export const DeliveryPersonCard = ({
     picture,
     place,
     emptyMessage = "배송자 정보가 없습니다.",
+    actionLabel,
+    onAction,
 }: DeliveryPersonCardProps) => {
     if (!name) {
         return (
@@ -37,7 +41,15 @@ export const DeliveryPersonCard = ({
                 )}
                 <div className="flex min-w-0 flex-col">
                     <span className="truncate text-lg font-bold">{name}</span>
-                    {place ? (
+                    {actionLabel && onAction ? (
+                        <button
+                            type="button"
+                            onClick={onAction}
+                            className="truncate text-xs text-gray-500"
+                        >
+                            {actionLabel}
+                        </button>
+                    ) : place ? (
                         <span className="truncate text-xs text-gray-500">
                             {place}
                         </span>

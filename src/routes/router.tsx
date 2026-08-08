@@ -5,6 +5,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import NotFoundPage from "../pages/NotFoundPage";
 import RouteErrorPage from "../pages/RouteErrorPage";
+import FeedbackPage from "../pages/FeedbackPage";
 
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const SignupPage = lazy(() => import("../pages/SignupPage"));
@@ -16,9 +17,7 @@ const MarketPage = lazy(() => import("../pages/MarketPage"));
 const MyPage = lazy(() => import("../pages/MyPage"));
 const EditProfile = lazy(() => import("../pages/EditProfile"));
 const InquiryPage = lazy(() => import("../pages/InquiryPage"));
-const ChangePasswordPage = lazy(
-    () => import("../pages/ChangePasswordPage"),
-);
+const ChangePasswordPage = lazy(() => import("../pages/ChangePasswordPage"));
 const PointPage = lazy(() => import("../pages/PointPage"));
 const HistoryStatsPage = lazy(() =>
     import("../pages/HistoryStatsPage").then((module) => ({
@@ -28,18 +27,12 @@ const HistoryStatsPage = lazy(() =>
 const DeliveryMatchingPage = lazy(
     () => import("../pages/DeliveryMatchingPage"),
 );
-const DeliveryRequestPage = lazy(
-    () => import("../pages/DeliveryRequestPage"),
-);
-const RequestCompletePage = lazy(
-    () => import("../pages/RequestCompletePage"),
-);
+const DeliveryRequestPage = lazy(() => import("../pages/DeliveryRequestPage"));
+const RequestCompletePage = lazy(() => import("../pages/RequestCompletePage"));
 const DeliveryTrackingPage = lazy(
     () => import("../pages/DeliveryTrackingPage"),
 );
-const DeliveryStatusPage = lazy(
-    () => import("../pages/DeliveryStatusPage"),
-);
+const DeliveryStatusPage = lazy(() => import("../pages/DeliveryStatusPage"));
 const ChatListPage = lazy(() => import("../pages/ChatListPage"));
 const ChatPage = lazy(() => import("../pages/ChatPage"));
 
@@ -157,6 +150,10 @@ export const router = createBrowserRouter([
                             {
                                 path: "chat/:chatRoomId",
                                 element: <ChatPage />,
+                            },
+                            {
+                                path: "feedback/:deliveryId",
+                                element: <FeedbackPage />,
                             },
                         ],
                     },
