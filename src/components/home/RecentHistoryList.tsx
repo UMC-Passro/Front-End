@@ -11,7 +11,7 @@ export function RecentHistoryList({ histories }: RecentHistoryListProps) {
     if (histories.length === 0) {
         return (
             <p className="mt-3.5 rounded-lg bg-gray-50 px-5 py-5 text-center text-sm font-medium text-gray-500">
-                배송 내역이 없습니다.
+                활동 내역이 없습니다.
             </p>
         );
     }

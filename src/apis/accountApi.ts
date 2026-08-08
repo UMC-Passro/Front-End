@@ -32,4 +32,11 @@ export const accountApi = {
             data: request,
         });
     },
+
+    checkStudent() {
+        return apiRequest<boolean>({
+            method: "GET",
+            url: API_ENDPOINTS.account.checkStudent
+        });
+    },
 };

@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { authApi } from "../../apis/authApi";
+import { ApiError } from "../../types/api";
 
 type VerificationStep = "intro" | "form" | "complete";
 
 interface StudentVerificationModalProps {
     onComplete: () => void;
+    onClose: () => void;
 }
 
 const modalClassName =
@@ -11,26 +14,74 @@ const modalClassName =
 
 export default function StudentVerificationModal({
     onComplete,
+    onClose,
 }: StudentVerificationModalProps) {
     const [step, setStep] = useState<VerificationStep>("intro");
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeRequested, setIsCodeRequested] = useState(false);
+    const [emailAction, setEmailAction] = useState<
+        "send" | "confirm" | null
+    >(null);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [hasError, setHasError] = useState(false);
+    const canRequestCode = Boolean(email.trim()) && emailAction === null;
+    const canConfirmCode =
+        isCodeRequested &&
+        verificationCode.length === 6 &&
+        emailAction === null;
 
-    const handleRequestCode = () => {
-        if (!email.trim()) {
+    const handleRequestCode = async () => {
+        const mail = email.trim();
+        if (!mail || emailAction) {
             return;
         }
 
-        setIsCodeRequested(true);
+        setEmailAction("send");
+        setFeedbackMessage("");
+        setHasError(false);
+
+        try {
+            await authApi.sendMail({ mail, student: true });
+            setIsCodeRequested(true);
+            setVerificationCode("");
+            setFeedbackMessage("학교 이메일로 인증번호를 전송했습니다.");
+        } catch (error) {
+            setHasError(true);
+            setFeedbackMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "인증번호를 전송하지 못했습니다.",
+            );
+        } finally {
+            setEmailAction(null);
+        }
     };
 
-    const handleVerify = () => {
-        if (!verificationCode.trim()) {
+    const handleVerify = async () => {
+        const mail = email.trim();
+        const code = verificationCode.trim();
+        if (!isCodeRequested || !mail || !code || emailAction) {
             return;
         }
 
-        setStep("complete");
+        setEmailAction("confirm");
+        setFeedbackMessage("");
+        setHasError(false);
+
+        try {
+            await authApi.confirmUniversityMail({ mail, code });
+            setStep("complete");
+        } catch (error) {
+            setHasError(true);
+            setFeedbackMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "인증번호를 확인하지 못했습니다.",
+            );
+        } finally {
+            setEmailAction(null);
+        }
     };
 
     return (
@@ -39,10 +90,12 @@ export default function StudentVerificationModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby={`student-verification-${step}-title`}
+            onClick={onClose}
         >
             {step === "intro" ? (
                 <section
                     className={`${modalClassName} flex flex-col items-center gap-[25px] px-[10px] pb-[22px] pt-[27px] text-center`}
+                    onClick={(event) => event.stopPropagation()}
                 >
                     <div className="flex flex-col items-center gap-[10px]">
                         <h2
@@ -71,6 +124,7 @@ export default function StudentVerificationModal({
             {step === "form" ? (
                 <section
                     className={`${modalClassName} flex flex-col gap-[10px] px-[22px] py-[25px]`}
+                    onClick={(event) => event.stopPropagation()}
                 >
                     <h2 id="student-verification-form-title" className="sr-only">
                         학생 이메일 인증
@@ -84,9 +138,13 @@ export default function StudentVerificationModal({
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(event) =>
-                                    setEmail(event.target.value)
-                                }
+                                onChange={(event) => {
+                                    setEmail(event.target.value);
+                                    setVerificationCode("");
+                                    setIsCodeRequested(false);
+                                    setFeedbackMessage("");
+                                    setHasError(false);
+                                }}
                                 placeholder="이메일을 입력해주세요"
                                 className="h-[52px] min-w-0 rounded-[10px] bg-gray-50 px-5 text-[15px] font-medium text-gray-800 outline-none placeholder:text-gray-500"
                                 autoComplete="email"
@@ -95,10 +153,14 @@ export default function StudentVerificationModal({
                         <button
                             type="button"
                             onClick={handleRequestCode}
-                            disabled={!email.trim()}
-                            className="flex h-[52px] w-[90px] shrink-0 items-center justify-center rounded-[10px] bg-gray-200 text-[15px] font-medium leading-[22px] text-gray-700 disabled:cursor-not-allowed"
+                            disabled={!canRequestCode}
+                            className={`flex h-[52px] w-[90px] shrink-0 items-center justify-center rounded-[10px] text-[15px] font-medium leading-[22px] transition-colors ${
+                                canRequestCode
+                                    ? "bg-purple-600 text-white hover:bg-[#918DFF]"
+                                    : "cursor-not-allowed bg-gray-200 text-gray-400"
+                            }`}
                         >
-                            인증 요청
+                            {emailAction === "send" ? "전송 중..." : "인증 요청"}
                         </button>
                     </div>
 
@@ -110,28 +172,45 @@ export default function StudentVerificationModal({
                             <input
                                 type="text"
                                 value={verificationCode}
-                                onChange={(event) =>
-                                    setVerificationCode(event.target.value)
-                                }
+                                onChange={(event) => {
+                                    setVerificationCode(
+                                        event.target.value
+                                            .replace(/\D/g, "")
+                                            .slice(0, 6),
+                                    );
+                                    setFeedbackMessage("");
+                                    setHasError(false);
+                                }}
                                 placeholder="인증번호를 입력해주세요"
                                 className="h-[52px] min-w-0 rounded-[10px] bg-gray-50 px-5 text-[15px] font-medium text-gray-800 outline-none placeholder:text-gray-500"
                                 inputMode="numeric"
+                                maxLength={6}
                                 autoComplete="one-time-code"
+                                disabled={!isCodeRequested || emailAction !== null}
                             />
                         </label>
                         <button
                             type="button"
                             onClick={handleVerify}
-                            disabled={!verificationCode.trim()}
-                            className="flex h-[52px] w-[90px] shrink-0 items-center justify-center rounded-[10px] bg-gray-200 text-[15px] font-medium leading-[22px] text-gray-700 disabled:cursor-not-allowed"
+                            disabled={!canConfirmCode}
+                            className={`flex h-[52px] w-[90px] shrink-0 items-center justify-center rounded-[10px] text-[15px] font-medium leading-[22px] transition-colors ${
+                                canConfirmCode
+                                    ? "bg-purple-600 text-white hover:bg-[#918DFF]"
+                                    : "cursor-not-allowed bg-gray-200 text-gray-400"
+                            }`}
                         >
-                            확인
+                            {emailAction === "confirm" ? "확인 중..." : "확인"}
                         </button>
                     </div>
 
-                    {isCodeRequested ? (
-                        <p className="sr-only" role="status">
-                            인증번호가 요청되었습니다.
+                    {feedbackMessage ? (
+                        <p
+                            className={`px-1 text-[12px] ${
+                                hasError ? "text-red-500" : "text-purple-500"
+                            }`}
+                            role={hasError ? "alert" : "status"}
+                        >
+                            {feedbackMessage}
                         </p>
                     ) : null}
                 </section>
@@ -140,6 +219,7 @@ export default function StudentVerificationModal({
             {step === "complete" ? (
                 <section
                     className={`${modalClassName} flex flex-col items-center gap-[25px] px-[10px] pb-[22px] pt-[27px] text-center`}
+                    onClick={(event) => event.stopPropagation()}
                 >
                     <div className="flex flex-col items-center gap-[10px]">
                         <h2

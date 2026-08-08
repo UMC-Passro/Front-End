@@ -18,6 +18,7 @@ export interface UserProfile {
     rating: number;
     reviewCount: number;
     pointBalance: number;
+    joinedAt?: string;
 }
 
 export interface CommuteRouteSummary {
@@ -41,12 +42,27 @@ export interface ProfilePageData {
     stats: ProfileStats;
 }
 
+type ProfilePlace = {
+    id: number;
+    region: string;
+    routeName: string;
+    stationName: string;
+    latitude: number;
+    longitude: number;
+}
+
 export type Profile = {
     picture?: string;
     nickname: string;
+    name: string;
+    birth: string;
+    phoneNumber: string;
     deliveryCount: number;
     point: number;
     rating: number;
+    createdAt: string;
+    startPlace: ProfilePlace,
+    destinationPlace: ProfilePlace
 };
 
 export type EditProfile = {
@@ -55,6 +71,8 @@ export type EditProfile = {
     startPlaceId: number;
     destinationPlaceId: number;
     wayPoints?: number[];
+    name: string;
+    birth: string;
 };
 
 export type EditPassword = {
