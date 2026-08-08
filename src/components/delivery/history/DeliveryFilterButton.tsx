@@ -17,7 +17,7 @@ export const DeliveryFilterButton = ({
     );
 
     return (
-        <div className="flex gap-2 mt-8">
+        <div className="flex gap-2">
             {labels.map((label) => (
                 <button
                     key={label}

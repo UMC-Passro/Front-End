@@ -21,6 +21,7 @@ interface DeliveryItem {
     end?: string;
     date?: string;
     status: DeliveryStatus;
+    role: UserRole;
 }
 
 function getDeliveryStatus(state: BackendDeliveryState): DeliveryStatus {
@@ -88,8 +89,41 @@ export function HistoryStatsPage() {
 
     return (
         <div className="page-container">
-            <PageHeader title="배송 내역" onBack={() => navigate("/mypage")} />
-            <DeliveryFilterButton selected={selected} onSelect={setSelected} />
+            <PageHeader title="활동 내역" onBack={() => navigate("/mypage")} />
+            <div className="mt-8 flex items-center justify-between gap-3">
+                <DeliveryFilterButton
+                    selected={selected}
+                    onSelect={setSelected}
+                />
+                <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isShipperFilter}
+                    aria-label={`${isShipperFilter ? "전달" : "요청"} 내역만 표시 중`}
+                    onClick={() =>
+                        setRoleFilter(isShipperFilter ? "sender" : "shipper")
+                    }
+                    className="flex shrink-0 items-center gap-1.5 rounded-full bg-gray-100 px-2 py-2 text-[11px] font-semibold text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                >
+                    <span
+                        className={`relative h-[22px] w-[42px] rounded-full transition-colors ${
+                            isShipperFilter ? "bg-purple-600" : "bg-gray-400"
+                        }`}
+                        aria-hidden="true"
+                    >
+                        <span
+                            className={`absolute top-0.5 h-[16px] w-[16px] rounded-full bg-white shadow-sm transition-transform ${
+                                isShipperFilter
+                                    ? "translate-x-[0px]"
+                                    : "translate-x-[-12px]"
+                            }`}
+                        />
+                    </span>
+                    <span>
+                        {isShipperFilter ? "전달만 표시" : "요청만 표시"}
+                    </span>
+                </button>
+            </div>
             <DeliveryList items={filteredItems} />
         </div>
     );
