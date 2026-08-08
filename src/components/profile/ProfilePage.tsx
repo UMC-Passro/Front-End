@@ -46,6 +46,22 @@ function getInitial(name: string) {
     return name.trim().charAt(0).toUpperCase() || "?";
 }
 
+function getDaysSince(dateString: string) {
+    const joinedDate = new Date(dateString);
+
+    if (Number.isNaN(joinedDate.getTime())) {
+        return null;
+    }
+
+    const startOfDay = (date: Date) =>
+        new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const diffDays = Math.round(
+        (startOfDay(new Date()) - startOfDay(joinedDate)) / (1000 * 60 * 60 * 24),
+    );
+
+    return Math.max(diffDays, 0) + 1;
+}
+
 function MoveIcon() {
     return (
         <svg
@@ -187,6 +203,7 @@ function ProfilePageContent({
     onLogout,
 }: ProfilePageContentProps) {
     const name = profile?.nickname || profile?.name || "이름 없음";
+    const daysSinceJoin = getDaysSince(profile.createdAt);
 
     const statItems = [
         {
@@ -242,9 +259,13 @@ function ProfilePageContent({
                         <p className="text-2xl font-bold text-gray-900">
                             {name}
                         </p>
-                        <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
-                            {roleLabels[role]}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            {daysSinceJoin !== null ? (
+                                <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
+                                    패스로와 함께 한 지 {daysSinceJoin}일
+                                </span>
+                            ) : null}
+                        </div>
                     </div>
                 </section>
 

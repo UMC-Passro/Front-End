@@ -4,7 +4,6 @@ import ProfilePage from "../components/profile/ProfilePage";
 import { getCurrentUser, logout } from "../utils/auth";
 import {
     accountApi,
-    reviewApi,
     senderDeliveryApi,
     shipperDeliveryApi,
 } from "../apis";
@@ -16,21 +15,10 @@ export default function MyPage() {
 
     const loadProfile = useCallback(() => accountApi.getProfile(), []);
     const profileRequest = useApiRequest(loadProfile);
-    const userId = Number(currentUser.id);
-
-    const loadAverageRating = useCallback(
-        () => reviewApi.getAverage(userId),
-        [userId],
-    );
-    const ratingRequest = useApiRequest(loadAverageRating);
 
     useEffect(() => {
         void profileRequest.execute().catch(() => undefined);
-
-        if (Number.isSafeInteger(userId) && userId > 0) {
-            void ratingRequest.execute().catch(() => undefined);
-        }
-    }, [profileRequest.execute, ratingRequest.execute, userId]);
+    }, [profileRequest.execute]);
 
     const loadDeliveryCounts = useCallback(
         () =>
@@ -79,10 +67,11 @@ export default function MyPage() {
         <ProfilePage
             profile={profileRequest.data}
             role={currentUser.role}
-            averageRating={ratingRequest.data?.averageRating ?? 0}
+            averageRating={profileRequest.data?.rating ?? 0}
             activityCount={activityCount}
             isLoading={profileRequest.isLoading}
             error={profileRequest.error}
+            onRetry={() => void profileRequest.execute().catch(() => undefined)}
             onBack={handleBack}
             onEditProfile={handleEditProfile}
             onInquiry={handleInquiry}
