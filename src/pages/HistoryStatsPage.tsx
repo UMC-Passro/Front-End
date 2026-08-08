@@ -13,7 +13,7 @@ import { senderDeliveryApi, shipperDeliveryApi } from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ShipperDeliveryListItem } from "../types/delivery/shipper";
 import { BackendDeliveryState } from "../types/backend";
-import { UserRole } from "../types/user";
+import type { UserRole } from "../types/user";
 import { SenderDeliveryListItem } from "../types/delivery/sender";
 
 interface DeliveryItem {
@@ -80,7 +80,6 @@ export function HistoryStatsPage() {
     const navigate = useNavigate();
 
     const [selected, setSelected] = useState<DeliveryFilterLabel>("전체");
-
     const [role, setRole] = useState<UserRole>("shipper");
     const isShipper = role === "shipper";
 
@@ -111,7 +110,6 @@ export function HistoryStatsPage() {
     const currentFilter: DeliveryFilter | null =
         Object.values(DELIVERY_FILTER).find((c) => c.label === selected)
             ?.code ?? null;
-
     const filteredItems = useMemo(() => {
         const roleFilteredItem = deliveryItems.filter(
             (item) => item.role === role,
