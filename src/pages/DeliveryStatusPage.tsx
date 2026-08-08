@@ -287,6 +287,9 @@ export default function DeliveryStatusPage() {
                         partyTitle="전달자 정보"
                         party={data.shipperInfo}
                         partyEmptyMessage="아직 배송자가 매칭되지 않았습니다."
+                        onReview={() =>
+                            navigate(`/delivery/feedback/${deliveryId}`)
+                        }
                     />
                 </div>
 

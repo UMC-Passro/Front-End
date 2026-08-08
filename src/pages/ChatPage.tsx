@@ -87,8 +87,8 @@ export default function ChatPage() {
         )
             ? "sender"
             : shipperDeliveries.some((delivery) => delivery.id === deliveryId)
-                ? "shipper"
-                : null;
+              ? "shipper"
+              : null;
 
         return { messages, roomInfo, deliveryRole };
     }, [chatRoomId]);
@@ -129,7 +129,7 @@ export default function ChatPage() {
                     (message) =>
                         !message.isRead &&
                         message.senderNickname !==
-                        data.roomInfo.partnerNickname,
+                            data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -305,7 +305,7 @@ export default function ChatPage() {
                         {getDeliveryStatusLabel(roomInfo.deliveryStatus)}
                     </span>
                 </button>
-            </div >
+            </div>
 
             <div className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto bg-white px-4 py-6">
                 {messages.length === 0 ? (
@@ -326,8 +326,9 @@ export default function ChatPage() {
                                 className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                             >
                                 <div
-                                    className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
-                                        }`}
+                                    className={`flex w-full items-end gap-2 ${
+                                        isMine ? "justify-end" : "justify-start"
+                                    }`}
                                 >
                                     {isMine && timestamp ? (
                                         <time
@@ -339,14 +340,16 @@ export default function ChatPage() {
                                     ) : null}
 
                                     <div
-                                        className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
-                                            }`}
+                                        className={`flex max-w-[75%] flex-col ${
+                                            isMine ? "items-end" : "items-start"
+                                        }`}
                                     >
                                         <div
-                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
-                                                ? "bg-[#6366F1] text-white"
-                                                : "bg-[#EFEFEF] text-gray-800"
-                                                }`}
+                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${
+                                                isMine
+                                                    ? "bg-[#6366F1] text-white"
+                                                    : "bg-[#EFEFEF] text-gray-800"
+                                            }`}
                                         >
                                             {message.content}
                                         </div>
@@ -419,7 +422,7 @@ export default function ChatPage() {
                         </svg>
                     </button>
                 </form>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

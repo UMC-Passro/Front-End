@@ -2,13 +2,17 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryFilterButton } from "../components/delivery/history/DeliveryFilterButton";
 import { DeliveryList } from "../components/delivery/history/DeliveryList";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DELIVERY_FILTER,
     DeliveryFilter,
     DeliveryFilterLabel,
     DeliveryStatus,
 } from "../types/delivery/delivery";
+import { shipperDeliveryApi } from "../apis";
+import { useApiRequest } from "../hooks/useApiRequest";
+import { ShipperDeliveryListItem } from "../types/delivery/shipper";
+import { BackendDeliveryState } from "../types/backend";
 import type { UserRole } from "../types/user";
 
 interface DeliveryItem {
@@ -21,55 +25,67 @@ interface DeliveryItem {
     role: UserRole;
 }
 
-const DELIVERY_ITEMS: DeliveryItem[] = [
-    {
-        id: 1,
-        name: "무인양품 티셔츠",
-        start: "안양",
-        end: "정왕역",
-        status: "DELIVERING",
+function getDeliveryStatus(state: BackendDeliveryState): DeliveryStatus {
+    switch (state) {
+        case "WAIT":
+        case "MATCHED":
+            return "WAITING_PICKUP";
+        case "DELIVERING":
+        case "CONFIRM_REQUESTED":
+            return "DELIVERING";
+        case "DELIVERED":
+        case "CANCEL":
+            return "COMPLETED";
+    }
+}
+
+function formatDeliveryDate(createdAt: string) {
+    const date = new Date(createdAt);
+
+    const year = String(date.getFullYear()).slice(2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}.${month}.${day}`;
+}
+
+function toDeliveryItem(delivery: ShipperDeliveryListItem): DeliveryItem {
+    return {
+        id: delivery.id,
+        name: delivery.name,
+        start: delivery.originPlace.subwayStationName,
+        end: delivery.destPlace.subwayStationName,
+        date: formatDeliveryDate(delivery.createdAt),
+        status: getDeliveryStatus(delivery.deliveryState),
         role: "shipper",
-    },
-    {
-        id: 2,
-        name: "코알라 티셔츠",
-        date: "26.06.26",
-        status: "COMPLETED",
-        role: "sender",
-    },
-    {
-        id: 3,
-        name: "프로그래밍 전공책",
-        date: "26.06.20",
-        status: "COMPLETED",
-        role: "shipper",
-    },
-    {
-        id: 4,
-        name: "선러브 모자",
-        date: "26.04.06",
-        status: "COMPLETED",
-        role: "sender",
-    },
-    {
-        id: 5,
-        name: "오렌지",
-        date: "26.04.01",
-        status: "COMPLETED",
-        role: "shipper",
-    },
-];
+    };
+}
 
 export function HistoryStatsPage() {
     const navigate = useNavigate();
 
     const [selected, setSelected] = useState<DeliveryFilterLabel>("전체");
     const [roleFilter, setRoleFilter] = useState<UserRole>("shipper");
+    const loadHistories = useCallback(
+        () => shipperDeliveryApi.getDeliveryList(),
+        [],
+    );
+    const deliveryRequest = useApiRequest(loadHistories);
+
+    useEffect(() => {
+        void deliveryRequest.execute().catch(() => undefined);
+    }, [deliveryRequest.execute]);
+
+    const deliveryItems = useMemo(
+        () => (deliveryRequest.data ?? []).map(toDeliveryItem),
+        [deliveryRequest.data],
+    );
+
     const currentFilter: DeliveryFilter | null =
         Object.values(DELIVERY_FILTER).find((c) => c.label === selected)
             ?.code ?? null;
     const isShipperFilter = roleFilter === "shipper";
-    const filteredItems = DELIVERY_ITEMS.filter(
+    const filteredItems = deliveryItems.filter(
         (item) =>
             item.role === roleFilter &&
             (currentFilter === null || item.status === currentFilter),

@@ -18,6 +18,7 @@ export interface UserProfile {
     rating: number;
     reviewCount: number;
     pointBalance: number;
+    joinedAt?: string;
 }
 
 export interface CommuteRouteSummary {
@@ -59,6 +60,7 @@ export type Profile = {
     deliveryCount: number;
     point: number;
     rating: number;
+    createdAt: string;
     startPlace: ProfilePlace,
     destinationPlace: ProfilePlace
 };

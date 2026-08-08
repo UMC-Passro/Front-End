@@ -1,18 +1,9 @@
+import { CreateReview, ReviewRequest } from "../types/delivery/sender";
 import { apiRequest } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 
-export interface CreateReviewRequest {
-    deliveryId: number;
-    rating: number;
-    content?: string;
-}
-
-export interface ReviewAverage {
-    averageRating: number;
-}
-
 export const reviewApi = {
-    create(request: CreateReviewRequest) {
+    create(request: CreateReview) {
         return apiRequest<string>({
             method: "POST",
             url: API_ENDPOINTS.review.root,
@@ -21,7 +12,7 @@ export const reviewApi = {
     },
 
     getAverage(userId: number) {
-        return apiRequest<ReviewAverage>({
+        return apiRequest<ReviewRequest>({
             method: "GET",
             url: API_ENDPOINTS.review.average(userId),
         });

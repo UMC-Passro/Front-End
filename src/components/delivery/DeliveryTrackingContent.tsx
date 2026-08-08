@@ -42,12 +42,11 @@ interface DeliveryTrackingContentProps {
     party: BackendDeliveryPartyInfo | null;
     partyEmptyMessage: string;
     supplementaryContent?: ReactNode;
+    onReview?: () => void;
 }
 
 function formatPartyPlace(place: BackendPlace | null) {
-    return place
-        ? `${place.subwayStationName}(${place.subwayRouteName})`
-        : null;
+    return place ? `${place.subwayStationName}역` : null;
 }
 
 function RouteLoadingSkeleton() {
@@ -83,6 +82,7 @@ export function DeliveryTrackingContent({
     party,
     partyEmptyMessage,
     supplementaryContent,
+    onReview,
 }: DeliveryTrackingContentProps) {
     const isCompleted = status === "DELIVERED";
     const routeProgress = getDeliveryRouteProgress(
@@ -105,8 +105,16 @@ export function DeliveryTrackingContent({
             <DeliveryPersonCard
                 name={party?.name ?? null}
                 picture={party?.picture}
-                place={formatPartyPlace(party?.place ?? null)}
+                place={
+                    isCompleted
+                        ? null
+                        : `${formatPartyPlace(party?.originPlace ?? null)} → ${formatPartyPlace(party?.destPlace ?? null)}`
+                }
                 emptyMessage={partyEmptyMessage}
+                actionLabel={
+                    isCompleted ? "이번 전달은 어떠셨나요?" : undefined
+                }
+                onAction={isCompleted ? onReview : undefined}
             />
         </section>
     );
