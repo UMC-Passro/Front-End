@@ -6,6 +6,7 @@ interface ProfilePageProps {
     profile?: Profile | null;
     role: UserRole;
     averageRating?: number;
+    activityCount?: number;
     isLoading?: boolean;
     error?: Error | null;
     onRetry?: () => void;
@@ -21,6 +22,7 @@ interface ProfilePageContentProps {
     profile: Profile;
     role: UserRole;
     averageRating: number;
+    activityCount: number;
     onBack?: () => void;
     onEditProfile?: () => void;
     onInquiry?: () => void;
@@ -176,6 +178,7 @@ function ProfilePageContent({
     profile,
     role,
     averageRating,
+    activityCount,
     onBack,
     onEditProfile,
     onInquiry,
@@ -187,8 +190,8 @@ function ProfilePageContent({
 
     const statItems = [
         {
-            label: "전달 내역",
-            value: numberFormatter.format(profile.deliveryCount),
+            label: "활동 내역",
+            value: numberFormatter.format(activityCount),
             onClick: onViewHistory,
         },
         {
@@ -300,6 +303,7 @@ function ProfilePage({
     profile,
     role,
     averageRating = 0,
+    activityCount = 0,
     isLoading = false,
     error = null,
     onRetry,
@@ -327,6 +331,7 @@ function ProfilePage({
             profile={profile}
             role={role}
             averageRating={averageRating}
+            activityCount={activityCount}
             {...actions}
         />
     );

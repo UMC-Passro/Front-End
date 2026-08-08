@@ -2,7 +2,12 @@ import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "../components/profile/ProfilePage";
 import { getCurrentUser, logout } from "../utils/auth";
-import { accountApi, reviewApi } from "../apis";
+import {
+    accountApi,
+    reviewApi,
+    senderDeliveryApi,
+    shipperDeliveryApi,
+} from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function MyPage() {
@@ -27,6 +32,24 @@ export default function MyPage() {
         }
     }, [profileRequest.execute, ratingRequest.execute, userId]);
 
+    const loadDeliveryCounts = useCallback(
+        () =>
+            Promise.all([
+                senderDeliveryApi.getDeliveryList(),
+                shipperDeliveryApi.getDeliveryList(),
+            ]),
+        [],
+    );
+    const deliveryCountRequest = useApiRequest(loadDeliveryCounts);
+
+    useEffect(() => {
+        void deliveryCountRequest.execute().catch(() => undefined);
+    }, [deliveryCountRequest.execute]);
+
+    const activityCount =
+        (deliveryCountRequest.data?.[0]?.length ?? 0) +
+        (deliveryCountRequest.data?.[1]?.length ?? 0);
+
     const handleEditProfile = useCallback(() => {
         navigate("/mypage/edit");
     }, [navigate]);
@@ -37,10 +60,6 @@ export default function MyPage() {
 
     const handleBack = useCallback(() => {
         navigate(-1);
-    }, [navigate]);
-
-    const handleManageRoutes = useCallback(() => {
-        navigate("/routes");
     }, [navigate]);
 
     const handleViewPoints = useCallback(() => {
@@ -61,6 +80,7 @@ export default function MyPage() {
             profile={profileRequest.data}
             role={currentUser.role}
             averageRating={ratingRequest.data?.averageRating ?? 0}
+            activityCount={activityCount}
             isLoading={profileRequest.isLoading}
             error={profileRequest.error}
             onBack={handleBack}
