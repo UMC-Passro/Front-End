@@ -1,17 +1,29 @@
-import { memo, useMemo } from "react";
-import type { ProfilePageData, UserRole } from "../../types/user";
-import { useNavigate } from "react-router-dom";
+import { memo } from "react";
+import type { Profile, UserRole } from "../../types/user";
 import PageHeader from "../common/PageHeader";
 
 interface ProfilePageProps {
-    data?: ProfilePageData;
+    profile?: Profile | null;
+    role: UserRole;
+    averageRating?: number;
     isLoading?: boolean;
-    error?: string | null;
+    error?: Error | null;
     onRetry?: () => void;
     onBack?: () => void;
     onEditProfile?: () => void;
     onInquiry?: () => void;
-    onManageRoutes?: () => void;
+    onViewPoints?: () => void;
+    onViewHistory?: () => void;
+    onLogout?: () => void;
+}
+
+interface ProfilePageContentProps {
+    profile: Profile;
+    role: UserRole;
+    averageRating: number;
+    onBack?: () => void;
+    onEditProfile?: () => void;
+    onInquiry?: () => void;
     onViewPoints?: () => void;
     onViewHistory?: () => void;
     onLogout?: () => void;
@@ -161,63 +173,35 @@ function MenuRow({
 }
 
 function ProfilePageContent({
-    data,
+    profile,
+    role,
+    averageRating,
     onBack,
     onEditProfile,
     onInquiry,
-    onManageRoutes,
     onViewPoints,
     onViewHistory,
     onLogout,
-}: Required<Pick<ProfilePageProps, "data">> &
-    Pick<
-        ProfilePageProps,
-        | "onBack"
-        | "onEditProfile"
-        | "onInquiry"
-        | "onManageRoutes"
-        | "onViewPoints"
-        | "onViewHistory"
-        | "onLogout"
-    >) {
-    const { profile, stats } = data;
-    const name = profile.name || "이름 없음";
-    const role = profile.role ?? "sender";
-    const rating = typeof profile.rating === "number" ? profile.rating : 0;
-    const pointBalance =
-        typeof profile.pointBalance === "number" ? profile.pointBalance : 0;
-    const completedDeliveries =
-        typeof stats?.completedDeliveries === "number"
-            ? stats.completedDeliveries
-            : 0;
-    const statItems = useMemo(() => {
-        const items = [
-            {
-                label: "활동 내역",
-                value: numberFormatter.format(completedDeliveries),
-                onClick: onViewHistory,
-            },
-            {
-                label: "포인트",
-                value: formatPoint(pointBalance),
-                onClick: onViewPoints,
-            },
-            {
-                label: "평점",
-                value: rating.toFixed(1),
-                onClick: undefined,
-            },
-        ];
+}: ProfilePageContentProps) {
+    const name = profile?.nickname || profile?.name || "이름 없음";
 
-        return items;
-    }, [
-        completedDeliveries,
-        onViewHistory,
-        onViewPoints,
-        pointBalance,
-        rating,
-        stats?.acceptanceRate,
-    ]);
+    const statItems = [
+        {
+            label: "전달 내역",
+            value: numberFormatter.format(profile.deliveryCount),
+            onClick: onViewHistory,
+        },
+        {
+            label: "포인트",
+            value: formatPoint(profile.point),
+            onClick: onViewPoints,
+        },
+        {
+            label: "평점",
+            value: averageRating.toFixed(1),
+            onClick: undefined,
+        },
+    ];
 
     return (
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
@@ -228,14 +212,13 @@ function ProfilePageContent({
             />
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pb-6">
-
                 <section
                     className="flex flex-col items-center gap-6 pt-8 pb-6"
                     aria-labelledby="profile-title"
                 >
-                    {profile.avatarUrl ? (
+                    {profile?.picture ? (
                         <img
-                            src={profile.avatarUrl}
+                            src={profile.picture}
                             alt={`${name} 프로필 사진`}
                             className="h-[110px] w-[110px] rounded-full object-cover"
                             loading="lazy"
@@ -253,7 +236,9 @@ function ProfilePageContent({
                         className="flex flex-col items-center gap-[11px]"
                         id="profile-title"
                     >
-                        <p className="text-2xl font-bold text-gray-900">{name}</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                            {name}
+                        </p>
                         <span className="flex items-center justify-center rounded-full bg-purple-100 px-4 py-[3px] text-xs font-bold text-purple-700">
                             {roleLabels[role]}
                         </span>
@@ -312,7 +297,9 @@ function ProfilePageContent({
 }
 
 function ProfilePage({
-    data,
+    profile,
+    role,
+    averageRating = 0,
     isLoading = false,
     error = null,
     onRetry,
@@ -323,10 +310,10 @@ function ProfilePage({
     }
 
     if (error) {
-        return <ErrorProfilePage message={error} onRetry={onRetry} />;
+        return <ErrorProfilePage message={error.message} onRetry={onRetry} />;
     }
 
-    if (!data) {
+    if (!profile) {
         return (
             <ErrorProfilePage
                 message="표시할 프로필 데이터가 없습니다."
@@ -335,7 +322,14 @@ function ProfilePage({
         );
     }
 
-    return <ProfilePageContent data={data} {...actions} />;
+    return (
+        <ProfilePageContent
+            profile={profile}
+            role={role}
+            averageRating={averageRating}
+            {...actions}
+        />
+    );
 }
 
 export default memo(ProfilePage);

@@ -1,38 +1,31 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "../components/profile/ProfilePage";
-import type { ProfilePageData } from "../types/user";
 import { getCurrentUser, logout } from "../utils/auth";
+import { accountApi, reviewApi } from "../apis";
+import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function MyPage() {
     const navigate = useNavigate();
     const currentUser = getCurrentUser()!;
 
-    const profileData = useMemo<ProfilePageData>(() => {
-        const isShipper = currentUser.role === "shipper";
+    const loadProfile = useCallback(() => accountApi.getProfile(), []);
+    const profileRequest = useApiRequest(loadProfile);
+    const userId = Number(currentUser.id);
 
-        return {
-            profile: {
-                id: currentUser.id,
-                name: currentUser.nickname || currentUser.name,
-                email: currentUser.profileEmail || currentUser.email,
-                schoolName: "",
-                department: "",
-                role: currentUser.role,
-                verificationStatus: "verified",
-                rating: 0,
-                reviewCount: 0,
-                pointBalance: 0,
-            },
+    const loadAverageRating = useCallback(
+        () => reviewApi.getAverage(userId),
+        [userId],
+    );
+    const ratingRequest = useApiRequest(loadAverageRating);
 
-            stats: {
-                deliveryRequests: 0,
-                completedDeliveries: 0,
-                savedRoutes: 0,
-                acceptanceRate: isShipper ? 0 : undefined,
-            },
-        };
-    }, [currentUser]);
+    useEffect(() => {
+        void profileRequest.execute().catch(() => undefined);
+
+        if (Number.isSafeInteger(userId) && userId > 0) {
+            void ratingRequest.execute().catch(() => undefined);
+        }
+    }, [profileRequest.execute, ratingRequest.execute, userId]);
 
     const handleEditProfile = useCallback(() => {
         navigate("/mypage/edit");
@@ -65,11 +58,14 @@ export default function MyPage() {
 
     return (
         <ProfilePage
-            data={profileData}
+            profile={profileRequest.data}
+            role={currentUser.role}
+            averageRating={ratingRequest.data?.averageRating ?? 0}
+            isLoading={profileRequest.isLoading}
+            error={profileRequest.error}
             onBack={handleBack}
             onEditProfile={handleEditProfile}
             onInquiry={handleInquiry}
-            onManageRoutes={handleManageRoutes}
             onViewPoints={handleViewPoints}
             onViewHistory={handleViewHistory}
             onLogout={handleLogout}

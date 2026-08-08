@@ -1,54 +1,13 @@
 export type UserRole = "sender" | "shipper";
 
-export type SchoolVerificationStatus =
-    | "verified"
-    | "pending"
-    | "rejected"
-    | "none";
-
-export interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    schoolName: string;
-    department?: string;
-    avatarUrl?: string;
-    role: UserRole;
-    verificationStatus: SchoolVerificationStatus;
-    rating: number;
-    reviewCount: number;
-    pointBalance: number;
-}
-
-export interface CommuteRouteSummary {
-    id: string;
-    name: string;
-    origin: string;
-    destination: string;
-    timeRange: string;
-}
-
-export interface ProfileStats {
-    deliveryRequests: number;
-    completedDeliveries: number;
-    savedRoutes: number;
-    acceptanceRate?: number;
-}
-
-export interface ProfilePageData {
-    profile: UserProfile;
-    primaryRoute?: CommuteRouteSummary;
-    stats: ProfileStats;
-}
-
-type ProfilePlace = {
+export type ProfilePlace = {
     id: number;
     region: string;
     routeName: string;
     stationName: string;
     latitude: number;
     longitude: number;
-}
+};
 
 export type Profile = {
     picture?: string;
@@ -59,8 +18,8 @@ export type Profile = {
     deliveryCount: number;
     point: number;
     rating: number;
-    startPlace: ProfilePlace,
-    destinationPlace: ProfilePlace
+    startPlace: ProfilePlace;
+    destinationPlace: ProfilePlace;
 };
 
 export type EditProfile = {
