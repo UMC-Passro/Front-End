@@ -1,7 +1,42 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
+import {
+    inquiryApi,
+    senderDeliveryApi,
+    shipperDeliveryApi,
+} from "../apis";
 import type { InquiryCategory } from "../apis/inquiryApi";
+import { ApiError } from "../types/api";
+
+async function findMostRecentDeliveryId(): Promise<number | null> {
+    const [senderDeliveries, shipperDeliveries] = await Promise.all([
+        senderDeliveryApi.getDeliveryList().catch(() => []),
+        shipperDeliveryApi.getDeliveryList().catch(() => []),
+    ]);
+
+    const candidates = [
+        ...senderDeliveries.map((delivery) => ({
+            deliveryId: delivery.deliveryId,
+            createdAt: delivery.createdAt,
+        })),
+        ...shipperDeliveries.map((delivery) => ({
+            deliveryId: delivery.id,
+            createdAt: delivery.createdAt,
+        })),
+    ];
+
+    if (candidates.length === 0) {
+        return null;
+    }
+
+    candidates.sort(
+        (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    return candidates[0].deliveryId;
+}
 
 const inquiryOptions: Array<{
     value: InquiryCategory;
@@ -19,15 +54,20 @@ const MIN_CONTENT_LENGTH = 10;
 
 export default function InquiryPage() {
     const navigate = useNavigate();
-    const [category, setCategory] = useState<InquiryCategory | "">("");
+    const [selectedLabel, setSelectedLabel] = useState("");
     const [content, setContent] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const selectedOption = inquiryOptions.find(
+        (option) => option.label === selectedLabel,
+    );
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!category) {
+        if (!selectedOption) {
             setErrorMessage("문의 유형을 선택해주세요.");
             return;
         }
@@ -41,9 +81,40 @@ export default function InquiryPage() {
         setIsConfirmOpen(true);
     };
 
-    const handleFinalSubmit = () => {
-        setIsConfirmOpen(false);
-        navigate("/");
+    const handleFinalSubmit = async () => {
+        if (!selectedOption || isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const deliveryId = await findMostRecentDeliveryId();
+
+            if (deliveryId === null) {
+                setIsConfirmOpen(false);
+                setErrorMessage("연결할 배송 건을 찾지 못했습니다.");
+                return;
+            }
+
+            await inquiryApi.createDelivery({
+                deliveryId,
+                category: selectedOption.value,
+                title: selectedOption.label,
+                content,
+            });
+            setIsConfirmOpen(false);
+            navigate("/home");
+        } catch (caughtError) {
+            setIsConfirmOpen(false);
+            setErrorMessage(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "문의를 등록하지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -72,12 +143,10 @@ export default function InquiryPage() {
                                 </span>
                                 <div className="relative">
                                     <select
-                                        value={category}
+                                        value={selectedLabel}
                                         onChange={(event) => {
-                                            setCategory(
-                                                event.target.value as
-                                                    | InquiryCategory
-                                                    | "",
+                                            setSelectedLabel(
+                                                event.target.value,
                                             );
                                             setErrorMessage("");
                                         }}
@@ -88,8 +157,8 @@ export default function InquiryPage() {
                                         </option>
                                         {inquiryOptions.map((option) => (
                                             <option
-                                                key={option.value}
-                                                value={option.value}
+                                                key={option.label}
+                                                value={option.label}
                                             >
                                                 {option.label}
                                             </option>
@@ -160,16 +229,18 @@ export default function InquiryPage() {
                             <button
                                 type="button"
                                 onClick={() => setIsConfirmOpen(false)}
-                                className="flex flex-1 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-bold text-gray-700 transition hover:bg-gray-200 focus:outline-none"
+                                disabled={isSubmitting}
+                                className="flex flex-1 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-bold text-gray-700 transition hover:bg-gray-200 focus:outline-none disabled:opacity-60"
                             >
                                 아니오
                             </button>
                             <button
                                 type="button"
                                 onClick={handleFinalSubmit}
-                                className="flex flex-1 items-center justify-center rounded-lg bg-purple-500 py-3.5 font-bold text-white transition hover:bg-purple-600 focus:outline-none"
+                                disabled={isSubmitting}
+                                className="flex flex-1 items-center justify-center rounded-lg bg-purple-500 py-3.5 font-bold text-white transition hover:bg-purple-600 focus:outline-none disabled:opacity-60"
                             >
-                                예
+                                {isSubmitting ? "등록 중..." : "예"}
                             </button>
                         </div>
                     </div>

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { accountApi } from "../apis/accountApi";
 import { HomeDashboard } from "../components/home/HomeDashboard";
+import FeedbackModal from "../components/signup/common/FeedbackModal";
+import StudentVerificationModal from "../components/verification/StudentVerificationModal";
 import { useApiRequest } from "../hooks/useApiRequest";
+import { ApiError } from "../types/api";
 import type {
     ActiveDelivery,
     HomeContent,
@@ -131,6 +134,9 @@ export default function HomePage() {
     const [userRole, setUserRole] = useState<UserRole>(
         () => getSelectedUserRole() ?? currentUser?.role ?? "shipper",
     );
+    const [isCheckingStudent, setIsCheckingStudent] = useState(false);
+    const [isVerificationOpen, setIsVerificationOpen] = useState(false);
+    const [studentCheckError, setStudentCheckError] = useState("");
     const loadProfile = useCallback(
         (role: UserRole) =>
             role === "sender"
@@ -174,10 +180,51 @@ export default function HomePage() {
         userRole,
     ]);
 
-    const handleRoleChange = useCallback((nextRole: UserRole) => {
+    const applyRoleChange = useCallback((nextRole: UserRole) => {
         setCurrentUserRole(nextRole);
         setUserRole(nextRole);
     }, []);
+
+    const handleRoleChange = useCallback(
+        async (nextRole: UserRole) => {
+            if (nextRole === userRole || isCheckingStudent) {
+                return;
+            }
+
+            if (nextRole === "sender") {
+                applyRoleChange("sender");
+                return;
+            }
+
+            setIsCheckingStudent(true);
+            setStudentCheckError("");
+
+            try {
+                const isStudentVerified = await accountApi.checkStudent();
+
+                if (!isStudentVerified) {
+                    setIsVerificationOpen(true);
+                    return;
+                }
+
+                applyRoleChange("shipper");
+            } catch (error) {
+                setStudentCheckError(
+                    error instanceof ApiError
+                        ? error.message
+                        : "학생 인증 여부를 확인하지 못했습니다.",
+                );
+            } finally {
+                setIsCheckingStudent(false);
+            }
+        },
+        [applyRoleChange, isCheckingStudent, userRole],
+    );
+
+    const handleVerificationComplete = () => {
+        setIsVerificationOpen(false);
+        applyRoleChange("shipper");
+    };
 
     const content = useMemo(
         () =>
@@ -194,20 +241,38 @@ export default function HomePage() {
         userRole === "sender" ? senderRequest : shipperRequest;
 
     return (
-        <HomeDashboard
-            role={userRole}
-            content={content}
-            avatarUrl={profileRequest.data?.picture}
-            isRoleChanging={activeRequest.isLoading}
-            onRoleChange={handleRoleChange}
-            isLoading={activeRequest.isLoading}
-            errorMessage={
-                activeRequest.error
-                    ? activeRequest.error.message ||
-                      "배송 목록을 불러오지 못했습니다."
-                    : undefined
-            }
-            onRetry={() => void activeRequest.execute().catch(() => undefined)}
-        />
+        <>
+            <HomeDashboard
+                role={userRole}
+                content={content}
+                avatarUrl={profileRequest.data?.picture}
+                isRoleChanging={
+                    activeRequest.isLoading || isCheckingStudent
+                }
+                onRoleChange={(nextRole) => void handleRoleChange(nextRole)}
+                isLoading={activeRequest.isLoading}
+                errorMessage={
+                    activeRequest.error
+                        ? activeRequest.error.message ||
+                          "배송 목록을 불러오지 못했습니다."
+                        : undefined
+                }
+                onRetry={() =>
+                    void activeRequest.execute().catch(() => undefined)
+                }
+            />
+
+            {isVerificationOpen ? (
+                <StudentVerificationModal
+                    onComplete={handleVerificationComplete}
+                    onClose={() => setIsVerificationOpen(false)}
+                />
+            ) : null}
+
+            <FeedbackModal
+                message={studentCheckError}
+                onClose={() => setStudentCheckError("")}
+            />
+        </>
     );
 }

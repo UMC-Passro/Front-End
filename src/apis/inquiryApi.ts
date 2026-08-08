@@ -17,7 +17,6 @@ export type DeliveryInquiryCategory =
     | "POINT"
     | "ETC";
 
-// InquiryPage currently represents delivery-specific inquiry categories.
 export type InquiryCategory = DeliveryInquiryCategory;
 
 export interface CreateGeneralInquiryRequest {
