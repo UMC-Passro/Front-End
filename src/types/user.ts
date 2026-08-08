@@ -71,6 +71,7 @@ export type EditProfile = {
     wayPoints?: number[];
     name: string;
     birth: string;
+    picture?: string;
 };
 
 export type EditPassword = {
