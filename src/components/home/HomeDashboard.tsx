@@ -36,9 +36,8 @@ export function HomeDashboard({
     return (
         <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col h-full transition duration-200  ${
-                    isConsentOpen ? "pointer-events-none blur-sm" : ""
-                }`}
+                className={`flex flex-col h-full transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
+                    }`}
                 aria-hidden={isConsentOpen}
             >
                 <div className="shrink-0">
@@ -97,7 +96,7 @@ export function HomeDashboard({
 
                     {role === "sender" ? (
                         <section className="mt-10">
-                            <SectionTitle>배송 내역</SectionTitle>
+                            <SectionTitle>활동 내역</SectionTitle>
                             {isLoading ? (
                                 <div className="mt-3.5 flex flex-col gap-2.5">
                                     {[0, 1].map((item) => (
