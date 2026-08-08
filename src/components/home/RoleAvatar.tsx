@@ -57,7 +57,7 @@ export function RoleAvatar({
                 aria-label={`현재 ${currentRoleLabel} 모드. ${nextRoleLabel} 모드로 전환`}
                 disabled={disabled}
                 onClick={() => onRoleChange(nextRole)}
-                className={`relative h-[50px] w-[120px] overflow-hidden rounded-full border p-1 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 ${
+                className={`relative h-[50px] w-[100px] overflow-hidden rounded-full border p-1 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 ${
                     isShipper
                         ? "border-purple-200 bg-purple-100 text-purple-600"
                         : "border-amber-200 bg-amber-50 text-amber-600"
@@ -72,7 +72,7 @@ export function RoleAvatar({
                 </span>
                 <span
                     className={`absolute left-1 top-1 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white bg-white shadow-md transition-transform duration-300 ease-out motion-reduce:transition-none ${
-                        isShipper ? "translate-x-0" : "translate-x-[70px]"
+                        isShipper ? "translate-x-0" : "translate-x-[50px]"
                     }`}
                 >
                     <img
@@ -84,7 +84,10 @@ export function RoleAvatar({
                     />
                 </span>
             </button>
-            <span className="pr-1 text-xs font-bold text-gray-700" aria-live="polite">
+            <span
+                className="pr-1 text-xs font-bold text-gray-700"
+                aria-live="polite"
+            >
                 {currentRoleLabel} 모드
             </span>
         </div>

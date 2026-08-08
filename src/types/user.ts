@@ -42,14 +42,14 @@ export interface ProfilePageData {
     stats: ProfileStats;
 }
 
-type ProfilePlace = {
+export type ProfilePlace = {
     id: number;
     region: string;
     routeName: string;
     stationName: string;
     latitude: number;
     longitude: number;
-}
+};
 
 export type Profile = {
     picture?: string;
@@ -61,8 +61,8 @@ export type Profile = {
     point: number;
     rating: number;
     createdAt: string;
-    startPlace: ProfilePlace,
-    destinationPlace: ProfilePlace
+    startPlace: ProfilePlace;
+    destinationPlace: ProfilePlace;
 };
 
 export type EditProfile = {

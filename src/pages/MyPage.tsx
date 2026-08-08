@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "../components/profile/ProfilePage";
-import type { ProfilePageData } from "../types/user";
 import { getCurrentUser, logout } from "../utils/auth";
-import { accountApi } from "../apis/accountApi";
+import {
+    accountApi,
+    senderDeliveryApi,
+    shipperDeliveryApi,
+} from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function MyPage() {
@@ -17,39 +20,23 @@ export default function MyPage() {
         void profileRequest.execute().catch(() => undefined);
     }, [profileRequest.execute]);
 
-    const profileData = useMemo<ProfilePageData | undefined>(() => {
-        const profile = profileRequest.data;
+    const loadDeliveryCounts = useCallback(
+        () =>
+            Promise.all([
+                senderDeliveryApi.getDeliveryList(),
+                shipperDeliveryApi.getDeliveryList(),
+            ]),
+        [],
+    );
+    const deliveryCountRequest = useApiRequest(loadDeliveryCounts);
 
-        if (!profile) {
-            return undefined;
-        }
+    useEffect(() => {
+        void deliveryCountRequest.execute().catch(() => undefined);
+    }, [deliveryCountRequest.execute]);
 
-        const isShipper = currentUser.role === "shipper";
-
-        return {
-            profile: {
-                id: currentUser.id,
-                name: profile.nickname || profile.name,
-                email: currentUser.profileEmail || currentUser.email,
-                schoolName: "",
-                department: "",
-                avatarUrl: profile.picture,
-                role: currentUser.role,
-                verificationStatus: "verified",
-                rating: profile.rating,
-                reviewCount: 0,
-                pointBalance: profile.point,
-                joinedAt: profile.createdAt,
-            },
-
-            stats: {
-                deliveryRequests: 0,
-                completedDeliveries: profile.deliveryCount,
-                savedRoutes: 0,
-                acceptanceRate: isShipper ? 0 : undefined,
-            },
-        };
-    }, [currentUser, profileRequest.data]);
+    const activityCount =
+        (deliveryCountRequest.data?.[0]?.length ?? 0) +
+        (deliveryCountRequest.data?.[1]?.length ?? 0);
 
     const handleEditProfile = useCallback(() => {
         navigate("/mypage/edit");
@@ -61,10 +48,6 @@ export default function MyPage() {
 
     const handleBack = useCallback(() => {
         navigate(-1);
-    }, [navigate]);
-
-    const handleManageRoutes = useCallback(() => {
-        navigate("/routes");
     }, [navigate]);
 
     const handleViewPoints = useCallback(() => {
@@ -82,14 +65,16 @@ export default function MyPage() {
 
     return (
         <ProfilePage
-            data={profileData}
+            profile={profileRequest.data}
+            role={currentUser.role}
+            averageRating={profileRequest.data?.rating ?? 0}
+            activityCount={activityCount}
             isLoading={profileRequest.isLoading}
-            error={profileRequest.error?.message ?? null}
+            error={profileRequest.error}
             onRetry={() => void profileRequest.execute().catch(() => undefined)}
             onBack={handleBack}
             onEditProfile={handleEditProfile}
             onInquiry={handleInquiry}
-            onManageRoutes={handleManageRoutes}
             onViewPoints={handleViewPoints}
             onViewHistory={handleViewHistory}
             onLogout={handleLogout}
