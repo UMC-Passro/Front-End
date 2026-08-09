@@ -31,11 +31,6 @@ interface ProfilePageContentProps {
     onLogout?: () => void;
 }
 
-const roleLabels: Record<UserRole, string> = {
-    sender: "발송자",
-    shipper: "배송자",
-};
-
 const numberFormatter = new Intl.NumberFormat("ko-KR");
 
 function formatPoint(value: number) {

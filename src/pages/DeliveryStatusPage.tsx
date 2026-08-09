@@ -290,6 +290,9 @@ export default function DeliveryStatusPage() {
                         onReview={() =>
                             navigate(`/delivery/feedback/${deliveryId}`)
                         }
+                        onPartyMessageClick={() =>
+                            navigate(`/delivery/chat/${deliveryId}`)
+                        }
                     />
                 </div>
 
