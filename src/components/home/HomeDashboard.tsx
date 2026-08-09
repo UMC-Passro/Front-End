@@ -126,6 +126,41 @@ export function HomeDashboard({
         }
     };
 
+    const handleAlarmSelect = async (alarm: NotificationItem) => {
+        if (!alarm.read) {
+            try {
+                const updatedAlarm = await notificationApi.markAsRead(
+                    alarm.notificationId,
+                );
+                setAlarms((current) =>
+                    current.map((item) =>
+                        item.notificationId === alarm.notificationId
+                            ? updatedAlarm
+                            : item,
+                    ),
+                );
+                setUnreadCount((current) => Math.max(0, current - 1));
+            } catch {
+                setAlarmError("알림을 확인 처리하지 못했습니다.");
+            }
+        }
+
+        if (
+            alarm.type !== "DELIVERY" ||
+            alarm.resourceType !== "DELIVERY" ||
+            alarm.resourceId === null
+        ) {
+            return;
+        }
+
+        setIsAlarmOpen(false);
+        navigate(
+            role === "sender"
+                ? `/delivery/status/${alarm.resourceId}`
+                : `/delivery/tracking/${alarm.resourceId}`,
+        );
+    };
+
     const handleClearAllAlarms = async () => {
         if (alarms.length === 0) {
             return;
@@ -198,6 +233,9 @@ export function HomeDashboard({
                                             void handleAlarmDismiss(
                                                 notificationId,
                                             )
+                                        }
+                                        onSelect={(alarm) =>
+                                            void handleAlarmSelect(alarm)
                                         }
                                         isLoading={isAlarmLoading}
                                         errorMessage={alarmError}

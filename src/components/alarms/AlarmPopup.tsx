@@ -6,6 +6,7 @@ interface AlarmPopupProps {
     alarms: NotificationItem[];
     onClearAll: () => void;
     onDismiss: (alarmId: number) => void;
+    onSelect: (alarm: NotificationItem) => void;
     className?: string;
     isLoading?: boolean;
     errorMessage?: string;
@@ -41,6 +42,7 @@ export default function AlarmPopup({
     alarms,
     onClearAll,
     onDismiss,
+    onSelect,
     className = "",
     isLoading = false,
     errorMessage,
@@ -91,37 +93,42 @@ export default function AlarmPopup({
                                 />
                             ) : null}
 
-                            <article className="flex flex-col gap-1">
-                                <div className="flex items-center justify-between gap-3">
-                                    <h3 className="min-w-0 truncate text-[13px] font-semibold leading-[14px] text-gray-800">
-                                        {alarm.title}
-                                    </h3>
-                                    <div className="flex shrink-0 items-center gap-0.5">
+                            <article className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => onSelect(alarm)}
+                                    className="flex w-full flex-col gap-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                                    aria-label={`${alarm.title} 알림 확인`}
+                                >
+                                    <div className="flex w-full items-center justify-between gap-3 pr-3">
+                                        <h3 className="min-w-0 truncate text-[13px] font-semibold leading-[14px] text-gray-800">
+                                            {alarm.title}
+                                        </h3>
                                         <time
                                             dateTime={alarm.createdAt}
-                                            className="text-[10px] font-medium leading-[14px] text-gray-500"
+                                            className="shrink-0 text-[10px] font-medium leading-[14px] text-gray-500"
                                         >
                                             {formatAlarmTime(alarm.createdAt)}
                                         </time>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                onDismiss(alarm.notificationId)
-                                            }
-                                            className="flex h-[10px] w-[10px] items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                                            aria-label={`${alarm.title} 알림 지우기`}
-                                        >
-                                            <img
-                                                src={closeIcon}
-                                                alt=""
-                                                className="h-[10px] w-[10px]"
-                                            />
-                                        </button>
                                     </div>
-                                </div>
-                                <p className="break-words text-xs font-medium leading-[14px] text-gray-500">
-                                    {alarm.content}
-                                </p>
+                                    <p className="break-words text-xs font-medium leading-[14px] text-gray-500">
+                                        {alarm.content}
+                                    </p>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        onDismiss(alarm.notificationId)
+                                    }
+                                    className="absolute right-0 top-0 flex h-[10px] w-[10px] items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                                    aria-label={`${alarm.title} 알림 지우기`}
+                                >
+                                    <img
+                                        src={closeIcon}
+                                        alt=""
+                                        className="h-[10px] w-[10px]"
+                                    />
+                                </button>
                             </article>
                         </li>
                     ))}
