@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
         findPassword: "/auth/find/password",
         availableNickname: "/auth/nickname/check",
         availableMail: "/auth/mail/check",
+        editPassword: "/mypage/edit/password"
     },
     subway: {
         search: "/subway/search",

@@ -1,8 +1,11 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
+import FeedbackModal from "../components/signup/common/FeedbackModal";
 import ValidationMessage from "../components/signup/common/ValidationMessage";
 import { getPasswordValidation } from "../utils/signupValidation";
+import { authApi } from "../apis/authApi";
+import { ApiError } from "../types/api";
 
 const inputClassName =
     "w-full rounded-[10px] bg-gray-50 px-5 py-[15px] text-[15px] font-medium leading-[22px] text-gray-800 outline-none placeholder:text-gray-500";
@@ -14,26 +17,48 @@ export default function ChangePasswordPage() {
     const [newPasswordCheck, setNewPasswordCheck] = useState("");
     const [showValidation, setShowValidation] = useState(false);
     const [submissionMessage, setSubmissionMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const isNewPasswordValid = getPasswordValidation(newPassword);
     const isPasswordCheckValid =
         newPasswordCheck.length > 0 && newPassword === newPasswordCheck;
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setShowValidation(true);
         setSubmissionMessage("");
+        setIsSuccess(false);
 
         if (
             !currentPassword.trim() ||
             !isNewPasswordValid ||
-            !isPasswordCheckValid
+            !isPasswordCheckValid ||
+            isSubmitting
         ) {
             return;
         }
 
-        setSubmissionMessage(
-            "현재 백엔드에 비밀번호 변경 API가 없어 화면만 구현된 상태입니다.",
-        );
+        setIsSubmitting(true);
+
+        try {
+            await authApi.editPassword({
+                nowPassword: currentPassword,
+                editPassword: newPassword,
+            });
+            setIsSuccess(true);
+            setCurrentPassword("");
+            setNewPassword("");
+            setNewPasswordCheck("");
+            setShowValidation(false);
+        } catch (error) {
+            setSubmissionMessage(
+                error instanceof ApiError
+                    ? error.message
+                    : "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -145,11 +170,18 @@ export default function ChangePasswordPage() {
 
                 <button
                     type="submit"
-                    className="w-full shrink-0 rounded-[10px] bg-purple-500 px-2.5 py-3.5 text-base font-bold leading-[22px] text-white transition-colors hover:bg-purple-600 focus:outline-none"
+                    disabled={isSubmitting}
+                    className="w-full shrink-0 rounded-[10px] bg-purple-500 px-2.5 py-3.5 text-base font-bold leading-[22px] text-white transition-colors hover:bg-purple-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    비밀번호 변경하기
+                    {isSubmitting ? "변경 중..." : "비밀번호 변경하기"}
                 </button>
             </form>
+
+            <FeedbackModal
+                title="비밀번호 변경 완료"
+                message={isSuccess ? "비밀번호가 변경되었습니다." : ""}
+                onClose={() => navigate(-1)}
+            />
         </main>
     );
 }
