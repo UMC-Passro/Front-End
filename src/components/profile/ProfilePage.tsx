@@ -1,6 +1,7 @@
 import { memo } from "react";
 import type { Profile, UserRole } from "../../types/user";
 import PageHeader from "../common/PageHeader";
+import { imgproxied } from "../../utils/img";
 
 interface ProfilePageProps {
     profile?: Profile | null;
@@ -233,7 +234,7 @@ function ProfilePageContent({
                 >
                     {profile?.picture ? (
                         <img
-                            src={profile.picture}
+                            src={imgproxied(profile.picture, 110)}
                             alt={`${name} 프로필 사진`}
                             className="h-[110px] w-[110px] rounded-full object-cover"
                             loading="lazy"
