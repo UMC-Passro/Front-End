@@ -68,4 +68,12 @@ export const API_ENDPOINTS = {
             `/chat/${deliveryId}/unread-count`,
         rooms: "/chat/rooms"
     },
+    notification: {
+        root: "/notifications",
+        unreadCount: "/notifications/unread-count",
+        read: (notificationId: number) =>
+            `/notifications/${notificationId}/read`,
+        detail: (notificationId: number) =>
+            `/notifications/${notificationId}`,
+    },
 } as const;

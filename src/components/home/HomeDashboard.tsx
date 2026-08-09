@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { notificationApi } from "../../apis/notificationApi";
+import type { NotificationItem } from "../../apis/notificationApi";
+import BellIcon from "../../assets/icons/BellIcon";
 import type { HomeContent } from "../../types/home";
 import type { UserRole } from "../../types/user";
+import AlarmPopup from "../alarms/AlarmPopup";
 import DeliveryConsentSheet from "../delivery/DeliveryConsentSheet";
 import { ActiveDeliveryCard } from "./ActiveDeliveryCard";
 import { HomeHeader } from "./HomeHeader";
@@ -32,6 +36,154 @@ export function HomeDashboard({
 }: HomeDashboardProps) {
     const navigate = useNavigate();
     const [isConsentOpen, setIsConsentOpen] = useState(false);
+    const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+    const [isAlarmLoading, setIsAlarmLoading] = useState(false);
+    const [alarmError, setAlarmError] = useState("");
+    const [alarms, setAlarms] = useState<NotificationItem[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const alarmContainerRef = useRef<HTMLDivElement>(null);
+
+    const loadNotifications = useCallback(async () => {
+        setIsAlarmLoading(true);
+        setAlarmError("");
+
+        try {
+            const page = await notificationApi.getNotifications({
+                page: 0,
+                size: 20,
+            });
+            setAlarms(page.content);
+        } catch {
+            setAlarmError("알림을 불러오지 못했습니다.");
+        } finally {
+            setIsAlarmLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        void notificationApi
+            .getUnreadCount()
+            .then((result) => setUnreadCount(result.unreadCount))
+            .catch(() => undefined);
+    }, []);
+
+    useEffect(() => {
+        if (!isAlarmOpen) {
+            return;
+        }
+
+        const handlePointerDown = (event: MouseEvent) => {
+            if (
+                alarmContainerRef.current &&
+                !alarmContainerRef.current.contains(event.target as Node)
+            ) {
+                setIsAlarmOpen(false);
+            }
+        };
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setIsAlarmOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handlePointerDown);
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handlePointerDown);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isAlarmOpen]);
+
+    const handleAlarmToggle = () => {
+        if (isAlarmOpen) {
+            setIsAlarmOpen(false);
+            return;
+        }
+
+        setIsAlarmOpen(true);
+        void loadNotifications();
+    };
+
+    const handleAlarmDismiss = async (notificationId: number) => {
+        const dismissedAlarm = alarms.find(
+            (alarm) => alarm.notificationId === notificationId,
+        );
+
+        try {
+            await notificationApi.deleteNotification(notificationId);
+            setAlarms((current) =>
+                current.filter(
+                    (alarm) => alarm.notificationId !== notificationId,
+                ),
+            );
+
+            if (dismissedAlarm && !dismissedAlarm.read) {
+                setUnreadCount((current) => Math.max(0, current - 1));
+            }
+        } catch {
+            setAlarmError("알림을 삭제하지 못했습니다.");
+        }
+    };
+
+    const handleAlarmSelect = async (alarm: NotificationItem) => {
+        if (!alarm.read) {
+            try {
+                const updatedAlarm = await notificationApi.markAsRead(
+                    alarm.notificationId,
+                );
+                setAlarms((current) =>
+                    current.map((item) =>
+                        item.notificationId === alarm.notificationId
+                            ? updatedAlarm
+                            : item,
+                    ),
+                );
+                setUnreadCount((current) => Math.max(0, current - 1));
+            } catch {
+                setAlarmError("알림을 확인 처리하지 못했습니다.");
+            }
+        }
+
+        if (
+            alarm.type !== "DELIVERY" ||
+            alarm.resourceType !== "DELIVERY" ||
+            alarm.resourceId === null
+        ) {
+            return;
+        }
+
+        setIsAlarmOpen(false);
+        navigate(
+            role === "sender"
+                ? `/delivery/status/${alarm.resourceId}`
+                : `/delivery/tracking/${alarm.resourceId}`,
+        );
+    };
+
+    const handleClearAllAlarms = async () => {
+        if (alarms.length === 0) {
+            return;
+        }
+
+        setIsAlarmLoading(true);
+        setAlarmError("");
+
+        try {
+            await Promise.all(
+                alarms.map((alarm) =>
+                    notificationApi.deleteNotification(alarm.notificationId),
+                ),
+            );
+            setAlarms([]);
+            setUnreadCount(0);
+        } catch {
+            setAlarmError("알림을 모두 삭제하지 못했습니다.");
+            await loadNotifications();
+        } finally {
+            setIsAlarmLoading(false);
+        }
+    };
 
     return (
         <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
@@ -48,6 +200,50 @@ export function HomeDashboard({
                         avatarUrl={avatarUrl}
                         isRoleChanging={isRoleChanging}
                         onRoleChange={onRoleChange}
+                        actions={
+                            <div
+                                ref={alarmContainerRef}
+                                className="relative"
+                            >
+                                <button
+                                    type="button"
+                                    onClick={handleAlarmToggle}
+                                    className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                                    aria-label="알림 열기"
+                                    aria-haspopup="dialog"
+                                    aria-expanded={isAlarmOpen}
+                                >
+                                    <BellIcon className="h-6 w-6" />
+                                    {unreadCount > 0 ? (
+                                        <span className="absolute right-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-purple-500 px-1 text-[9px] font-bold leading-4 text-white">
+                                            {unreadCount > 99
+                                                ? "99+"
+                                                : unreadCount}
+                                        </span>
+                                    ) : null}
+                                </button>
+
+                                {isAlarmOpen ? (
+                                    <AlarmPopup
+                                        alarms={alarms}
+                                        onClearAll={() =>
+                                            void handleClearAllAlarms()
+                                        }
+                                        onDismiss={(notificationId) =>
+                                            void handleAlarmDismiss(
+                                                notificationId,
+                                            )
+                                        }
+                                        onSelect={(alarm) =>
+                                            void handleAlarmSelect(alarm)
+                                        }
+                                        isLoading={isAlarmLoading}
+                                        errorMessage={alarmError}
+                                        className="absolute right-0 top-[calc(100%+10px)] z-50"
+                                    />
+                                ) : null}
+                            </div>
+                        }
                     />
                 </div>
 
