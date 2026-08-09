@@ -118,8 +118,8 @@ function StationFieldButton({
             <span className="flex min-w-0 items-baseline gap-1">
                 <span
                     className={`truncate text-[15px] ${station
-                            ? "font-medium text-gray-800"
-                            : "text-gray-500"
+                        ? "font-medium text-gray-800"
+                        : "text-gray-500"
                         }`}
                 >
                     {station?.name ?? placeholder}
@@ -170,11 +170,10 @@ function EditableProfileField({
                 readOnly={readOnly}
                 onChange={(event) => onChange?.(event.target.value)}
                 onBlur={onBlur}
-                className={`${editableFieldClassName} ${
-                    readOnly
-                        ? "cursor-default bg-gray-200 text-gray-500"
-                        : "bg-gray-50 text-gray-800"
-                }`}
+                className={`${editableFieldClassName} ${readOnly
+                    ? "cursor-default bg-gray-200 text-gray-500"
+                    : "bg-gray-50 text-gray-800"
+                    }`}
             />
         </label>
     );
@@ -505,11 +504,10 @@ export default function EditProfile() {
 
                     {pictureMessage ? (
                         <p
-                            className={`mt-3 text-xs ${
-                                pictureHasError
-                                    ? "text-red-500"
-                                    : "text-purple-600"
-                            }`}
+                            className={`mt-3 text-xs ${pictureHasError
+                                ? "text-red-500"
+                                : "text-purple-600"
+                                }`}
                             role={pictureHasError ? "alert" : "status"}
                         >
                             {pictureMessage}
@@ -630,28 +628,6 @@ export default function EditProfile() {
                             </div>
                         ))}
 
-                        <div className="my-3 flex items-center justify-center gap-[10px]">
-                            <button
-                                type="button"
-                                onClick={() => setStationField("wayPoint")}
-                                className="w-[100px] text-right text-[13px] font-semibold text-gray-500"
-                            >
-                                경유지 추가
-                            </button>
-                            <span className="w-2 text-[13px] font-semibold text-gray-200">
-                                |
-                            </span>
-                            <button
-                                type="button"
-                                onClick={handleAutoSetTransfers}
-                                disabled={isSettingTransfers}
-                                className="w-[100px] text-left text-[13px] font-semibold text-purple-500 disabled:cursor-wait disabled:text-gray-400"
-                            >
-                                {isSettingTransfers
-                                    ? "경로 탐색 중..."
-                                    : "환승역 자동설정"}
-                            </button>
-                        </div>
 
                         <StationFieldButton
                             placeholder="도착지를 선택해주세요"
@@ -662,8 +638,8 @@ export default function EditProfile() {
                         {routeMessage ? (
                             <p
                                 className={`px-1 text-xs ${routeHasError
-                                        ? "text-red-500"
-                                        : "text-purple-600"
+                                    ? "text-red-500"
+                                    : "text-purple-600"
                                     }`}
                                 role={routeHasError ? "alert" : "status"}
                             >
@@ -672,7 +648,30 @@ export default function EditProfile() {
                         ) : null}
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
+                    <div className="my-3 flex items-center justify-center gap-[10px]">
+                        <button
+                            type="button"
+                            onClick={() => setStationField("wayPoint")}
+                            className="w-[100px] text-right text-[13px] font-semibold text-gray-500"
+                        >
+                            경유지 추가
+                        </button>
+                        <span className="w-2 text-[13px] font-semibold text-gray-200">
+                            |
+                        </span>
+                        <button
+                            type="button"
+                            onClick={handleAutoSetTransfers}
+                            disabled={isSettingTransfers}
+                            className="w-[100px] text-left text-[13px] font-semibold text-purple-500 disabled:cursor-wait disabled:text-gray-400"
+                        >
+                            {isSettingTransfers
+                                ? "경로 탐색 중..."
+                                : "환승역 자동설정"}
+                        </button>
+                    </div>
+
+                    {/* <div className="flex flex-col gap-1.5">
                         <span className="text-sm font-medium leading-[22px] text-gray-600">
                             비밀번호 변경
                         </span>
@@ -686,7 +685,7 @@ export default function EditProfile() {
                             </span>
                             <MoveIcon />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -716,6 +715,12 @@ export default function EditProfile() {
                 >
                     {isSaving ? "저장 중..." : "변경사항 저장"}
                 </button>
+
+                <div className="w-full flex justify-center">
+                    <span className="text-sm font-medium leading-[22px] text-gray-600 mt-2 mb-4 cursor-pointer" onClick={() => { navigate("/mypage/edit/password") }}>
+                        비밀번호 변경
+                    </span>
+                </div>
             </div>
 
             {isDatePickerOpen ? (

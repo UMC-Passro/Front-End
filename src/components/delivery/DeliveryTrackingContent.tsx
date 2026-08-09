@@ -41,6 +41,7 @@ interface DeliveryTrackingContentProps {
     partyTitle: string;
     party: BackendDeliveryPartyInfo | null;
     partyEmptyMessage: string;
+    onPartyMessageClick?: () => void;
     supplementaryContent?: ReactNode;
     onReview?: () => void;
 }
@@ -81,6 +82,7 @@ export function DeliveryTrackingContent({
     partyTitle,
     party,
     partyEmptyMessage,
+    onPartyMessageClick,
     supplementaryContent,
     onReview,
 }: DeliveryTrackingContentProps) {
@@ -115,6 +117,7 @@ export function DeliveryTrackingContent({
                     isCompleted ? "이번 전달은 어떠셨나요?" : undefined
                 }
                 onAction={isCompleted ? onReview : undefined}
+                onMessageClick={party ? onPartyMessageClick : undefined}
             />
         </section>
     );

@@ -191,6 +191,9 @@ export default function DeliveryTrackingPage() {
                     partyTitle="발송자 정보"
                     party={detail.senderInfo}
                     partyEmptyMessage="발송자 정보를 확인할 수 없습니다."
+                    onPartyMessageClick={() =>
+                        navigate(`/delivery/chat/${deliveryId}`)
+                    }
                 />
             </div>
 
