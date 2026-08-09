@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { UserRole } from "../../types/user";
 import { RoleAvatar } from "./RoleAvatar";
 
@@ -8,6 +9,7 @@ type HomeHeaderProps = {
     avatarUrl?: string | null;
     isRoleChanging?: boolean;
     onRoleChange: (role: UserRole) => void;
+    actions?: ReactNode;
 };
 
 export function HomeHeader({
@@ -17,6 +19,7 @@ export function HomeHeader({
     avatarUrl,
     isRoleChanging = false,
     onRoleChange,
+    actions,
 }: HomeHeaderProps) {
     return (
         <div>
@@ -26,12 +29,15 @@ export function HomeHeader({
                     <br />
                     {headline}
                 </p>
-                <RoleAvatar
-                    role={role}
-                    avatarUrl={avatarUrl}
-                    disabled={isRoleChanging}
-                    onRoleChange={onRoleChange}
-                />
+                <div className="flex shrink-0 items-center gap-3">
+                    <RoleAvatar
+                        role={role}
+                        avatarUrl={avatarUrl}
+                        disabled={isRoleChanging}
+                        onRoleChange={onRoleChange}
+                    />
+                    {actions}
+                </div>
             </div>
         </div>
     );
