@@ -630,7 +630,27 @@ export default function EditProfile() {
                             </div>
                         ))}
 
-                        <div className="my-3 flex items-center justify-center gap-[10px]">
+
+                        <StationFieldButton
+                            placeholder="도착지를 선택해주세요"
+                            station={destinationStation}
+                            onClick={() => setStationField("destination")}
+                        />
+
+                        {routeMessage ? (
+                            <p
+                                className={`px-1 text-xs ${routeHasError
+                                        ? "text-red-500"
+                                        : "text-purple-600"
+                                    }`}
+                                role={routeHasError ? "alert" : "status"}
+                            >
+                                {routeMessage}
+                            </p>
+                        ) : null}
+                    </div>
+
+                    <div className="my-3 flex items-center justify-center gap-[10px]">
                             <button
                                 type="button"
                                 onClick={() => setStationField("wayPoint")}
@@ -652,25 +672,6 @@ export default function EditProfile() {
                                     : "환승역 자동설정"}
                             </button>
                         </div>
-
-                        <StationFieldButton
-                            placeholder="도착지를 선택해주세요"
-                            station={destinationStation}
-                            onClick={() => setStationField("destination")}
-                        />
-
-                        {routeMessage ? (
-                            <p
-                                className={`px-1 text-xs ${routeHasError
-                                        ? "text-red-500"
-                                        : "text-purple-600"
-                                    }`}
-                                role={routeHasError ? "alert" : "status"}
-                            >
-                                {routeMessage}
-                            </p>
-                        ) : null}
-                    </div>
 
                     <div className="flex flex-col gap-1.5">
                         <span className="text-sm font-medium leading-[22px] text-gray-600">
