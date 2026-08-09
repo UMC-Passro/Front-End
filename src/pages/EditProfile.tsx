@@ -17,6 +17,7 @@ import {
     getCurrentUser,
     updateCurrentUserProfile,
 } from "../utils/auth";
+import { imgproxied } from "../utils/img";
 
 const editableFieldClassName =
     "min-h-[52px] w-full rounded-[10px] px-5 py-[15px] text-[15px] font-medium leading-[22px] outline-none placeholder:text-gray-500";
@@ -470,8 +471,7 @@ export default function EditProfile() {
                             {picturePreview || profileRequest.data?.picture ? (
                                 <img
                                     src={
-                                        picturePreview ??
-                                        profileRequest.data?.picture
+                                        (profileRequest.data?.picture && imgproxied(profileRequest.data?.picture, 110)) || ""
                                     }
                                     alt="프로필"
                                     className="h-full w-full rounded-full object-cover"
