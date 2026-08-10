@@ -28,7 +28,7 @@ export const PointList = ({ items }: PointListProps) => {
                             </div>
                         </div>
                         <div
-                            className={`font-bold ${item.type === "SAVING" ? "text-purple-600" : "text-[#E86C6C]"}`}
+                            className={`font-bold ${item.type === "SAVING" ? "text-purple-600" : "text-errorRed"}`}
                         >
                             {sign} {item.amount.toLocaleString()}p
                         </div>
