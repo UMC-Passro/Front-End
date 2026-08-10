@@ -7,6 +7,7 @@ interface DeliveryPersonCardProps {
     emptyMessage?: string;
     actionLabel?: string;
     onAction?: () => void;
+    onMessageClick?: () => void;
 }
 
 export const DeliveryPersonCard = ({
@@ -16,6 +17,7 @@ export const DeliveryPersonCard = ({
     emptyMessage = "배송자 정보가 없습니다.",
     actionLabel,
     onAction,
+    onMessageClick,
 }: DeliveryPersonCardProps) => {
     if (!name) {
         return (
@@ -56,7 +58,18 @@ export const DeliveryPersonCard = ({
                     ) : null}
                 </div>
             </div>
-            <MessageIcon className="shrink-0 text-gray-400" />
+            {onMessageClick ? (
+                <button
+                    type="button"
+                    onClick={onMessageClick}
+                    aria-label={`${name}님과의 채팅 열기`}
+                    className="shrink-0 rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 focus:outline-none"
+                >
+                    <MessageIcon />
+                </button>
+            ) : (
+                <MessageIcon className="shrink-0 text-gray-400" />
+            )}
         </div>
     );
 };

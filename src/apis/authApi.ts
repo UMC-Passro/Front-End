@@ -44,6 +44,11 @@ export interface SignupRequest {
     picture?: string;
 }
 
+export interface EditPasswordRequest {
+    nowPassword: string;
+    editPassword: string;
+}
+
 export const authApi = {
     sendMail(request: SendMailRequest) {
         return apiRequest<null>({
@@ -135,4 +140,12 @@ export const authApi = {
             },
         });
     },
+
+    editPassword(request: EditPasswordRequest) {
+        return apiRequest<boolean>({
+            method: "PATCH",
+            url: API_ENDPOINTS.account.editPassword,
+            data: request
+        })
+    }
 };

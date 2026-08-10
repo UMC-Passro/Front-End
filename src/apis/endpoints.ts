@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
         findPassword: "/auth/find/password",
         availableNickname: "/auth/nickname/check",
         availableMail: "/auth/mail/check",
+        editPassword: "/mypage/edit/password"
     },
     subway: {
         search: "/subway/search",
@@ -66,5 +67,13 @@ export const API_ENDPOINTS = {
         unreadCount: (deliveryId: number) =>
             `/chat/${deliveryId}/unread-count`,
         rooms: "/chat/rooms"
+    },
+    notification: {
+        root: "/notifications",
+        unreadCount: "/notifications/unread-count",
+        read: (notificationId: number) =>
+            `/notifications/${notificationId}/read`,
+        detail: (notificationId: number) =>
+            `/notifications/${notificationId}`,
     },
 } as const;

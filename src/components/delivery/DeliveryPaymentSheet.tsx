@@ -1,6 +1,6 @@
 import { memo } from "react";
-import type { DeliveryPayment } from "../../apis/deliveryApi";
 import BottomSheet from "../common/BottomSheet";
+import { DeliveryPayment } from "../../types/delivery/sender";
 
 interface DeliveryPaymentSheetProps {
     payment: DeliveryPayment;
