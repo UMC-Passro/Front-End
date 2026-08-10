@@ -28,6 +28,7 @@ export default {
                     800: "#373840",
                     900: "#1D1E23",
                 },
+                errorRed: "#FF3D3D",
             },
         },
     },

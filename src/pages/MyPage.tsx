@@ -2,11 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "../components/profile/ProfilePage";
 import { getCurrentUser, logout } from "../utils/auth";
-import {
-    accountApi,
-    senderDeliveryApi,
-    shipperDeliveryApi,
-} from "../apis";
+import { accountApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 
 export default function MyPage() {
@@ -47,7 +43,7 @@ export default function MyPage() {
     }, [navigate]);
 
     const handleBack = useCallback(() => {
-        navigate(-1);
+        navigate("/home");
     }, [navigate]);
 
     const handleViewPoints = useCallback(() => {

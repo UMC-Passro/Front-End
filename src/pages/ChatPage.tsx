@@ -14,6 +14,7 @@ import PageHeader from "../components/common/PageHeader";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
+import ChatModal from "../components/chat/ChatModal";
 
 function formatMessageTimestamp(createdAt: string) {
     const createdDate = new Date(createdAt);
@@ -39,6 +40,7 @@ export default function ChatPage() {
     const [draft, setDraft] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [sendError, setSendError] = useState("");
+    const [isOpen, setIsopen] = useState(false);
 
     const mergeMessages = useCallback((nextMessages: ChatMessage[]) => {
         if (nextMessages.length === 0) {
@@ -249,7 +251,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
+        <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
             {/* 상단바 영역 */}
             <div className="z-40 w-full shrink-0 border-b border-gray-100 bg-white px-4 pb-4 pt-3">
                 <PageHeader
@@ -259,6 +261,7 @@ export default function ChatPage() {
                     rightAction={
                         <button
                             type="button"
+                            onClick={() => setIsopen(true)}
                             className="-mr-1 p-1 text-gray-600 focus:outline-none"
                             aria-label="채팅방 메뉴 열기"
                         >
@@ -423,6 +426,7 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
+            {isOpen && <ChatModal onClose={() => setIsopen(false)} />}
         </div>
     );
 }
