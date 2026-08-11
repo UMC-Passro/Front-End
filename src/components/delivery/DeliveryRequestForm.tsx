@@ -240,7 +240,7 @@ function LoadingDeliveryRequestForm() {
             aria-labelledby="delivery-request-loading-title"
         >
             <h1 id="delivery-request-loading-title" className="sr-only">
-                배송 요청 정보를 불러오는 중
+                전달 요청 정보를 불러오는 중
             </h1>
             <div className="flex h-14 shrink-0 items-center justify-center px-5">
                 <div className="h-5 w-16 animate-pulse rounded bg-slate-200" />
@@ -256,7 +256,7 @@ function LoadingDeliveryRequestForm() {
                 </div>
             </div>
             <p className="sr-only" role="status">
-                배송 요청 화면을 불러오고 있습니다.
+                전달 요청 화면을 불러오고 있습니다.
             </p>
         </section>
     );
@@ -276,7 +276,7 @@ function ErrorDeliveryRequestForm({
                 role="alert"
             >
                 <h1 className="text-lg font-semibold">
-                    배송 요청 화면을 불러오지 못했습니다
+                    전달 요청 화면을 불러오지 못했습니다
                 </h1>
                 <p className="mt-2 text-sm">{message}</p>
                 {onRetry ? (
@@ -519,7 +519,7 @@ function DeliveryRequestFormContent({
                 aria-hidden={isOverlayOpen}
             >
                 <PageHeader
-                    title="배송 요청"
+                    title="전달 요청"
                     onBack={onBack}
                     className="shrink-0"
                 />
@@ -608,7 +608,7 @@ function DeliveryRequestFormContent({
                 <div className="flex">
                     {createdDeliveryId !== null ? (
                         <p className="mb-2 text-center text-xs font-medium text-purple-600">
-                            배송 요청이 생성되었습니다. 결제를 완료해주세요.
+                            전달 요청이 생성되었습니다. 결제를 완료해주세요.
                         </p>
                     ) : null}
                     {requestError ? (

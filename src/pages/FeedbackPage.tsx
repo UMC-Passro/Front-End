@@ -25,7 +25,7 @@ export default function FeedbackPage() {
 
     const loadDeliveryDetail = useCallback(() => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
-            return Promise.reject(new Error("올바르지 않은 배송 ID입니다."));
+            return Promise.reject(new Error("올바르지 않은 전달 ID입니다."));
         }
 
         return senderDeliveryApi.getDeliveryItem(deliveryId);
@@ -42,7 +42,7 @@ export default function FeedbackPage() {
     const reviewerName =
         currentUser?.nickname ?? currentUser?.name ?? "패스로 사용자";
 
-    const shipperName = detailRequest.data?.shipperInfo?.name ?? "배송자";
+    const shipperName = detailRequest.data?.shipperInfo?.name ?? "전달자";
 
     const handleTagClick = (tag: string) => {
         setSelectedTags((prev) =>
@@ -54,7 +54,7 @@ export default function FeedbackPage() {
 
     const handleSubmit = async () => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
-            setError("올바르지 않은 배송 ID입니다.");
+            setError("올바르지 않은 전달 ID입니다.");
             return;
         }
 

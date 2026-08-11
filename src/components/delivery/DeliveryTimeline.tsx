@@ -36,13 +36,13 @@ interface TimelineItem {
 const TIMELINE_DEFINITIONS: TimelineDefinition[] = [
     {
         type: "SEND_REQUEST",
-        label: "배송 요청",
-        description: "배송 요청이 등록되었습니다.",
+        label: "전달 요청",
+        description: "전달 요청이 등록되었습니다.",
     },
     {
         type: "MATCHED",
-        label: "배송자 매칭",
-        description: "배송을 수행할 전달자가 배정됩니다.",
+        label: "전달자 매칭",
+        description: "전달을 수행할 전달자가 배정됩니다.",
     },
     {
         type: "PICKED_UP",
@@ -56,8 +56,8 @@ const TIMELINE_DEFINITIONS: TimelineDefinition[] = [
     },
     {
         type: "DONE",
-        label: "배송 완료",
-        description: "발송자가 최종 배송 완료를 승인합니다.",
+        label: "전달 완료",
+        description: "발송자가 최종 전달 완료를 승인합니다.",
     },
 ];
 
@@ -136,8 +136,8 @@ export function DeliveryTimeline({
     if (status === "CANCEL" || canceledLog) {
         timelineItems.push({
             type: "CANCELED",
-            label: "배송 취소",
-            description: "배송 요청이 취소되었습니다.",
+            label: "전달 취소",
+            description: "전달 요청이 취소되었습니다.",
             log: canceledLog,
             state: canceledLog ? "canceled" : "current",
         });

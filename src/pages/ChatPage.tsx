@@ -290,13 +290,13 @@ export default function ChatPage() {
                     className="flex w-full items-center justify-between rounded-2xl bg-[#F7F7F9] p-4 text-left transition-colors enabled:hover:bg-gray-100 disabled:cursor-default"
                     aria-label={
                         deliveryRole
-                            ? `${roomInfo.itemName ?? "배송 물품"} 상세 보기`
-                            : "배송 물품 정보"
+                            ? `${roomInfo.itemName ?? "전달 물품"} 상세 보기`
+                            : "전달 물품 정보"
                     }
                 >
                     <div className="min-w-0">
                         <h2 className="mb-0.5 truncate text-[15px] font-bold text-gray-900">
-                            {roomInfo.itemName ?? "배송 물품"}
+                            {roomInfo.itemName ?? "전달 물품"}
                         </h2>
                         {route ? (
                             <p className="truncate text-sm font-semibold text-gray-400">

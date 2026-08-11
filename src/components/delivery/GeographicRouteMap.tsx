@@ -557,7 +557,7 @@ export function GeographicRouteMap({
             onPointerCancel={handlePointerEnd}
             onDoubleClick={() => changeZoom(1)}
             role="application"
-            aria-label={`${stations[0]?.stationName ?? "출발역"}에서 ${stations[stations.length - 1]?.stationName ?? "도착역"}까지의 배송 추적 지도`}
+            aria-label={`${stations[0]?.stationName ?? "출발역"}에서 ${stations[stations.length - 1]?.stationName ?? "도착역"}까지의 전달 추적 지도`}
         >
             {visibleTiles.map((tile) => (
                 <img

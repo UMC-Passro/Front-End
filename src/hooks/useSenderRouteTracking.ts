@@ -17,9 +17,9 @@ function getLocationErrorMessage(error: unknown) {
     if (error instanceof ApiError) {
         switch (error.code) {
             case "SHIPPER_LOCATION404_1":
-                return "배송자가 아직 위치 공유를 시작하지 않았거나 마지막 위치 갱신 후 2분이 지났습니다.";
+                return "전달자가 아직 위치 공유를 시작하지 않았거나 마지막 위치 갱신 후 2분이 지났습니다.";
             case "SHIPPER_LOCATION400_1":
-                return "배송 중 상태에서만 배송자 위치를 확인할 수 있습니다.";
+                return "전달 중 상태에서만 전달자 위치를 확인할 수 있습니다.";
         }
 
         return error.message;
@@ -27,7 +27,7 @@ function getLocationErrorMessage(error: unknown) {
 
     return error instanceof Error
         ? error.message
-        : "배송자 위치를 불러오지 못했습니다.";
+        : "전달자 위치를 불러오지 못했습니다.";
 }
 
 export function useSenderRouteTracking({
