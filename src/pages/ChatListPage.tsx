@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { chatApi } from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type { ChatRoom } from "../data/chatRooms";
@@ -13,7 +13,6 @@ export default function ChatListPage() {
     }, []);
 
     const { data, error, isLoading, execute } = useApiRequest(loadChatList);
-    const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
 
     useEffect(() => {
         let isStopped = false;
@@ -39,43 +38,21 @@ export default function ChatListPage() {
         };
     }, [execute]);
 
-    useEffect(() => {
-        if (!data) {
-            return;
-        }
-
-        const tempChatRooms: ChatRoom[] = [];
-
-        data.forEach(datum => {
-            if (!datum.lastMessage) return;
-
-            const date = new Date(datum.lastMessageAt);
-
-            let dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} `;
-
-            if (date.getHours() < 12) {
-                dateString += `오후 ${date.getHours() - 12}:${date.getMinutes()}`
-            } else if (date.getHours() == 12) {
-                dateString += `오후 ${date.getHours()}:${date.getMinutes()}`
-            } else if (date.getHours() > 12) {
-                dateString += `오후 ${date.getHours() - 12}:${date.getMinutes()}`
-            }
-
-            tempChatRooms.push({
+    const chatRooms = useMemo<ChatRoom[]>(
+        () =>
+            (data ?? []).map((datum) => ({
                 id: datum.deliveryId.toString(),
                 participantName: datum.partner.nickname,
-                itemName: datum.itemName,
+                itemName: datum.itemName ?? "배송 물품",
                 route: "",
                 status: "",
-                lastMessage: datum.lastMessage,
-                updatedAt: dateString,
+                lastMessage: datum.lastMessage ?? "아직 메시지가 없습니다.",
+                updatedAt: formatChatRoomTimestamp(datum.lastMessageAt),
                 unreadCount: datum.unreadCount,
-                messages: []
-            })
-        });
-
-        setChatRooms(tempChatRooms);
-    }, [data]);
+                messages: [],
+            })),
+        [data],
+    );
 
     return (
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
@@ -86,55 +63,106 @@ export default function ChatListPage() {
             />
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pt-5">
-                <ul className="divide-y divide-gray-100">
-                    {chatRooms.map((room) => (
-                        <li key={room.id}>
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    navigate(`/delivery/chat/${room.id}`)
-                                }
-                                className="flex w-full items-center gap-4 py-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
-                                aria-label={`${room.participantName}님과의 채팅 열기`}
-                            >
-                                <span
-                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-purple-100 text-base font-bold text-purple-600"
-                                    aria-hidden="true"
+                {data !== null && chatRooms.length === 0 ? (
+                    <p className="py-16 text-center text-sm font-medium text-gray-400">
+                        참여 중인 채팅방이 없습니다.
+                    </p>
+                ) : (
+                    <ul className="divide-y divide-gray-100">
+                        {chatRooms.map((room) => (
+                            <li key={room.id}>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        navigate(`/delivery/chat/${room.id}`)
+                                    }
+                                    className="flex w-full items-center gap-4 py-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
+                                    aria-label={`${room.participantName}님과의 채팅 열기`}
                                 >
-                                    {room.participantName.charAt(0)}
-                                </span>
+                                    <span
+                                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-purple-100 text-base font-bold text-purple-600"
+                                        aria-hidden="true"
+                                    >
+                                        {room.participantName.charAt(0)}
+                                    </span>
 
-                                <span className="min-w-0 flex-1">
-                                    <span className="flex items-center gap-2">
-                                        <strong className="truncate text-[16px] text-gray-900">
-                                            {room.participantName}
-                                        </strong>
-                                        <span className="truncate text-xs font-medium text-gray-400">
-                                            {room.itemName}
+                                    <span className="min-w-0 flex-1">
+                                        <span className="flex items-center gap-2">
+                                            <strong className="truncate text-[16px] text-gray-900">
+                                                {room.participantName}
+                                            </strong>
+                                            <span className="truncate text-xs font-medium text-gray-400">
+                                                {room.itemName}
+                                            </span>
+                                        </span>
+                                        <span className="mt-1 block truncate text-sm text-gray-500">
+                                            {room.lastMessage}
                                         </span>
                                     </span>
-                                    <span className="mt-1 block truncate text-sm text-gray-500">
-                                        {room.lastMessage}
-                                    </span>
-                                </span>
 
-                                <span className="flex shrink-0 flex-col items-end gap-2">
-                                    <time className="text-xs text-gray-400">
-                                        {room.updatedAt}
-                                    </time>
-                                    {room.unreadCount > 0 ? (
-                                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-purple-500 px-1.5 text-[11px] font-bold text-white">
-                                            {room.unreadCount}
-                                        </span>
-                                    ) : (
-                                        <span className="h-5" aria-hidden="true" />
-                                    )}
-                                </span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                                    <span className="flex shrink-0 flex-col items-end gap-2">
+                                        {room.updatedAt ? (
+                                            <time className="text-xs text-gray-400">
+                                                {room.updatedAt}
+                                            </time>
+                                        ) : null}
+                                        {room.unreadCount > 0 ? (
+                                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-purple-500 px-1.5 text-[11px] font-bold text-white">
+                                                {room.unreadCount}
+                                            </span>
+                                        ) : (
+                                            <span
+                                                className="h-5"
+                                                aria-hidden="true"
+                                            />
+                                        )}
+                                    </span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </main>
+    );
+}
+
+function formatChatRoomTimestamp(value: string | null) {
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    const now = new Date();
+    if (isSameDate(date, now)) {
+        return new Intl.DateTimeFormat("ko-KR", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        }).format(date);
+    }
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (isSameDate(date, yesterday)) {
+        return "어제";
+    }
+
+    if (date.getFullYear() === now.getFullYear()) {
+        return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+    }
+
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function isSameDate(left: Date, right: Date) {
+    return (
+        left.getFullYear() === right.getFullYear() &&
+        left.getMonth() === right.getMonth() &&
+        left.getDate() === right.getDate()
     );
 }
