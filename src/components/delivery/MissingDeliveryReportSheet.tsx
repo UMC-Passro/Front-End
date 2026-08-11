@@ -47,8 +47,8 @@ export function MissingDeliveryReportSheet({
             }
         >
             <p className="text-sm font-medium leading-6 text-gray-600">
-                접수 내용은 해당 배송의 분실 문의로 기록됩니다. 현재 백엔드에서는
-                신고 접수만 가능하며 배송 상태와 정산을 자동으로 보류하지는
+                접수 내용은 해당 전달의 분실 문의로 기록됩니다. 현재 백엔드에서는
+                신고 접수만 가능하며 전달 상태와 정산을 자동으로 보류하지는
                 않습니다.
             </p>
             <label className="mt-5 block">

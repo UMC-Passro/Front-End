@@ -249,11 +249,11 @@ export function HomeDashboard({
 
                 <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
                     <section className="mt-12">
-                        <SectionTitle accent>진행중인 배송</SectionTitle>
+                        <SectionTitle accent>진행중인 전달</SectionTitle>
                         {isLoading ? (
                             <div
                                 className="mt-3 h-[76px] animate-pulse rounded-lg bg-purple-50"
-                                aria-label="배송 목록을 불러오는 중"
+                                aria-label="전달 목록을 불러오는 중"
                             />
                         ) : errorMessage ? (
                             <div
@@ -285,7 +285,7 @@ export function HomeDashboard({
                             </div>
                         ) : (
                             <p className="mt-3 rounded-lg bg-purple-50 px-5 py-5 text-center text-sm font-medium text-purple-500">
-                                진행 중인 배송이 없습니다.
+                                진행 중인 전달이 없습니다.
                             </p>
                         )}
                     </section>

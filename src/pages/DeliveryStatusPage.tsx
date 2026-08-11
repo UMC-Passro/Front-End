@@ -15,17 +15,17 @@ import { senderDeliveryApi } from "../apis";
 function getSenderTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
         case "WAIT":
-            return "배송자가 매칭되면 경로 추적을 시작할 수 있습니다.";
+            return "전달자가 매칭되면 경로 추적을 시작할 수 있습니다.";
         case "MATCHED":
-            return "배송자가 물품을 인수하면 위치 추적이 시작됩니다.";
+            return "전달자가 물품을 인수하면 위치 추적이 시작됩니다.";
         case "DELIVERING":
-            return "배송자의 위치를 15초마다 갱신하고 있습니다.";
+            return "전달자의 위치를 15초마다 갱신하고 있습니다.";
         case "CONFIRM_REQUESTED":
             return "전달 완료 확인을 기다리고 있습니다.";
         case "DELIVERED":
-            return "배송이 최종 완료되었습니다.";
+            return "전달이 최종 완료되었습니다.";
         case "CANCEL":
-            return "취소된 배송입니다.";
+            return "취소된 전달입니다.";
     }
 }
 
@@ -50,7 +50,7 @@ export default function DeliveryStatusPage() {
     const loadDelivery = useCallback(() => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
             return Promise.reject(
-                new ApiError({ message: "올바르지 않은 배송 ID입니다." }),
+                new ApiError({ message: "올바르지 않은 전달 ID입니다." }),
             );
         }
 
@@ -130,7 +130,7 @@ export default function DeliveryStatusPage() {
             setActionError(
                 caughtError instanceof ApiError
                     ? caughtError.message
-                    : "배송 완료 처리에 실패했습니다. 다시 시도해주세요.",
+                    : "전달 완료 처리에 실패했습니다. 다시 시도해주세요.",
             );
         } finally {
             setIsCompleting(false);
@@ -153,7 +153,7 @@ export default function DeliveryStatusPage() {
             setCancelError(
                 caughtError instanceof ApiError
                     ? caughtError.message
-                    : "배송 요청을 취소하지 못했습니다. 다시 시도해주세요.",
+                    : "전달 요청을 취소하지 못했습니다. 다시 시도해주세요.",
             );
         } finally {
             setIsCanceling(false);
@@ -197,7 +197,7 @@ export default function DeliveryStatusPage() {
         return (
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
-                    title="배송 추적"
+                    title="전달 추적"
                     onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
@@ -216,7 +216,7 @@ export default function DeliveryStatusPage() {
         return (
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
-                    title="배송 추적"
+                    title="전달 추적"
                     onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
@@ -227,7 +227,7 @@ export default function DeliveryStatusPage() {
                     >
                         <p className="text-sm font-medium text-rose-700">
                             {error?.message ??
-                                "배송 정보를 불러오지 못했습니다."}
+                                "전달 정보를 불러오지 못했습니다."}
                         </p>
                         <button
                             type="button"
@@ -251,7 +251,7 @@ export default function DeliveryStatusPage() {
         <>
             <div className="page-container relative flex flex-col overflow-hidden">
                 <PageHeader
-                    title="배송 추적"
+                    title="전달 추적"
                     onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
@@ -286,7 +286,7 @@ export default function DeliveryStatusPage() {
                         )}
                         partyTitle="전달자 정보"
                         party={data.shipperInfo}
-                        partyEmptyMessage="아직 배송자가 매칭되지 않았습니다."
+                        partyEmptyMessage="아직 전달자가 매칭되지 않았습니다."
                         onReview={() =>
                             navigate(`/delivery/feedback/${deliveryId}`)
                         }
@@ -323,7 +323,7 @@ export default function DeliveryStatusPage() {
                                 }}
                                 className="w-full rounded-xl border border-rose-200 bg-white py-3.5 font-semibold text-rose-600 transition-colors hover:bg-rose-50"
                             >
-                                배송 요청 취소
+                                전달 요청 취소
                             </button>
                         ) : null}
                         {canComplete ? (
@@ -349,7 +349,7 @@ export default function DeliveryStatusPage() {
                                 >
                                     {isCompleting
                                         ? "완료 처리 중..."
-                                        : "배송 완료 승인"}
+                                        : "전달 완료 승인"}
                                 </button>
                             </div>
                         ) : null}

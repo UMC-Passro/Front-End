@@ -6,11 +6,11 @@ export const DELIVERY_FILTER = {
         code: null, // 또는 "ALL" (서버 정책에 맞게)
     },
     DELIVERING: {
-        label: "배송중",
+        label: "전달중",
         code: "DELIVERING",
     },
     COMPLETED: {
-        label: "배송완료",
+        label: "전달완료",
         code: "COMPLETED",
     },
 } as const;

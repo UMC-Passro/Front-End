@@ -17,7 +17,7 @@ export default function DeliveryMatchingPage() {
 
     const loadDeliveryDetail = useCallback(() => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
-            return Promise.reject(new Error("올바르지 않은 배송 ID입니다."));
+            return Promise.reject(new Error("올바르지 않은 전달 ID입니다."));
         }
         return shipperDeliveryApi.getDeliveryDetail(deliveryId);
     }, [deliveryId]);
@@ -34,7 +34,7 @@ export default function DeliveryMatchingPage() {
             deliveryId <= 0 ||
             isAccepting
         ) {
-            setAcceptError("올바르지 않은 배송 ID입니다.");
+            setAcceptError("올바르지 않은 전달 ID입니다.");
             return;
         }
 
@@ -56,11 +56,11 @@ export default function DeliveryMatchingPage() {
     };
 
     if (detailRequest.isLoading) {
-        return <div>배송 정보를 불러오는 중...</div>;
+        return <div>전달 정보를 불러오는 중...</div>;
     }
 
     if (detailRequest.error) {
-        return <div>배송 정보를 불러오는 중 오류가 발생했습니다.</div>;
+        return <div>전달 정보를 불러오는 중 오류가 발생했습니다.</div>;
     }
 
     const delivery = detailRequest.data;

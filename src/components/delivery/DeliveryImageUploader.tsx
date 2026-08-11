@@ -99,7 +99,7 @@ export const DeliveryImageUploader = ({
                     <div key={image.imageKey} className="relative h-16 w-16">
                         <img
                             src={image.previewUrl}
-                            alt="배송 이미지"
+                            alt="전달 이미지"
                             className="h-full w-full rounded-lg object-cover"
                         />
                         <button

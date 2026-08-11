@@ -1,52 +1,19 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
-import {
-    inquiryApi,
-    senderDeliveryApi,
-    shipperDeliveryApi,
-} from "../apis";
-import type { InquiryCategory } from "../apis/inquiryApi";
+import { inquiryApi } from "../apis";
+import type { GeneralInquiryCategory } from "../apis/inquiryApi";
 import { ApiError } from "../types/api";
 
-async function findMostRecentDeliveryId(): Promise<number | null> {
-    const [senderDeliveries, shipperDeliveries] = await Promise.all([
-        senderDeliveryApi.getDeliveryList().catch(() => []),
-        shipperDeliveryApi.getDeliveryList().catch(() => []),
-    ]);
-
-    const candidates = [
-        ...senderDeliveries.map((delivery) => ({
-            deliveryId: delivery.deliveryId,
-            createdAt: delivery.createdAt,
-        })),
-        ...shipperDeliveries.map((delivery) => ({
-            deliveryId: delivery.id,
-            createdAt: delivery.createdAt,
-        })),
-    ];
-
-    if (candidates.length === 0) {
-        return null;
-    }
-
-    candidates.sort(
-        (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-
-    return candidates[0].deliveryId;
-}
-
 const inquiryOptions: Array<{
-    value: InquiryCategory;
+    value: GeneralInquiryCategory;
     label: string;
 }> = [
-    { value: "DELAY", label: "배송 지연" },
-    { value: "DAMAGE", label: "물품 파손" },
-    { value: "LOST", label: "물품 분실" },
-    { value: "WRONG_DELIVERY", label: "오배송" },
-    { value: "POINT", label: "요금 및 포인트" },
+    { value: "ACCOUNT", label: "계정 및 회원 정보" },
+    { value: "PAYMENT", label: "결제 및 포인트" },
+    { value: "DELIVERY", label: "전달 서비스" },
+    { value: "SERVICE", label: "서비스 이용" },
+    { value: "BUG", label: "오류 및 버그 신고" },
     { value: "ETC", label: "기타" },
 ];
 
@@ -89,19 +56,10 @@ export default function InquiryPage() {
         setIsSubmitting(true);
 
         try {
-            const deliveryId = await findMostRecentDeliveryId();
-
-            if (deliveryId === null) {
-                setIsConfirmOpen(false);
-                setErrorMessage("연결할 배송 건을 찾지 못했습니다.");
-                return;
-            }
-
-            await inquiryApi.createDelivery({
-                deliveryId,
+            await inquiryApi.createGeneral({
                 category: selectedOption.value,
                 title: selectedOption.label,
-                content,
+                content: content.trim(),
             });
             setIsConfirmOpen(false);
             navigate("/home");

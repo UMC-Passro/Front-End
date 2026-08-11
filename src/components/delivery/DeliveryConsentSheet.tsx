@@ -2,12 +2,12 @@ import { memo, useState } from "react";
 import BottomSheet from "../common/BottomSheet";
 
 const CONSENT_ITEMS = [
-    "맡기는 물품은 배송 가능한 물품입니다.",
+    "맡기는 물품은 전달 가능한 물품입니다.",
     "물품 정보를 정확하게 입력했습니다.",
     "운송 중 문제가 없도록 포장했습니다.",
     "수령인의 정보를 정확하게 입력했습니다.",
-    "배송 제한 품목 및 보상 정책을 확인했습니다.",
-    "내용을 확인하고 배송을 요청합니다.",
+    "전달 제한 품목 및 보상 정책을 확인했습니다.",
+    "내용을 확인하고 전달을 요청합니다.",
 ];
 
 interface DeliveryConsentSheetProps {
@@ -23,7 +23,7 @@ function DeliveryConsentSheet({
 
     return (
         <BottomSheet
-            title="[필수] 배송 요청 전 확인 및 동의"
+            title="[필수] 전달 요청 전 확인 및 동의"
             onClose={onClose}
             footer={
                 <button
@@ -32,7 +32,7 @@ function DeliveryConsentSheet({
                     disabled={!agreed}
                     className="flex w-full py-3.5 items-center justify-center rounded-lg bg-gray-800 font-bold text-white transition hover:bg-gray-900 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-300"
                 >
-                    배송 등록하기
+                    전달 등록하기
                 </button>
             }
         >
