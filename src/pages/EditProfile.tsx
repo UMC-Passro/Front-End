@@ -13,10 +13,7 @@ import DatePickerSheet from "../components/signup/date-picker/DatePickerSheet";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { formatPhoneNumber } from "../utils/signupFormatters";
-import {
-    getCurrentUser,
-    updateCurrentUserProfile,
-} from "../utils/auth";
+import { getCurrentUser, updateCurrentUserProfile } from "../utils/auth";
 import { imgproxied } from "../utils/img";
 
 const editableFieldClassName =
@@ -44,8 +41,7 @@ function getRouteWayPoints(
         const isEndpoint = index === 0 || index === stations.length - 1;
         const isSelectedWayPoint = selectedIds.has(station.id);
         const isTransferStation =
-            index > 0 &&
-            station.routeName !== stations[index - 1].routeName;
+            index > 0 && station.routeName !== stations[index - 1].routeName;
 
         if (
             !isEndpoint &&
@@ -118,10 +114,9 @@ function StationFieldButton({
         >
             <span className="flex min-w-0 items-baseline gap-1">
                 <span
-                    className={`truncate text-[15px] ${station
-                        ? "font-medium text-gray-800"
-                        : "text-gray-500"
-                        }`}
+                    className={`truncate text-[15px] ${
+                        station ? "font-medium text-gray-800" : "text-gray-500"
+                    }`}
                 >
                     {station?.name ?? placeholder}
                 </span>
@@ -171,10 +166,11 @@ function EditableProfileField({
                 readOnly={readOnly}
                 onChange={(event) => onChange?.(event.target.value)}
                 onBlur={onBlur}
-                className={`${editableFieldClassName} ${readOnly
-                    ? "cursor-default bg-gray-200 text-gray-500"
-                    : "bg-gray-50 text-gray-800"
-                    }`}
+                className={`${editableFieldClassName} ${
+                    readOnly
+                        ? "cursor-default bg-gray-200 text-gray-500"
+                        : "bg-gray-50 text-gray-800"
+                }`}
             />
         </label>
     );
@@ -366,12 +362,7 @@ export default function EditProfile() {
             return;
         }
 
-        if (
-            !nickname.trim() ||
-            !name.trim() ||
-            !phone.trim() ||
-            !birthDate
-        ) {
+        if (!nickname.trim() || !name.trim() || !phone.trim() || !birthDate) {
             setSaveHasError(true);
             setSaveMessage("닉네임, 이름, 전화번호, 생년월일을 확인해주세요.");
             return;
@@ -416,6 +407,9 @@ export default function EditProfile() {
                 birthDate,
             });
             setSaveMessage("프로필을 저장했습니다.");
+            setTimeout(() => {
+                navigate("/mypage", { replace: true });
+            }, 1000);
         } catch (error) {
             setSaveHasError(true);
             setSaveMessage(
@@ -471,7 +465,13 @@ export default function EditProfile() {
                             {picturePreview || profileRequest.data?.picture ? (
                                 <img
                                     src={
-                                        (profileRequest.data?.picture && imgproxied(profileRequest.data?.picture, 110)) || ""
+                                        picturePreview ??
+                                        (profileRequest.data?.picture
+                                            ? imgproxied(
+                                                  profileRequest.data?.picture,
+                                                  110,
+                                              )
+                                            : "")
                                     }
                                     alt="프로필"
                                     className="h-full w-full rounded-full object-cover"
@@ -496,7 +496,9 @@ export default function EditProfile() {
                             ref={pictureInputRef}
                             type="file"
                             accept="image/*"
-                            onChange={(event) => void handlePictureChange(event)}
+                            onChange={(event) =>
+                                void handlePictureChange(event)
+                            }
                             className="sr-only"
                             aria-label="프로필 이미지 선택"
                         />
@@ -504,10 +506,11 @@ export default function EditProfile() {
 
                     {pictureMessage ? (
                         <p
-                            className={`mt-3 text-xs ${pictureHasError
-                                ? "text-red-500"
-                                : "text-purple-600"
-                                }`}
+                            className={`mt-3 text-xs ${
+                                pictureHasError
+                                    ? "text-red-500"
+                                    : "text-purple-600"
+                            }`}
                             role={pictureHasError ? "alert" : "status"}
                         >
                             {pictureMessage}
@@ -567,9 +570,7 @@ export default function EditProfile() {
                         type="tel"
                         inputMode="tel"
                         autoComplete="tel"
-                        onChange={(value) =>
-                            setPhone(formatPhoneNumber(value))
-                        }
+                        onChange={(value) => setPhone(formatPhoneNumber(value))}
                     />
                     <BirthDateField
                         value={birthDate}
@@ -628,7 +629,6 @@ export default function EditProfile() {
                             </div>
                         ))}
 
-
                         <StationFieldButton
                             placeholder="도착지를 선택해주세요"
                             station={destinationStation}
@@ -637,10 +637,11 @@ export default function EditProfile() {
 
                         {routeMessage ? (
                             <p
-                                className={`px-1 text-xs ${routeHasError
-                                    ? "text-red-500"
-                                    : "text-purple-600"
-                                    }`}
+                                className={`px-1 text-xs ${
+                                    routeHasError
+                                        ? "text-red-500"
+                                        : "text-purple-600"
+                                }`}
                                 role={routeHasError ? "alert" : "status"}
                             >
                                 {routeMessage}
@@ -692,8 +693,9 @@ export default function EditProfile() {
             <div className="shrink-0 pt-3">
                 {saveMessage ? (
                     <p
-                        className={`mb-2 text-center text-xs ${saveHasError ? "text-red-500" : "text-purple-600"
-                            }`}
+                        className={`mb-2 text-center text-xs ${
+                            saveHasError ? "text-red-500" : "text-purple-600"
+                        }`}
                         role={saveHasError ? "alert" : "status"}
                     >
                         {saveMessage}
@@ -717,7 +719,12 @@ export default function EditProfile() {
                 </button>
 
                 <div className="w-full flex justify-center">
-                    <span className="text-sm font-medium leading-[22px] text-gray-600 mt-2 mb-4 cursor-pointer" onClick={() => { navigate("/mypage/edit/password") }}>
+                    <span
+                        className="text-sm font-medium leading-[22px] text-gray-600 mt-2 mb-4 cursor-pointer"
+                        onClick={() => {
+                            navigate("/mypage/edit/password");
+                        }}
+                    >
                         비밀번호 변경
                     </span>
                 </div>
@@ -740,8 +747,8 @@ export default function EditProfile() {
                         stationField === "origin"
                             ? "출발역 선택"
                             : stationField === "destination"
-                                ? "도착역 선택"
-                                : "경유역 선택"
+                              ? "도착역 선택"
+                              : "경유역 선택"
                     }
                     onClose={() => setStationField(null)}
                     onSelect={handleStationSelect}

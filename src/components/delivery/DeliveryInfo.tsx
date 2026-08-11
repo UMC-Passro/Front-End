@@ -42,7 +42,7 @@ export const DeliveryInfo = ({
                                 <span className="text-gray-400 text-sm">
                                     물품 크기
                                 </span>
-                                <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-gray-500 text-white text-xs font-bold cursor-pointer">
+                                <div className="group relative flex items-center justify-center w-4 h-4 rounded-full bg-purple-400 text-white text-xs font-bold cursor-pointer">
                                     ?
                                     <SizeInfo
                                         boxTranslate="-24%"

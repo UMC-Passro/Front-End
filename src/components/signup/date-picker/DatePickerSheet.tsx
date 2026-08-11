@@ -62,7 +62,7 @@ export default function DatePickerSheet({
 
     return (
         <div
-            className="bottom-sheet-backdrop-in fixed inset-0 z-30 mx-auto flex w-full max-w-[402px] items-end overflow-hidden bg-black/40"
+            className="bottom-sheet-backdrop-in fixed inset-0 z-30 mx-auto flex w-full max-w-[402px] items-end overflow-hidden bg-black/40 pb-16"
             onClick={onClose}
         >
             <div
