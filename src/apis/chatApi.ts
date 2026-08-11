@@ -27,14 +27,14 @@ export interface ChatRoomInfo {
 export interface ChatRoomListElement {
     deliveryId: number;
     partner: {
-        id: number,
-        nickname: string,
-        picture: string
+        id: number;
+        nickname: string;
+        picture: string | null;
     };
-    itemName: string,
-    lastMessage: string,
-    lastMessageAt: string,
-    unreadCount: number
+    itemName: string | null;
+    lastMessage: string | null;
+    lastMessageAt: string | null;
+    unreadCount: number;
 }
 
 export const chatApi = {
