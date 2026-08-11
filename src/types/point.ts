@@ -34,34 +34,36 @@ export type PointIncrementReason =
     | "DELIVERY_SETTLEMENT"
     | "MARKET_PURCHASE";
 
+export type PointPlace = {
+    id: number;
+    subwayRouteName: string;
+    subwayStationName: string;
+};
+
+export type PointDelivery = {
+    id: number;
+    name: string | null;
+    origin: PointPlace | null;
+    destination: PointPlace | null;
+    status: BackendDeliveryState;
+    memo: string | null;
+};
+
+export type PointMarket = {
+    id: number;
+    name: string;
+    price: number;
+};
+
 export type PointLog = {
     pointLogId: number;
-    delivery: {
-        id: number;
-        name: string;
-        origin: {
-            id: number;
-            subwayRouteName: string;
-            subwayStationName: string;
-        };
-        destination: {
-            id: number;
-            subwayRouteName: string;
-            subwayStationName: string;
-        };
-        status: BackendDeliveryState;
-        memo?: string;
-    };
-    market: {
-        id: number;
-        name: string;
-        price: number;
-    };
+    delivery: PointDelivery | null;
+    market: PointMarket | null;
     incrementReason: PointIncrementReason;
     deltaPoint: number;
     beforePoint: number;
     afterPoint: number;
-    incrementReasonMemo?: string;
+    incrementReasonMemo: string | null;
     createdAt: string;
 };
 
