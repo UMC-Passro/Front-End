@@ -8,6 +8,7 @@ import {
     PointFilter,
     PointFilterLabel,
     PointIncrementReason,
+    PointLog,
 } from "../types/point";
 import { useNavigate } from "react-router-dom";
 import { pointApi } from "../apis";
@@ -28,11 +29,7 @@ export default function PointPage() {
     const pointItems = useMemo(() => {
         return (pointRequest.data?.pointLogs ?? []).map((log) => ({
             id: log.pointLogId,
-            name:
-                log.delivery.name ??
-                log.market.name ??
-                log.incrementReasonMemo ??
-                "포인트 내역",
+            name: getPointLogName(log),
             date: formatPointDate(log.createdAt),
             amount: Math.abs(log.deltaPoint),
             type: getPointFilterType(log.incrementReason),
@@ -58,6 +55,15 @@ export default function PointPage() {
             <div className="my-5 font-bold text-gray-800">적립 내역</div>
             <PointList items={filteredItems} />
         </div>
+    );
+}
+
+function getPointLogName(log: PointLog) {
+    return (
+        log.delivery?.name?.trim() ||
+        log.market?.name?.trim() ||
+        log.incrementReasonMemo?.trim() ||
+        "포인트 내역"
     );
 }
 
