@@ -19,6 +19,7 @@ type HomeDashboardProps = {
     errorMessage?: string;
     onRetry?: () => void;
     avatarUrl?: string | null;
+    isNicknameLoading?: boolean;
     isRoleChanging?: boolean;
     onRoleChange: (role: UserRole) => void;
 };
@@ -30,6 +31,7 @@ export function HomeDashboard({
     errorMessage,
     onRetry,
     avatarUrl,
+    isNicknameLoading = false,
     isRoleChanging = false,
     onRoleChange,
 }: HomeDashboardProps) {
@@ -176,6 +178,7 @@ export function HomeDashboard({
                         headline={content.headline}
                         role={role}
                         avatarUrl={avatarUrl}
+                        isNicknameLoading={isNicknameLoading}
                         unreadCount={unreadCount}
                         isNotificationOpen={isAlarmOpen}
                         onNotificationToggle={handleAlarmToggle}

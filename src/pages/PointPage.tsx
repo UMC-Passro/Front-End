@@ -45,12 +45,14 @@ export default function PointPage() {
             ? pointItems
             : pointItems.filter((item) => item.type === currentFilter);
 
-    const totalPoint = pointRequest.data?.currentPoint ?? 0;
+    const totalPoint = pointRequest.data?.currentPoint;
+    const isPointLoading =
+        pointRequest.data === null && pointRequest.error === null;
 
     return (
         <div className="page-container">
             <PageHeader title="포인트" onBack={() => navigate("/mypage")} />
-            <TotalPoint total={totalPoint} />
+            <TotalPoint total={totalPoint} isLoading={isPointLoading} />
             <PointFilterButton selected={selected} onSelect={setSelected} />
             <div className="my-5 font-bold text-gray-800">적립 내역</div>
             <PointList items={filteredItems} />

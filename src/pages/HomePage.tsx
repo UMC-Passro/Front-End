@@ -148,6 +148,8 @@ export default function HomePage() {
     );
     const profileRequest = useApiRequest(loadProfile);
     const displayName = nickname;
+    const isNicknameLoading =
+        !nickname && !profileRequest.error;
     const loadSenderDeliveries = useCallback(
         () => senderDeliveryApi.getDeliveryList(),
         [],
@@ -260,6 +262,7 @@ export default function HomePage() {
                 role={userRole}
                 content={content}
                 avatarUrl={profileRequest.data?.picture}
+                isNicknameLoading={isNicknameLoading}
                 isRoleChanging={
                     activeRequest.isLoading || isCheckingStudent
                 }
