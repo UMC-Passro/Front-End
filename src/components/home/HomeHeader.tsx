@@ -7,7 +7,6 @@ type HomeHeaderProps = {
     headline: string;
     role: UserRole;
     avatarUrl?: string | null;
-    isNicknameLoading?: boolean;
     unreadCount?: number;
     isNotificationOpen?: boolean;
     onNotificationToggle?: () => void;
@@ -22,7 +21,6 @@ export function HomeHeader({
     headline,
     role,
     avatarUrl,
-    isNicknameLoading = false,
     unreadCount = 0,
     isNotificationOpen = false,
     onNotificationToggle,
@@ -39,7 +37,7 @@ export function HomeHeader({
                     aria-live="polite"
                 >
                     안녕하세요,{" "}
-                    {isNicknameLoading ? null : name}
+                    {name}
                     님!
                     <br />
                     {headline}

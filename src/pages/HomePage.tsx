@@ -16,6 +16,7 @@ import {
     getCurrentUser,
     getSelectedUserRole,
     setCurrentUserRole,
+    updateCurrentUserProfile,
 } from "../utils/auth";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import { SenderDeliveryListItem } from "../types/delivery/sender";
@@ -131,6 +132,7 @@ function createShipperContent(
 
 export default function HomePage() {
     const currentUser = getCurrentUser();
+    const [nickname, setNickname] = useState(currentUser?.nickname ?? "");
     const [userRole, setUserRole] = useState<UserRole>(
         () => getSelectedUserRole() ?? currentUser?.role ?? "shipper",
     );
@@ -145,14 +147,7 @@ export default function HomePage() {
         [],
     );
     const profileRequest = useApiRequest(loadProfile);
-    const displayName =
-        profileRequest.data?.nickname ||
-        currentUser?.nickname ||
-        "패스로 사용자";
-    const isNicknameLoading =
-        !profileRequest.data?.nickname &&
-        !currentUser?.nickname &&
-        !profileRequest.error;
+    const displayName = nickname;
     const loadSenderDeliveries = useCallback(
         () => senderDeliveryApi.getDeliveryList(),
         [],
@@ -182,6 +177,22 @@ export default function HomePage() {
         shipperRequest.execute,
         userRole,
     ]);
+
+    useEffect(() => {
+        const profile = profileRequest.data;
+
+        if (!profile) {
+            return;
+        }
+
+        updateCurrentUserProfile({
+            name: profile.name,
+            nickname: profile.nickname,
+            phone: profile.phoneNumber,
+            birthDate: profile.birth,
+        });
+        setNickname(profile.nickname);
+    }, [profileRequest.data]);
 
     const applyRoleChange = useCallback((nextRole: UserRole) => {
         setCurrentUserRole(nextRole);
@@ -249,7 +260,6 @@ export default function HomePage() {
                 role={userRole}
                 content={content}
                 avatarUrl={profileRequest.data?.picture}
-                isNicknameLoading={isNicknameLoading}
                 isRoleChanging={
                     activeRequest.isLoading || isCheckingStudent
                 }
