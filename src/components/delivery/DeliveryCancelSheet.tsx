@@ -31,7 +31,7 @@ export function DeliveryCancelSheet({
                         type="button"
                         onClick={onConfirm}
                         disabled={isSubmitting}
-                        className="rounded-xl bg-rose-600 py-3.5 font-bold text-white disabled:bg-rose-300"
+                        className="rounded-xl bg-[#FF3D3D] py-3.5 font-bold text-white disabled:bg-rose-300"
                     >
                         {isSubmitting ? "취소 처리 중..." : "요청 취소하기"}
                     </button>

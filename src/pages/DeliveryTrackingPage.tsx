@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { subwayApi } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryTrackingContent } from "../components/delivery/DeliveryTrackingContent";
+import { DeliveryTrackingProgress } from "../components/delivery/DeliveryTrackingOverview";
+import matchingWaitImage from "../assets/matching-wait.svg";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { useShipperRouteTracking } from "../hooks/useShipperRouteTracking";
 import { ApiError } from "../types/api";
@@ -27,7 +29,7 @@ function getShipperTrackingMessage(status: BackendDeliveryState) {
 }
 
 function getActionLabel(status: BackendDeliveryState) {
-    return status === "MATCHED" ? "물품 인수 확인" : "전달 완료 요청";
+    return status === "MATCHED" ? "물품 인수 확인" : "완료 확인";
 }
 
 export default function DeliveryTrackingPage() {
@@ -44,7 +46,10 @@ export default function DeliveryTrackingPage() {
         }
 
         const detail = await shipperDeliveryApi.getDeliveryDetail(deliveryId);
-        if (detail.deliveryState === "DELIVERED") {
+        if (
+            detail.deliveryState === "WAIT" ||
+            detail.deliveryState === "DELIVERED"
+        ) {
             return { detail, route: null };
         }
 
@@ -153,52 +158,91 @@ export default function DeliveryTrackingPage() {
     const canUpdateStatus =
         detail.deliveryState === "MATCHED" ||
         detail.deliveryState === "DELIVERING";
+    const isWaitingForMatch = detail.deliveryState === "WAIT";
 
     return (
-        <div className="page-container relative flex flex-col overflow-hidden">
+        <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="전달 추적"
                 onBack={() => navigate(-1)}
                 className="shrink-0"
             />
 
-            <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                <DeliveryTrackingContent
-                    itemName={detail.name}
-                    status={detail.deliveryState}
-                    originPlace={detail.originPlace}
-                    destinationPlace={detail.destPlace}
-                    logs={detail.deliveryTimeLine}
-                    route={route}
-                    isRouteLoading={false}
-                    currentPlaceId={locationTracking.nearestStation?.station.id}
-                    currentCoordinates={locationTracking.position ?? undefined}
-                    currentDistanceMeters={
-                        locationTracking.nearestStation?.distanceMeters
-                    }
-                    gpsAccuracyMeters={
-                        locationTracking.position?.accuracyMeters
-                    }
-                    trackingStatus={locationTracking.status}
-                    trackingError={locationTracking.errorMessage}
-                    lastLocationUpdatedAt={
-                        locationTracking.lastSyncedLocation?.updatedAt
-                    }
-                    overviewTimeMode="elapsed"
-                    trackingStatusMessage={getShipperTrackingMessage(
-                        detail.deliveryState,
-                    )}
-                    partyTitle="발송자 정보"
-                    party={detail.senderInfo}
-                    partyEmptyMessage="발송자 정보를 확인할 수 없습니다."
-                    onPartyMessageClick={() =>
-                        navigate(`/delivery/chat/${deliveryId}`)
-                    }
-                />
-            </div>
+            {isWaitingForMatch ? (
+                <div className="flex min-h-0 flex-1 flex-col pt-7">
+                    <DeliveryTrackingProgress status="WAIT" />
+                    <div className="flex flex-1 flex-col items-center justify-center pb-12 text-center">
+                        <img
+                            src={matchingWaitImage}
+                            alt=""
+                            className="h-[106px] w-[162px]"
+                        />
+                        <div className="mt-[38px]">
+                            <h2 className="text-[22px] font-semibold leading-[22px] text-purple-600">
+                                전달자를 찾는 중이에요!
+                            </h2>
+                            <p className="mt-[15px] text-sm font-medium leading-normal text-gray-400">
+                                잠시만 기다려주세요...
+                                <br />
+                                빠르게 매칭해 드릴게요!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                    <DeliveryTrackingContent
+                        itemName={detail.name}
+                        status={detail.deliveryState}
+                        originPlace={detail.originPlace}
+                        destinationPlace={detail.destPlace}
+                        logs={detail.deliveryTimeLine}
+                        route={route}
+                        isRouteLoading={false}
+                        currentPlaceId={
+                            locationTracking.nearestStation?.station.id
+                        }
+                        currentCoordinates={
+                            locationTracking.position ?? undefined
+                        }
+                        currentDistanceMeters={
+                            locationTracking.nearestStation?.distanceMeters
+                        }
+                        gpsAccuracyMeters={
+                            locationTracking.position?.accuracyMeters
+                        }
+                        trackingStatus={locationTracking.status}
+                        trackingError={locationTracking.errorMessage}
+                        lastLocationUpdatedAt={
+                            locationTracking.lastSyncedLocation?.updatedAt
+                        }
+                        overviewTimeMode="elapsed"
+                        trackingStatusMessage={getShipperTrackingMessage(
+                            detail.deliveryState,
+                        )}
+                        partyTitle="발송자 정보"
+                        party={detail.senderInfo}
+                        partyEmptyMessage="발송자 정보를 확인할 수 없습니다."
+                        onPartyMessageClick={() =>
+                            navigate(`/delivery/chat/${deliveryId}`)
+                        }
+                        variant="figma"
+                    />
+                </div>
+            )}
 
-            {canUpdateStatus ? (
-                <div className="shrink-0 border-t border-gray-100 bg-white pt-3">
+            {isWaitingForMatch ? (
+                <div className="shrink-0 bg-white pt-3">
+                    <button
+                        type="button"
+                        disabled
+                        className="w-full rounded-[10px] bg-gray-100 py-3.5 font-semibold text-gray-900"
+                    >
+                        완료 확인
+                    </button>
+                </div>
+            ) : canUpdateStatus ? (
+                <div className="shrink-0 bg-white pt-3">
                     {actionError ? (
                         <p
                             className="mb-2 text-center text-xs font-medium text-rose-600"
@@ -211,7 +255,7 @@ export default function DeliveryTrackingPage() {
                         type="button"
                         onClick={handleStatusAction}
                         disabled={isUpdatingStatus}
-                        className="w-full rounded-xl bg-purple-600 py-3.5 font-semibold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                        className="w-full rounded-[10px] bg-gray-100 py-3.5 font-semibold text-gray-900 shadow-[0_4px_15px_rgba(0,0,0,0.05)] transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
                     >
                         {isUpdatingStatus
                             ? "처리 중..."

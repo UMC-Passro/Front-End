@@ -17,6 +17,7 @@ interface DeliveryTimelineProps {
     originPlace: BackendPlace;
     destinationPlace: BackendPlace;
     currentStationLabel?: string | null;
+    variant?: "default" | "figma";
 }
 
 interface TimelineDefinition {
@@ -71,6 +72,31 @@ const CURRENT_TARGET_BY_STATUS: Partial<
     CANCEL: "CANCELED",
 };
 
+const TIME_ZONE_SUFFIX_PATTERN = /(?:Z|[+-]\d{2}:?\d{2})$/u;
+
+function formatCompactDateTime(value: string | undefined) {
+    if (!value) return null;
+
+    const date = new Date(
+        TIME_ZONE_SUFFIX_PATTERN.test(value) ? value : `${value}Z`,
+    );
+    if (Number.isNaN(date.getTime())) return value;
+
+    const parts = new Intl.DateTimeFormat("ko-KR", {
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Seoul",
+    }).formatToParts(date);
+    const getPart = (type: Intl.DateTimeFormatPartTypes) =>
+        parts.find((part) => part.type === type)?.value ?? "";
+
+    return `${getPart("month")}.${getPart("day")}(${getPart("weekday")}) ${getPart("hour")}:${getPart("minute")}`;
+}
+
 function getTimelineLocation(
     type: BackendDeliveryLogType,
     state: TimelineState,
@@ -114,23 +140,26 @@ export function DeliveryTimeline({
     originPlace,
     destinationPlace,
     currentStationLabel,
+    variant = "default",
 }: DeliveryTimelineProps) {
     const currentTarget = CURRENT_TARGET_BY_STATUS[status];
     const logsByType = new Map(logs.map((log) => [log.type, log]));
-    const timelineItems: TimelineItem[] = TIMELINE_DEFINITIONS.map((definition) => {
-        const log = logsByType.get(definition.type);
-        const state: TimelineState = log
-            ? "completed"
-            : currentTarget === definition.type
-              ? "current"
-              : "pending";
+    const timelineItems: TimelineItem[] = TIMELINE_DEFINITIONS.map(
+        (definition) => {
+            const log = logsByType.get(definition.type);
+            const state: TimelineState = log
+                ? "completed"
+                : currentTarget === definition.type
+                  ? "current"
+                  : "pending";
 
-        return {
-            ...definition,
-            log,
-            state,
-        };
-    });
+            return {
+                ...definition,
+                log,
+                state,
+            };
+        },
+    );
     const canceledLog = logsByType.get("CANCELED");
 
     if (status === "CANCEL" || canceledLog) {
@@ -141,6 +170,107 @@ export function DeliveryTimeline({
             log: canceledLog,
             state: canceledLog ? "canceled" : "current",
         });
+    }
+
+    if (variant === "figma") {
+        return (
+            <section>
+                <h2 className="text-[17px] font-bold leading-[22px] text-gray-900">
+                    전달 타임라인
+                </h2>
+                <ol className="mt-5 pl-2.5">
+                    {timelineItems.map((item, index) => {
+                        const isLast = index === timelineItems.length - 1;
+                        const isPending = item.state === "pending";
+                        const location = getTimelineLocation(
+                            item.type,
+                            item.state,
+                            originPlace,
+                            destinationPlace,
+                            currentStationLabel,
+                        );
+                        const locationLabel = location
+                            ?.replace(/^출발지 · /u, "")
+                            .replace(/^도착지 · /u, "")
+                            .replace(/^현재 위치 · /u, "");
+
+                        return (
+                            <li
+                                key={item.type}
+                                className="relative grid grid-cols-[10px_minmax(0,1fr)] gap-[15px] pb-6 last:pb-0"
+                            >
+                                {!isLast ? (
+                                    <span
+                                        className={`absolute -bottom-1.5 left-[4px] top-4 border-l-2 border-dotted ${
+                                            item.state === "completed"
+                                                ? "border-purple-300"
+                                                : "border-gray-200"
+                                        }`}
+                                        aria-hidden="true"
+                                    />
+                                ) : null}
+                                <span
+                                    className={`relative z-10 mt-1.5 h-2.5 w-2.5 rounded-full ${
+                                        item.state === "completed" ||
+                                        item.state === "current"
+                                            ? "bg-purple-500"
+                                            : item.state === "canceled"
+                                              ? "bg-rose-500"
+                                              : "bg-gray-300"
+                                    }`}
+                                    aria-hidden="true"
+                                />
+                                <div className="min-w-0">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <h3
+                                            className={`text-[15px] font-medium leading-[22px] ${
+                                                isPending
+                                                    ? "text-gray-400"
+                                                    : "text-gray-900"
+                                            }`}
+                                        >
+                                            {item.label}
+                                        </h3>
+                                        {item.log?.createdAt ||
+                                        item.state === "current" ? (
+                                            <span className="shrink-0 text-xs font-semibold text-gray-500">
+                                                {item.state === "current"
+                                                    ? "진행중"
+                                                    : formatCompactDateTime(
+                                                          item.log?.createdAt,
+                                                      )}
+                                            </span>
+                                        ) : null}
+                                    </div>
+                                    <p
+                                        className={`mt-1 text-[13px] font-medium leading-normal ${
+                                            isPending
+                                                ? "text-gray-300"
+                                                : "text-gray-500"
+                                        }`}
+                                    >
+                                        {item.description}
+                                    </p>
+                                    {locationLabel &&
+                                    locationLabel !==
+                                        "로그 위치 정보 미제공" ? (
+                                        <span
+                                            className={`mt-2 inline-flex rounded-md bg-gray-50 px-2 py-1 text-xs font-semibold ${
+                                                isPending
+                                                    ? "text-gray-300"
+                                                    : "text-purple-800"
+                                            }`}
+                                        >
+                                            {locationLabel}
+                                        </span>
+                                    ) : null}
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ol>
+            </section>
+        );
     }
 
     return (
@@ -222,7 +352,8 @@ export function DeliveryTimeline({
                                                     ? "bg-purple-50 text-purple-700"
                                                     : item.state === "current"
                                                       ? "bg-amber-50 text-amber-700"
-                                                      : item.state === "canceled"
+                                                      : item.state ===
+                                                          "canceled"
                                                         ? "bg-rose-50 text-rose-700"
                                                         : "bg-gray-50 text-gray-400"
                                             }`}

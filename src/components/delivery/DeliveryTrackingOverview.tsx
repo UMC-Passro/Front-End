@@ -20,6 +20,88 @@ interface DeliveryTrackingOverviewProps {
     timeMode?: "estimated" | "elapsed";
     deliveryStartedAt?: string | null;
     deliveryHandedOffAt?: string | null;
+    variant?: "default" | "figma";
+}
+
+function withStationSuffix(stationName: string) {
+    return stationName.endsWith("역") ? stationName : `${stationName}역`;
+}
+
+function getTrackingStep(status: BackendDeliveryState) {
+    if (status === "DELIVERED") return 2;
+    if (status === "DELIVERING" || status === "CONFIRM_REQUESTED") return 1;
+    return 0;
+}
+
+export function DeliveryTrackingProgress({
+    status,
+}: {
+    status: BackendDeliveryState;
+}) {
+    const currentStep = getTrackingStep(status);
+    const steps = ["물건 픽업", "전달중", "전달 완료"];
+
+    return (
+        <div className="relative mx-[5px] grid grid-cols-[60px_1fr_60px] items-start">
+            <span
+                className={`absolute left-[44px] right-[calc(50%+14px)] top-2 h-0.5 ${
+                    currentStep >= 1 ? "bg-gray-800" : "bg-gray-200"
+                }`}
+                aria-hidden="true"
+            />
+            <span
+                className={`absolute left-[calc(50%+14px)] right-[44px] top-2 h-0.5 ${
+                    currentStep >= 2 ? "bg-gray-800" : "bg-gray-200"
+                }`}
+                aria-hidden="true"
+            />
+            {steps.map((label, index) => {
+                const isActive = index === currentStep;
+                const isReached = index <= currentStep;
+
+                return (
+                    <div
+                        key={label}
+                        className="relative flex flex-col items-center gap-2"
+                    >
+                        <span
+                            className={`relative z-10 flex h-[17px] w-[17px] items-center justify-center rounded-full ${
+                                isActive
+                                    ? "bg-purple-100"
+                                    : isReached
+                                      ? "bg-gray-800"
+                                      : "bg-gray-200"
+                            }`}
+                            aria-hidden="true"
+                        >
+                            {isActive ? (
+                                <span className="h-[7px] w-[7px] rounded-full bg-purple-500" />
+                            ) : null}
+                        </span>
+                        <span
+                            className={`relative z-10 whitespace-nowrap bg-white px-1 text-[13px] font-medium leading-[22px] ${
+                                isActive ? "text-purple-600" : "text-gray-600"
+                            }`}
+                        >
+                            {label}
+                        </span>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+function getCompactTimeLabel(timeLabel: string) {
+    if (
+        timeLabel === "정보 없음" ||
+        timeLabel === "아직 시작되지 않음" ||
+        timeLabel === "완료 시각 정보 없음"
+    ) {
+        return "경로 확인 중";
+    }
+
+    return `약 ${timeLabel.replace(/\s*(경과|소요)$/u, "")}`;
 }
 
 interface InformationCardProps {
@@ -73,6 +155,7 @@ export function DeliveryTrackingOverview({
     timeMode = "estimated",
     deliveryStartedAt,
     deliveryHandedOffAt,
+    variant = "default",
 }: DeliveryTrackingOverviewProps) {
     const [currentTime, setCurrentTime] = useState(() => Date.now());
     const isCompleted = status === "DELIVERED";
@@ -80,11 +163,7 @@ export function DeliveryTrackingOverview({
     const showsElapsedTime = !isCompleted && timeMode === "elapsed";
 
     useEffect(() => {
-        if (
-            !showsElapsedTime ||
-            !deliveryStartedAt ||
-            deliveryHandedOffAt
-        ) {
+        if (!showsElapsedTime || !deliveryStartedAt || deliveryHandedOffAt) {
             return;
         }
 
@@ -101,9 +180,7 @@ export function DeliveryTrackingOverview({
         deliveryHandedOffAt,
         currentTime,
     );
-    const locationUpdatedLabel = formatTrackingDateTime(
-        lastLocationUpdatedAt,
-    );
+    const locationUpdatedLabel = formatTrackingDateTime(lastLocationUpdatedAt);
     const currentStationLabel = isCompleted
         ? destinationPlace.subwayStationName
         : isConfirmationPending
@@ -118,9 +195,7 @@ export function DeliveryTrackingOverview({
           : routeProgress.currentStation
             ? [
                   routeProgress.currentStation.routeName,
-                  locationUpdatedLabel
-                      ? `${locationUpdatedLabel} 갱신`
-                      : null,
+                  locationUpdatedLabel ? `${locationUpdatedLabel} 갱신` : null,
               ]
                   .filter(Boolean)
                   .join(" · ")
@@ -136,7 +211,7 @@ export function DeliveryTrackingOverview({
               : "추적 시작 전";
     const nextStationDescription = routeProgress.nextStation?.routeName;
     const timeLabel = isCompleted
-        ? formatTrackingDateTime(completedAt) ?? "완료 시각 정보 없음"
+        ? (formatTrackingDateTime(completedAt) ?? "완료 시각 정보 없음")
         : showsElapsedTime
           ? elapsedMinutes == null
               ? "아직 시작되지 않음"
@@ -162,6 +237,46 @@ export function DeliveryTrackingOverview({
             ? "현재 역에서 도착역까지 예상 소요 시간"
             : "전달자 위치가 갱신되면 표시됩니다";
 
+    if (variant === "figma") {
+        return (
+            <section className="pt-7">
+                <DeliveryTrackingProgress status={status} />
+
+                <div className="mt-6 grid grid-cols-[1fr_64px_1fr] items-center rounded-xl bg-gray-50 px-7 py-5 text-center">
+                    <div className="min-w-0">
+                        <p className="truncate text-lg font-bold text-gray-900">
+                            {withStationSuffix(originPlace.subwayStationName)}
+                        </p>
+                        <p className="mt-2 text-xs font-medium text-gray-400">
+                            출발지
+                        </p>
+                    </div>
+                    <div>
+                        <p
+                            className="text-[15px] text-gray-500"
+                            aria-hidden="true"
+                        >
+                            →
+                        </p>
+                        <p className="mt-1 truncate text-xs font-medium text-gray-400">
+                            {getCompactTimeLabel(timeLabel)}
+                        </p>
+                    </div>
+                    <div className="min-w-0">
+                        <p className="truncate text-lg font-bold text-gray-900">
+                            {withStationSuffix(
+                                destinationPlace.subwayStationName,
+                            )}
+                        </p>
+                        <p className="mt-2 text-xs font-medium text-gray-400">
+                            도착지
+                        </p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section
             className={`mt-5 overflow-hidden rounded-3xl px-5 py-5 text-white shadow-sm ${
@@ -178,7 +293,7 @@ export function DeliveryTrackingOverview({
                     <h1 className="mt-3 truncate text-xl font-bold">
                         {isCompleted
                             ? "전달이 완료되었습니다"
-                            : itemName ?? "이름 없는 물품"}
+                            : (itemName ?? "이름 없는 물품")}
                     </h1>
                     <p className="mt-1 text-sm font-medium text-white/75">
                         {isCompleted
