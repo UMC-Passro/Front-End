@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { notificationApi } from "../../apis/notificationApi";
 import type { NotificationItem } from "../../apis/notificationApi";
-import BellIcon from "../../assets/icons/BellIcon";
 import type { HomeContent } from "../../types/home";
 import type { UserRole } from "../../types/user";
 import AlarmPopup from "../alarms/AlarmPopup";
@@ -105,27 +104,6 @@ export function HomeDashboard({
         void loadNotifications();
     };
 
-    const handleAlarmDismiss = async (notificationId: number) => {
-        const dismissedAlarm = alarms.find(
-            (alarm) => alarm.notificationId === notificationId,
-        );
-
-        try {
-            await notificationApi.deleteNotification(notificationId);
-            setAlarms((current) =>
-                current.filter(
-                    (alarm) => alarm.notificationId !== notificationId,
-                ),
-            );
-
-            if (dismissedAlarm && !dismissedAlarm.read) {
-                setUnreadCount((current) => Math.max(0, current - 1));
-            }
-        } catch {
-            setAlarmError("알림을 삭제하지 못했습니다.");
-        }
-    };
-
     const handleAlarmSelect = async (alarm: NotificationItem) => {
         if (!alarm.read) {
             try {
@@ -198,52 +176,26 @@ export function HomeDashboard({
                         headline={content.headline}
                         role={role}
                         avatarUrl={avatarUrl}
+                        unreadCount={unreadCount}
+                        isNotificationOpen={isAlarmOpen}
+                        onNotificationToggle={handleAlarmToggle}
+                        notificationContainerRef={alarmContainerRef}
+                        notificationPanel={
+                            <AlarmPopup
+                                alarms={alarms}
+                                onClearAll={() =>
+                                    void handleClearAllAlarms()
+                                }
+                                onSelect={(alarm) =>
+                                    void handleAlarmSelect(alarm)
+                                }
+                                isLoading={isAlarmLoading}
+                                errorMessage={alarmError}
+                                className="absolute right-0 top-full z-50"
+                            />
+                        }
                         isRoleChanging={isRoleChanging}
                         onRoleChange={onRoleChange}
-                        actions={
-                            <div
-                                ref={alarmContainerRef}
-                                className="relative"
-                            >
-                                <button
-                                    type="button"
-                                    onClick={handleAlarmToggle}
-                                    className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                                    aria-label="알림 열기"
-                                    aria-haspopup="dialog"
-                                    aria-expanded={isAlarmOpen}
-                                >
-                                    <BellIcon className="h-6 w-6" />
-                                    {unreadCount > 0 ? (
-                                        <span className="absolute right-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-purple-500 px-1 text-[9px] font-bold leading-4 text-white">
-                                            {unreadCount > 99
-                                                ? "99+"
-                                                : unreadCount}
-                                        </span>
-                                    ) : null}
-                                </button>
-
-                                {isAlarmOpen ? (
-                                    <AlarmPopup
-                                        alarms={alarms}
-                                        onClearAll={() =>
-                                            void handleClearAllAlarms()
-                                        }
-                                        onDismiss={(notificationId) =>
-                                            void handleAlarmDismiss(
-                                                notificationId,
-                                            )
-                                        }
-                                        onSelect={(alarm) =>
-                                            void handleAlarmSelect(alarm)
-                                        }
-                                        isLoading={isAlarmLoading}
-                                        errorMessage={alarmError}
-                                        className="absolute right-0 top-[calc(100%+10px)] z-50"
-                                    />
-                                ) : null}
-                            </div>
-                        }
                     />
                 </div>
 

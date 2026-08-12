@@ -1,11 +1,10 @@
-import closeIcon from "../../assets/icons/alarm-close.svg";
+import { Fragment } from "react";
 import divider from "../../assets/icons/alarm-divider.svg";
 import type { NotificationItem } from "../../apis/notificationApi";
 
 interface AlarmPopupProps {
     alarms: NotificationItem[];
     onClearAll: () => void;
-    onDismiss: (alarmId: number) => void;
     onSelect: (alarm: NotificationItem) => void;
     className?: string;
     isLoading?: boolean;
@@ -41,7 +40,6 @@ function formatAlarmTime(createdAt: string) {
 export default function AlarmPopup({
     alarms,
     onClearAll,
-    onDismiss,
     onSelect,
     className = "",
     isLoading = false,
@@ -49,7 +47,7 @@ export default function AlarmPopup({
 }: AlarmPopupProps) {
     return (
         <section
-            className={`flex max-h-[70dvh] w-[286px] flex-col gap-2.5 rounded-[9px] bg-white p-[15px] shadow-[0_0_4px_rgba(0,0,0,0.1)] ${className}`}
+            className={`flex max-h-[70dvh] w-[286px] flex-col gap-[18px] rounded-[9px] bg-white p-[15px] shadow-[0_0_4px_rgba(0,0,0,0.1)] ${className}`}
             aria-label="알림 목록"
             role="dialog"
         >
@@ -81,26 +79,27 @@ export default function AlarmPopup({
                     새로운 알림이 없습니다.
                 </p>
             ) : (
-                <ul className="scrollbar-hidden min-h-0 overflow-y-auto">
+                <ul className="scrollbar-hidden flex min-h-0 flex-col gap-[15px] overflow-y-auto">
                     {alarms.map((alarm, index) => (
-                        <li key={alarm.notificationId}>
+                        <Fragment key={alarm.notificationId}>
                             {index > 0 ? (
-                                <img
-                                    src={divider}
-                                    alt=""
-                                    className="my-2.5 h-px w-full"
-                                    aria-hidden="true"
-                                />
+                                <li aria-hidden="true">
+                                    <img
+                                        src={divider}
+                                        alt=""
+                                        className="h-px w-full"
+                                    />
+                                </li>
                             ) : null}
 
-                            <article className="relative">
+                            <li>
                                 <button
                                     type="button"
                                     onClick={() => onSelect(alarm)}
-                                    className="flex w-full flex-col gap-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                                    className="flex w-full flex-col gap-[6px] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
                                     aria-label={`${alarm.title} 알림 확인`}
                                 >
-                                    <div className="flex w-full items-center justify-between gap-3 pr-3">
+                                    <div className="flex w-full items-center justify-between gap-3">
                                         <h3 className="min-w-0 truncate text-[13px] font-semibold leading-[14px] text-gray-800">
                                             {alarm.title}
                                         </h3>
@@ -115,22 +114,8 @@ export default function AlarmPopup({
                                         {alarm.content}
                                     </p>
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        onDismiss(alarm.notificationId)
-                                    }
-                                    className="absolute right-0 top-0 flex h-[10px] w-[10px] items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                                    aria-label={`${alarm.title} 알림 지우기`}
-                                >
-                                    <img
-                                        src={closeIcon}
-                                        alt=""
-                                        className="h-[10px] w-[10px]"
-                                    />
-                                </button>
-                            </article>
-                        </li>
+                            </li>
+                        </Fragment>
                     ))}
                 </ul>
             )}

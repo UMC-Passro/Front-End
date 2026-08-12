@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import type { UserRole } from "../../types/user";
 import { RoleAvatar } from "./RoleAvatar";
 
@@ -7,9 +7,13 @@ type HomeHeaderProps = {
     headline: string;
     role: UserRole;
     avatarUrl?: string | null;
+    unreadCount?: number;
+    isNotificationOpen?: boolean;
+    onNotificationToggle?: () => void;
+    notificationPanel?: ReactNode;
+    notificationContainerRef?: Ref<HTMLDivElement>;
     isRoleChanging?: boolean;
     onRoleChange: (role: UserRole) => void;
-    actions?: ReactNode;
 };
 
 export function HomeHeader({
@@ -17,27 +21,57 @@ export function HomeHeader({
     headline,
     role,
     avatarUrl,
+    unreadCount = 0,
+    isNotificationOpen = false,
+    onNotificationToggle,
+    notificationPanel,
+    notificationContainerRef,
     isRoleChanging = false,
     onRoleChange,
-    actions,
 }: HomeHeaderProps) {
     return (
         <div>
             <div className="flex items-center justify-between gap-4">
-                <p className="text-xl font-bold tracking-normal">
+                <p className="text-[21px] font-bold leading-[30px] tracking-normal text-gray-900">
                     안녕하세요, {name}님!
                     <br />
                     {headline}
                 </p>
-                <div className="flex shrink-0 items-center gap-3">
-                    <RoleAvatar
-                        role={role}
-                        avatarUrl={avatarUrl}
-                        disabled={isRoleChanging}
-                        onRoleChange={onRoleChange}
-                    />
-                    {actions}
+                <div ref={notificationContainerRef} className="relative shrink-0">
+                    <button
+                        type="button"
+                        onClick={onNotificationToggle}
+                        className="relative block h-[60px] w-[60px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                        aria-label="알림 열기"
+                        aria-haspopup="dialog"
+                        aria-expanded={isNotificationOpen}
+                    >
+                        <span className="block h-[60px] w-[60px] overflow-hidden rounded-full border border-gray-200 bg-white">
+                            <img
+                                src={avatarUrl || "/Logo.png"}
+                                alt=""
+                                className={`h-full w-full ${
+                                    avatarUrl
+                                        ? "object-cover"
+                                        : "object-contain p-1"
+                                }`}
+                            />
+                        </span>
+                        {unreadCount > 0 ? (
+                            <span className="absolute -right-[3px] -top-[3px] flex h-[23px] min-w-[23px] items-center justify-center rounded-full bg-errorRed px-1 text-center text-sm font-medium leading-none text-white">
+                                {unreadCount > 99 ? "99+" : unreadCount}
+                            </span>
+                        ) : null}
+                    </button>
+                    {isNotificationOpen ? notificationPanel : null}
                 </div>
+            </div>
+            <div className="mt-12">
+                <RoleAvatar
+                    role={role}
+                    disabled={isRoleChanging}
+                    onRoleChange={onRoleChange}
+                />
             </div>
         </div>
     );
