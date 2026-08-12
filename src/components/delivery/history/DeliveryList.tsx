@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import ArrowIcon from "../../../assets/icons/ArrowIcon";
 import {
     DELIVERY_FILTER,
     DeliveryStatus,
 } from "../../../types/delivery/delivery";
+import { UserRole } from "../../../types/user";
 
 interface DeliveryItem {
     id: number;
@@ -11,6 +13,7 @@ interface DeliveryItem {
     start?: string;
     end?: string;
     date?: string;
+    role: UserRole;
 }
 
 interface DeliveryListProps {
@@ -18,22 +21,50 @@ interface DeliveryListProps {
 }
 
 export const DeliveryList = ({ items }: DeliveryListProps) => {
+    const navigate = useNavigate();
+
+    const getStatusLabel = (status: DeliveryStatus) => {
+        switch (status) {
+            case "WAITING_PICKUP":
+                return "픽업 대기";
+            case "DELIVERING":
+                return DELIVERY_FILTER.DELIVERING.label;
+            case "COMPLETED":
+                return DELIVERY_FILTER.COMPLETED.label;
+        }
+    };
+
+    const getStatusClassName = (status: DeliveryStatus) => {
+        switch (status) {
+            case "WAITING_PICKUP":
+                return "bg-purple-600";
+            case "DELIVERING":
+                return "bg-purple-600";
+            case "COMPLETED":
+                return "bg-gray-300";
+        }
+    };
+
     return (
         <div className="mt-6 flex w-full flex-col gap-3.5">
             {items.map((delivery) => {
-                const statusLabel =
-                    delivery.status === "DELIVERING"
-                        ? DELIVERY_FILTER.DELIVERING.label
-                        : DELIVERY_FILTER.COMPLETED.label;
+                const statusLabel = getStatusLabel(delivery.status);
                 return (
-                    <div
+                    <button
+                        type="button"
                         key={delivery.id}
+                        onClick={() => {
+                            if (delivery.role === "sender") {
+                                navigate(`/delivery/status/${delivery.id}`);
+                            } else {
+                                navigate(`/delivery/tracking/${delivery.id}`);
+                            }
+                        }}
                         className="flex items-center justify-between rounded-lg bg-gray-50 px-5 py-4"
                     >
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col items-start text-left gap-1">
                             <div className="font-bold">{delivery.name}</div>
-
-                            {delivery.status === "DELIVERING" ? (
+                            {delivery.status !== "COMPLETED" ? (
                                 <div className="flex items-center text-sm font-semibold text-gray-500">
                                     <div>{delivery.start}</div>
                                     <ArrowIcon />
@@ -47,15 +78,13 @@ export const DeliveryList = ({ items }: DeliveryListProps) => {
                         </div>
 
                         <div
-                            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold text-white ${
-                                delivery.status === "DELIVERING"
-                                    ? "bg-purple-600"
-                                    : "bg-gray-300"
-                            }`}
+                            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold text-white ${getStatusClassName(
+                                delivery.status,
+                            )}`}
                         >
                             {statusLabel}
                         </div>
-                    </div>
+                    </button>
                 );
             })}
         </div>
