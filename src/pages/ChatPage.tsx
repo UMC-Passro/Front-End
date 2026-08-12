@@ -426,7 +426,12 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
-            {isOpen && <ChatModal onClose={() => setIsopen(false)} />}
+            {isOpen && (
+                <ChatModal
+                    onClose={() => setIsopen(false)}
+                    chatMessageId={Number(chatRoomId)}
+                />
+            )}
         </div>
     );
 }

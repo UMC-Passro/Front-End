@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import NotFoundPage from "../pages/NotFoundPage";
 import RouteErrorPage from "../pages/RouteErrorPage";
 import FeedbackPage from "../pages/FeedbackPage";
+import ReportPage from "../pages/ReportPage";
 
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const SignupPage = lazy(() => import("../pages/SignupPage"));
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
                                 element: <HistoryStatsPage />,
                             },
                         ],
+                    },
+                    {
+                        path: "report",
+                        element: <ReportPage />,
                     },
                     {
                         path: "/delivery",
