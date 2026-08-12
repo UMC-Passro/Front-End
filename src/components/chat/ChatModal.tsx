@@ -5,9 +5,10 @@ import existIcon from "../../assets/icons/exist.svg";
 
 interface ChatModalProps {
     onClose: () => void;
+    onReport: () => void;
 }
 
-export default function ChatModal({ onClose }: ChatModalProps) {
+export default function ChatModal({ onClose, onReport }: ChatModalProps) {
     return (
         <div
             onClick={onClose}
@@ -22,10 +23,14 @@ export default function ChatModal({ onClose }: ChatModalProps) {
                         <img src={blockIcon} />
                         <span className="flex text-gray-900">차단하기</span>
                     </div>
-                    <div className="flex gap-4 px-6 py-4 border-b border-gray-100">
-                        <img src={reportIcon} />
+                    <button
+                        type="button"
+                        onClick={onReport}
+                        className="flex gap-4 border-b border-gray-100 px-6 py-4 text-left"
+                    >
+                        <img src={reportIcon} alt="" />
                         <span className="flex text-gray-900">신고하기</span>
-                    </div>
+                    </button>
                     <div className="flex gap-4 px-6 py-4 border-b border-gray-100">
                         <img src={noAlarmIcon} />
                         <span className="flex text-gray-900">알림끄기</span>

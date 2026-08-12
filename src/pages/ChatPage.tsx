@@ -6,7 +6,12 @@ import {
     type FormEvent,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { chatApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
+import {
+    chatApi,
+    reportApi,
+    senderDeliveryApi,
+    shipperDeliveryApi,
+} from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
 // import { senderDeliveryApi } from "../apis/delivery/senderDeliveryApi";
 // import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
@@ -15,6 +20,8 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
+import ChatReportModal from "../components/chat/ChatReportModal";
+import type { ReportReason } from "../apis/reportApi";
 
 function formatMessageTimestamp(createdAt: string) {
     const createdDate = new Date(createdAt);
@@ -41,6 +48,9 @@ export default function ChatPage() {
     const [isSending, setIsSending] = useState(false);
     const [sendError, setSendError] = useState("");
     const [isOpen, setIsopen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
+    const [reportError, setReportError] = useState("");
 
     const mergeMessages = useCallback((nextMessages: ChatMessage[]) => {
         if (nextMessages.length === 0) {
@@ -199,6 +209,48 @@ export default function ChatPage() {
             );
         } finally {
             setIsSending(false);
+        }
+    };
+
+    const handleOpenReport = () => {
+        setIsopen(false);
+        setReportError("");
+        setIsReportOpen(true);
+    };
+
+    const handleReportSubmit = async (
+        reason: ReportReason,
+        detail: string,
+    ) => {
+        const deliveryId = Number(chatRoomId);
+
+        if (
+            isReporting ||
+            !Number.isInteger(deliveryId) ||
+            deliveryId <= 0
+        ) {
+            return;
+        }
+
+        setIsReporting(true);
+        setReportError("");
+
+        try {
+            await reportApi.createDeliveryReport({
+                targetType: "DELIVERY",
+                reason,
+                detail,
+                deliveryId,
+            });
+            setIsReportOpen(false);
+        } catch (caughtError) {
+            setReportError(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "신고를 접수하지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsReporting(false);
         }
     };
 
@@ -426,7 +478,22 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
-            {isOpen && <ChatModal onClose={() => setIsopen(false)} />}
+            {isOpen ? (
+                <ChatModal
+                    onClose={() => setIsopen(false)}
+                    onReport={handleOpenReport}
+                />
+            ) : null}
+            {isReportOpen ? (
+                <ChatReportModal
+                    isSubmitting={isReporting}
+                    errorMessage={reportError}
+                    onClose={() => setIsReportOpen(false)}
+                    onSubmit={(reason, detail) =>
+                        void handleReportSubmit(reason, detail)
+                    }
+                />
+            ) : null}
         </div>
     );
 }
