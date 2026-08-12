@@ -21,6 +21,7 @@ import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
 import ChatReportModal from "../components/chat/ChatReportModal";
+import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
 import type { ReportReason } from "../apis/reportApi";
 
 function formatMessageTimestamp(createdAt: string) {
@@ -255,11 +256,7 @@ export default function ChatPage() {
     };
 
     if (isLoading || (!data && !error)) {
-        return (
-            <div className="flex h-full items-center justify-center bg-white text-sm text-gray-500">
-                채팅을 불러오는 중입니다...
-            </div>
-        );
+        return <ChatRoomSkeleton />;
     }
 
     if (error || !data) {

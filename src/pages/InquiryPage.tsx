@@ -19,6 +19,26 @@ const inquiryOptions: Array<{
 
 const MIN_CONTENT_LENGTH = 10;
 
+function ChevronDownIcon() {
+    return (
+        <svg
+            width="14"
+            height="8"
+            viewBox="0 0 14 8"
+            fill="none"
+            aria-hidden="true"
+        >
+            <path
+                d="M1 1L7 7L13 1"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
 export default function InquiryPage() {
     const navigate = useNavigate();
     const [selectedLabel, setSelectedLabel] = useState("");
@@ -123,10 +143,10 @@ export default function InquiryPage() {
                                         ))}
                                     </select>
                                     <span
-                                        className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-xl leading-none text-gray-400"
+                                        className="pointer-events-none absolute right-5 top-1/2 flex h-2 w-3.5 -translate-y-1/2 items-center justify-center text-gray-800"
                                         aria-hidden="true"
                                     >
-                                        ⌄
+                                        <ChevronDownIcon />
                                     </span>
                                 </div>
                             </label>
