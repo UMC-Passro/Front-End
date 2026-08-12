@@ -72,13 +72,13 @@ function createSenderContent(
 
     return {
         name,
-        headline: "배송을 요청해보세요!",
+        headline: "전달을 요청해보세요!",
         activeDeliveries: activeDeliveries.map(toSenderActiveDelivery),
         matchingRequests: [],
         recentHistories: deliveries
             .filter((delivery) => !isSenderActiveDelivery(delivery))
             .map(toHistory),
-        actionLabel: "배송 요청하기",
+        actionLabel: "전달 요청하기",
     };
 }
 
@@ -122,7 +122,7 @@ function createShipperContent(
 
     return {
         name,
-        headline: "배송을 시작해보세요!",
+        headline: "전달을 시작해보세요!",
         activeDeliveries: activeDeliveries.map(toShipperActiveDelivery),
         matchingRequests: requests.map(toMatchingRequest),
         recentHistories: [],
@@ -254,7 +254,7 @@ export default function HomePage() {
                 errorMessage={
                     activeRequest.error
                         ? activeRequest.error.message ||
-                          "배송 목록을 불러오지 못했습니다."
+                          "전달 목록을 불러오지 못했습니다."
                         : undefined
                 }
                 onRetry={() =>

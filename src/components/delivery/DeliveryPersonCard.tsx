@@ -14,7 +14,7 @@ export const DeliveryPersonCard = ({
     name,
     picture,
     place,
-    emptyMessage = "배송자 정보가 없습니다.",
+    emptyMessage = "전달자 정보가 없습니다.",
     actionLabel,
     onAction,
     onMessageClick,

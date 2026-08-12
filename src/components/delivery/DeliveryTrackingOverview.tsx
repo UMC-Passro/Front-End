@@ -126,7 +126,7 @@ export function DeliveryTrackingOverview({
                   .join(" · ")
             : undefined;
     const nextStationLabel = isCompleted
-        ? "배송 완료"
+        ? "전달 완료"
         : isConfirmationPending
           ? "이동 완료 · 승인 대기"
           : routeProgress.nextStation
@@ -156,11 +156,11 @@ export function DeliveryTrackingOverview({
           ? deliveryStartedAt
               ? deliveryHandedOffAt
                   ? "물품 인수부터 전달 완료 요청까지"
-                  : `${formatTrackingTime(deliveryStartedAt) ?? "처리 시각 미상"} 배송 시작`
+                  : `${formatTrackingTime(deliveryStartedAt) ?? "처리 시각 미상"} 전달 시작`
               : "물품 인수 후 자동으로 계산됩니다"
           : estimatedTimeMinutes != null
             ? "현재 역에서 도착역까지 예상 소요 시간"
-            : "배송자 위치가 갱신되면 표시됩니다";
+            : "전달자 위치가 갱신되면 표시됩니다";
 
     return (
         <section
@@ -177,7 +177,7 @@ export function DeliveryTrackingOverview({
                     </span>
                     <h1 className="mt-3 truncate text-xl font-bold">
                         {isCompleted
-                            ? "배송이 완료되었습니다"
+                            ? "전달이 완료되었습니다"
                             : itemName ?? "이름 없는 물품"}
                     </h1>
                     <p className="mt-1 text-sm font-medium text-white/75">
@@ -212,13 +212,13 @@ export function DeliveryTrackingOverview({
 
             <div className="mt-5 grid grid-cols-2 gap-2">
                 <InformationCard
-                    label={isCompleted ? "최종 도착역" : "현재 배송자 위치"}
+                    label={isCompleted ? "최종 도착역" : "현재 전달자 위치"}
                     value={currentStationLabel}
                     description={currentStationDescription}
                     accent
                 />
                 <InformationCard
-                    label={isCompleted ? "배송 결과" : "다음 이동 예정 역"}
+                    label={isCompleted ? "전달 결과" : "다음 이동 예정 역"}
                     value={nextStationLabel}
                     description={nextStationDescription}
                 />
@@ -227,21 +227,21 @@ export function DeliveryTrackingOverview({
                         isCompleted
                             ? "완료 시각"
                             : showsElapsedTime
-                              ? "배송 경과 시간"
+                              ? "전달 경과 시간"
                               : "도착 예상 시간"
                     }
                     value={timeLabel}
                     description={timeDescription}
                 />
                 <InformationCard
-                    label="현재 배송 상태"
+                    label="현재 전달 상태"
                     value={getDeliveryStatusLabel(status)}
                 />
             </div>
 
             <div className="mt-5 rounded-2xl bg-black/10 px-4 py-3">
                 <div className="flex items-center justify-between gap-4 text-xs font-bold">
-                    <span>전체 배송 경로 진행률</span>
+                    <span>전체 전달 경로 진행률</span>
                     <span>
                         {routeProgress.totalStationCount > 0
                             ? `${routeProgress.completedStationCount}/${routeProgress.totalStationCount}역 · `
@@ -254,7 +254,7 @@ export function DeliveryTrackingOverview({
                 <div
                     className="mt-2.5 h-2 overflow-hidden rounded-full bg-white/20"
                     role="progressbar"
-                    aria-label="전체 배송 경로 진행률"
+                    aria-label="전체 전달 경로 진행률"
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={routeProgress.percentage}

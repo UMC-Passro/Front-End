@@ -15,7 +15,7 @@ export function DeliveryCancelSheet({
 }: DeliveryCancelSheetProps) {
     return (
         <BottomSheet
-            title="배송 요청을 취소할까요?"
+            title="전달 요청을 취소할까요?"
             onClose={isSubmitting ? undefined : onClose}
             footer={
                 <div className="grid grid-cols-2 gap-2.5">

@@ -43,7 +43,7 @@ export default function Navbar() {
             id: 2,
             title: "마켓",
             navigate: "/market",
-            imgUrl: null,
+            imgUrl: "/market.png",
         },
         {
             id: 3,
@@ -75,19 +75,17 @@ export default function Navbar() {
                                 alt={nav.title}
                                 width="100"
                                 height="100"
-                                className={`h-8 w-8 object-contain transition-opacity hover:opacity-80 ${
-                                    isActive
+                                className={`h-8 w-8 object-contain transition-opacity hover:opacity-80 ${isActive
                                         ? "opacity-100"
                                         : "opacity-35 group-hover:opacity-60"
-                                }`}
+                                    }`}
                             />
                         ) : (
                             <span
-                                className={`block transition-opacity ${
-                                    isActive
+                                className={`block transition-opacity ${isActive
                                         ? "text-purple-600 opacity-100"
                                         : "text-gray-900 opacity-35 group-hover:opacity-60"
-                                }`}
+                                    }`}
                                 aria-label={nav.title}
                             >
                                 <MarketIcon />

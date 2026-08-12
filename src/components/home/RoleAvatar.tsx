@@ -44,9 +44,9 @@ export function RoleAvatar({
     onRoleChange,
 }: RoleAvatarProps) {
     const isShipper = role === "shipper";
-    const currentRoleLabel = isShipper ? "배송자" : "요청자";
+    const currentRoleLabel = isShipper ? "전달자" : "요청자";
     const nextRole: UserRole = isShipper ? "sender" : "shipper";
-    const nextRoleLabel = isShipper ? "요청자" : "배송자";
+    const nextRoleLabel = isShipper ? "요청자" : "전달자";
 
     return (
         <div className="flex shrink-0 flex-col items-end gap-1.5">

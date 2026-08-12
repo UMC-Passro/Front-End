@@ -12,7 +12,7 @@ import { shipperDeliveryApi } from "../apis";
 function getShipperTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
         case "WAIT":
-            return "배송 매칭 전 상태입니다.";
+            return "전달 매칭 전 상태입니다.";
         case "MATCHED":
             return "물품 인수 후 GPS 위치 공유가 시작됩니다.";
         case "DELIVERING":
@@ -20,9 +20,9 @@ function getShipperTrackingMessage(status: BackendDeliveryState) {
         case "CONFIRM_REQUESTED":
             return "발송자의 최종 완료 승인을 기다리고 있습니다.";
         case "DELIVERED":
-            return "배송이 최종 완료되었습니다.";
+            return "전달이 최종 완료되었습니다.";
         case "CANCEL":
-            return "취소된 배송입니다.";
+            return "취소된 전달입니다.";
     }
 }
 
@@ -40,7 +40,7 @@ export default function DeliveryTrackingPage() {
     const [actionError, setActionError] = useState<string | null>(null);
     const loadTrackingData = useCallback(async () => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
-            throw new ApiError({ message: "올바르지 않은 배송 ID입니다." });
+            throw new ApiError({ message: "올바르지 않은 전달 ID입니다." });
         }
 
         const detail = await shipperDeliveryApi.getDeliveryDetail(deliveryId);
@@ -91,7 +91,7 @@ export default function DeliveryTrackingPage() {
             setActionError(
                 caughtError instanceof Error
                     ? caughtError.message
-                    : "배송 상태를 변경하지 못했습니다.",
+                    : "전달 상태를 변경하지 못했습니다.",
             );
         } finally {
             setIsUpdatingStatus(false);
@@ -132,7 +132,7 @@ export default function DeliveryTrackingPage() {
                     >
                         <p className="text-sm font-medium text-rose-700">
                             {error?.message ??
-                                "배송 추적 정보를 불러오지 못했습니다."}
+                                "전달 추적 정보를 불러오지 못했습니다."}
                         </p>
                         <button
                             type="button"

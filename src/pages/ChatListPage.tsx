@@ -40,17 +40,28 @@ export default function ChatListPage() {
 
     const chatRooms = useMemo<ChatRoom[]>(
         () =>
-            (data ?? []).map((datum) => ({
-                id: datum.deliveryId.toString(),
-                participantName: datum.partner.nickname,
-                itemName: datum.itemName ?? "배송 물품",
-                route: "",
-                status: "",
-                lastMessage: datum.lastMessage ?? "아직 메시지가 없습니다.",
-                updatedAt: formatChatRoomTimestamp(datum.lastMessageAt),
-                unreadCount: datum.unreadCount,
-                messages: [],
-            })),
+            (data ?? []).flatMap((datum) => {
+                const lastMessage = datum.lastMessage?.trim();
+                if (!lastMessage) {
+                    return [];
+                }
+
+                return [
+                    {
+                        id: datum.deliveryId.toString(),
+                        participantName: datum.partner.nickname,
+                        itemName: datum.itemName ?? "전달 물품",
+                        route: "",
+                        status: "",
+                        lastMessage,
+                        updatedAt: formatChatRoomTimestamp(
+                            datum.lastMessageAt,
+                        ),
+                        unreadCount: datum.unreadCount,
+                        messages: [],
+                    },
+                ];
+            }),
         [data],
     );
 
@@ -65,7 +76,7 @@ export default function ChatListPage() {
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pt-5">
                 {data !== null && chatRooms.length === 0 ? (
                     <p className="py-16 text-center text-sm font-medium text-gray-400">
-                        참여 중인 채팅방이 없습니다.
+                        아직 시작된 채팅이 없습니다.
                     </p>
                 ) : (
                     <ul className="divide-y divide-gray-100">
