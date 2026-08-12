@@ -10,6 +10,7 @@ import { useShipperRouteTracking } from "../hooks/useShipperRouteTracking";
 import { ApiError } from "../types/api";
 import type { BackendDeliveryState } from "../types/backend";
 import { shipperDeliveryApi } from "../apis";
+import { ReportIcon } from "../assets/icons/report";
 
 function getShipperTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
@@ -110,6 +111,23 @@ export default function DeliveryTrackingPage() {
                     title="전달 추적"
                     onBack={() => navigate("/home")}
                     className="shrink-0"
+                    rightAction={
+                        <button
+                            type="button"
+                            onClick={() =>
+                                navigate("/report", {
+                                    state: {
+                                        targetType: "DELIVERY",
+                                        deliveryId,
+                                    },
+                                })
+                            }
+                        >
+                            <button className="text-gray-500">
+                                <ReportIcon />
+                            </button>
+                        </button>
+                    }
                 />
                 <div
                     className="flex flex-1 flex-col gap-5 pt-8"
@@ -129,6 +147,23 @@ export default function DeliveryTrackingPage() {
                     title="전달 추적"
                     onBack={() => navigate("/home")}
                     className="shrink-0"
+                    rightAction={
+                        <button
+                            type="button"
+                            onClick={() =>
+                                navigate("/report", {
+                                    state: {
+                                        targetType: "DELIVERY",
+                                        deliveryId,
+                                    },
+                                })
+                            }
+                        >
+                            <button className="text-gray-500">
+                                <ReportIcon />
+                            </button>
+                        </button>
+                    }
                 />
                 <div className="flex flex-1 items-center justify-center">
                     <div
@@ -166,6 +201,23 @@ export default function DeliveryTrackingPage() {
                 title="전달 추적"
                 onBack={() => navigate(-1)}
                 className="shrink-0"
+                rightAction={
+                    <button
+                        type="button"
+                        onClick={() =>
+                            navigate("/report", {
+                                state: {
+                                    targetType: "DELIVERY",
+                                    deliveryId,
+                                },
+                            })
+                        }
+                    >
+                        <button className="text-gray-500">
+                            <ReportIcon />
+                        </button>
+                    </button>
+                }
             />
 
             {isWaitingForMatch ? (
