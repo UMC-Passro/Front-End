@@ -1,4 +1,5 @@
 import type { UserRole } from "../types/user";
+import { accountApi } from "../apis/accountApi";
 import { authApi } from "../apis/authApi";
 import { tokenStorage } from "../apis/tokenStorage";
 
@@ -10,7 +11,7 @@ export interface AuthUser {
     email: string;
     name: string;
     role: UserRole;
-    nickname?: string;
+    nickname: string;
     phone?: string;
     birthDate?: string;
     address?: string;
@@ -38,13 +39,14 @@ function isUserRole(value: string | null): value is UserRole {
     return value === "sender" || value === "shipper";
 }
 
-function createSessionUser(email: string): AuthUser {
+function createSessionUser(email: string, nickname = ""): AuthUser {
   const normalizedEmail = email.trim().toLowerCase();
   const authUser: AuthUser = {
     id: createUserId(normalizedEmail),
     email: normalizedEmail,
     name: getNameFromEmail(normalizedEmail),
     role: getRoleFromEmail(normalizedEmail),
+    nickname,
   };
 
   localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authUser));
@@ -64,7 +66,20 @@ export async function login(email: string, password: string): Promise<AuthUser> 
   });
 
   tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
-  return createSessionUser(email);
+  const sessionUser = createSessionUser(email);
+
+  try {
+    const profile = await accountApi.getProfile();
+
+    return updateCurrentUserProfile({
+      name: profile.name,
+      nickname: profile.nickname,
+      phone: profile.phoneNumber,
+      birthDate: profile.birth,
+    }) ?? sessionUser;
+  } catch {
+    return sessionUser;
+  }
 }
 
 export async function logout(): Promise<void> {
