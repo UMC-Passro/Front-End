@@ -44,16 +44,17 @@ interface DeliveryTrackingContentProps {
     onPartyMessageClick?: () => void;
     supplementaryContent?: ReactNode;
     onReview?: () => void;
+    variant?: "default" | "figma";
 }
 
 function formatPartyPlace(place: BackendPlace | null) {
     return place ? `${place.subwayStationName}역` : null;
 }
 
-function RouteLoadingSkeleton() {
+function RouteLoadingSkeleton({ compact = false }: { compact?: boolean }) {
     return (
         <div
-            className="h-[460px] animate-pulse rounded-3xl bg-gray-100"
+            className={`${compact ? "h-[280px] rounded-[10px]" : "h-[460px] rounded-3xl"} animate-pulse bg-gray-100`}
             aria-label="지하철 경로를 불러오는 중"
             aria-busy="true"
         />
@@ -85,6 +86,7 @@ export function DeliveryTrackingContent({
     onPartyMessageClick,
     supplementaryContent,
     onReview,
+    variant = "default",
 }: DeliveryTrackingContentProps) {
     const isCompleted = status === "DELIVERED";
     const routeProgress = getDeliveryRouteProgress(
@@ -100,8 +102,16 @@ export function DeliveryTrackingContent({
             ? `${routeProgress.currentStation.stationName} · ${routeProgress.currentStation.routeName}`
             : null;
     const partySection = (
-        <section className="rounded-3xl border border-gray-100 bg-white px-5 py-5 shadow-sm">
-            <h2 className="mb-3 text-base font-bold text-gray-900">
+        <section
+            className={
+                variant === "figma"
+                    ? ""
+                    : "rounded-3xl border border-gray-100 bg-white px-5 py-5 shadow-sm"
+            }
+        >
+            <h2
+                className={`${variant === "figma" ? "mb-3 text-[17px] leading-[22px]" : "mb-3 text-base"} font-bold text-gray-900`}
+            >
                 {partyTitle}
             </h2>
             <DeliveryPersonCard
@@ -121,6 +131,69 @@ export function DeliveryTrackingContent({
             />
         </section>
     );
+
+    const routeSection = isRouteLoading ? (
+        <RouteLoadingSkeleton compact={variant === "figma"} />
+    ) : route ? (
+        <SubwayRouteTracker
+            stations={route.stations}
+            currentPlaceId={currentPlaceId}
+            currentCoordinates={currentCoordinates}
+            currentDistanceMeters={currentDistanceMeters}
+            gpsAccuracyMeters={gpsAccuracyMeters}
+            trackingStatus={trackingStatus}
+            trackingError={trackingError}
+            transferCount={route.transferCount}
+            lastUpdatedAt={lastLocationUpdatedAt}
+            statusMessage={trackingStatusMessage}
+            variant={variant}
+        />
+    ) : (
+        <p
+            className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-8 text-center text-sm font-medium text-rose-700"
+            role="alert"
+        >
+            {routeError ?? "지하철 경로를 불러오지 못했습니다."}
+        </p>
+    );
+
+    if (variant === "figma") {
+        return (
+            <>
+                <DeliveryTrackingOverview
+                    itemName={itemName}
+                    status={status}
+                    originPlace={originPlace}
+                    destinationPlace={destinationPlace}
+                    routeProgress={routeProgress}
+                    completedAt={completedAt}
+                    lastLocationUpdatedAt={lastLocationUpdatedAt}
+                    estimatedTimeMinutes={estimatedTimeMinutes}
+                    timeMode={overviewTimeMode}
+                    deliveryStartedAt={deliveryStartedAt}
+                    deliveryHandedOffAt={deliveryHandedOffAt}
+                    variant="figma"
+                />
+                {!isCompleted ? (
+                    <div className="mt-8">{routeSection}</div>
+                ) : null}
+                <div className="mt-8">
+                    <DeliveryTimeline
+                        status={status}
+                        logs={logs}
+                        originPlace={originPlace}
+                        destinationPlace={destinationPlace}
+                        currentStationLabel={liveStationLabel}
+                        variant="figma"
+                    />
+                </div>
+                <div className="mt-10">{partySection}</div>
+                {supplementaryContent ? (
+                    <div className="mt-5">{supplementaryContent}</div>
+                ) : null}
+            </>
+        );
+    }
 
     return (
         <>
@@ -151,34 +224,7 @@ export function DeliveryTrackingContent({
             ) : (
                 <>
                     <div className="mt-6 grid gap-6">
-                        <div>
-                            {isRouteLoading ? (
-                                <RouteLoadingSkeleton />
-                            ) : route ? (
-                                <SubwayRouteTracker
-                                    stations={route.stations}
-                                    currentPlaceId={currentPlaceId}
-                                    currentCoordinates={currentCoordinates}
-                                    currentDistanceMeters={
-                                        currentDistanceMeters
-                                    }
-                                    gpsAccuracyMeters={gpsAccuracyMeters}
-                                    trackingStatus={trackingStatus}
-                                    trackingError={trackingError}
-                                    transferCount={route.transferCount}
-                                    lastUpdatedAt={lastLocationUpdatedAt}
-                                    statusMessage={trackingStatusMessage}
-                                />
-                            ) : (
-                                <p
-                                    className="rounded-3xl border border-rose-200 bg-rose-50 px-5 py-8 text-center text-sm font-medium text-rose-700"
-                                    role="alert"
-                                >
-                                    {routeError ??
-                                        "지하철 경로를 불러오지 못했습니다."}
-                                </p>
-                            )}
-                        </div>
+                        <div>{routeSection}</div>
 
                         <aside className="flex flex-col gap-5">
                             {partySection}

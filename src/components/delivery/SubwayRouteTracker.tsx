@@ -6,10 +6,7 @@ import {
     type GeographicCoordinates,
 } from "../../utils/subwayLocation";
 import { formatTrackingTime } from "../../utils/deliveryTracking";
-import {
-    GeographicRouteMap,
-    getSubwayLineColor,
-} from "./GeographicRouteMap";
+import { GeographicRouteMap, getSubwayLineColor } from "./GeographicRouteMap";
 
 interface SubwayRouteTrackerProps {
     stations: SubwayStationItem[];
@@ -22,6 +19,7 @@ interface SubwayRouteTrackerProps {
     transferCount: number;
     lastUpdatedAt?: string | null;
     statusMessage?: string;
+    variant?: "default" | "figma";
 }
 
 function formatDistance(distanceMeters?: number) {
@@ -64,6 +62,7 @@ export function SubwayRouteTracker({
     transferCount,
     lastUpdatedAt,
     statusMessage,
+    variant = "default",
 }: SubwayRouteTrackerProps) {
     const currentStationIndex = stations.findIndex(
         (station) => station.id === currentPlaceId,
@@ -91,6 +90,32 @@ export function SubwayRouteTracker({
     const distanceLabel = formatDistance(currentDistanceMeters);
     const updatedAtLabel = formatTrackingTime(lastUpdatedAt);
     const trackingLabel = statusMessage ?? getTrackingLabel(trackingStatus);
+
+    if (variant === "figma") {
+        return (
+            <section>
+                <h2 className="text-[17px] font-bold leading-[22px] text-gray-900">
+                    실시간 전달 지도
+                </h2>
+                <div className="mt-3 overflow-hidden rounded-[10px]">
+                    <GeographicRouteMap
+                        stations={stations}
+                        currentPlaceId={currentPlaceId}
+                        currentCoordinates={currentCoordinates}
+                        compact
+                    />
+                </div>
+                {trackingError ? (
+                    <p
+                        className="mt-2 text-xs font-medium text-rose-600"
+                        role="alert"
+                    >
+                        {trackingError}
+                    </p>
+                ) : null}
+            </section>
+        );
+    }
 
     return (
         <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm">
@@ -153,16 +178,15 @@ export function SubwayRouteTracker({
                                     ? ` · GPS 오차 ±${Math.round(gpsAccuracyMeters)}m`
                                     : ""
                             }`}
-                            {updatedAtLabel
-                                ? ` · ${updatedAtLabel} 갱신`
-                                : ""}
+                            {updatedAtLabel ? ` · ${updatedAtLabel} 갱신` : ""}
                         </p>
                     ) : null}
                 </div>
 
                 {coordinateCoverage < stations.length ? (
                     <p className="mt-3 text-xs font-medium text-amber-700">
-                        좌표 확인 가능 역 {coordinateCoverage}/{stations.length}개
+                        좌표 확인 가능 역 {coordinateCoverage}/{stations.length}
+                        개
                     </p>
                 ) : null}
 

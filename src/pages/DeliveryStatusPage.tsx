@@ -5,7 +5,9 @@ import { subwayApi, type SubwayPathItem } from "../apis/subwayApi";
 import PageHeader from "../components/common/PageHeader";
 import { DeliveryCancelSheet } from "../components/delivery/DeliveryCancelSheet";
 import { DeliveryTrackingContent } from "../components/delivery/DeliveryTrackingContent";
+import { DeliveryTrackingProgress } from "../components/delivery/DeliveryTrackingOverview";
 import { MissingDeliveryReportSheet } from "../components/delivery/MissingDeliveryReportSheet";
+import matchingWaitImage from "../assets/matching-wait.svg";
 import { useApiRequest } from "../hooks/useApiRequest";
 import { useSenderRouteTracking } from "../hooks/useSenderRouteTracking";
 import { ApiError } from "../types/api";
@@ -72,7 +74,7 @@ export default function DeliveryStatusPage() {
             return;
         }
 
-        if (data.status === "DELIVERED") {
+        if (data.status === "WAIT" || data.status === "DELIVERED") {
             setRoute(null);
             setRouteError(null);
             setIsRouteLoading(false);
@@ -249,55 +251,79 @@ export default function DeliveryStatusPage() {
 
     return (
         <>
-            <div className="page-container relative flex flex-col overflow-hidden">
+            <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
                     title="전달 추적"
                     onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
 
-                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                    <DeliveryTrackingContent
-                        itemName={data.name}
-                        status={data.status}
-                        originPlace={data.originPlace}
-                        destinationPlace={data.destPlace}
-                        logs={data.deliveryTimeLine}
-                        route={route}
-                        isRouteLoading={isRouteLoading}
-                        routeError={routeError}
-                        currentPlaceId={senderTracking.location?.placeId}
-                        currentCoordinates={
-                            senderTracking.location ?? undefined
-                        }
-                        currentDistanceMeters={
-                            senderTracking.nearestStation?.distanceMeters
-                        }
-                        trackingStatus={senderTracking.status}
-                        trackingError={senderTracking.errorMessage}
-                        lastLocationUpdatedAt={
-                            senderTracking.location?.updatedAt
-                        }
-                        estimatedTimeMinutes={
-                            senderTracking.location?.estimatedTimeMinutes
-                        }
-                        trackingStatusMessage={getSenderTrackingMessage(
-                            data.status,
-                        )}
-                        partyTitle="전달자 정보"
-                        party={data.shipperInfo}
-                        partyEmptyMessage="아직 전달자가 매칭되지 않았습니다."
-                        onReview={() =>
-                            navigate(`/delivery/feedback/${deliveryId}`)
-                        }
-                        onPartyMessageClick={() =>
-                            navigate(`/delivery/chat/${deliveryId}`)
-                        }
-                    />
-                </div>
+                {canCancel ? (
+                    <div className="flex min-h-0 flex-1 flex-col pt-7">
+                        <DeliveryTrackingProgress status="WAIT" />
+                        <div className="flex flex-1 flex-col items-center justify-center pb-12 text-center">
+                            <img
+                                src={matchingWaitImage}
+                                alt=""
+                                className="h-[106px] w-[162px]"
+                            />
+                            <div className="mt-[38px]">
+                                <h2 className="text-[22px] font-semibold leading-[22px] text-purple-600">
+                                    전달자를 찾는 중이에요!
+                                </h2>
+                                <p className="mt-[15px] text-sm font-medium leading-normal text-gray-400">
+                                    잠시만 기다려주세요...
+                                    <br />
+                                    빠르게 매칭해 드릴게요!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
+                        <DeliveryTrackingContent
+                            itemName={data.name}
+                            status={data.status}
+                            originPlace={data.originPlace}
+                            destinationPlace={data.destPlace}
+                            logs={data.deliveryTimeLine}
+                            route={route}
+                            isRouteLoading={isRouteLoading}
+                            routeError={routeError}
+                            currentPlaceId={senderTracking.location?.placeId}
+                            currentCoordinates={
+                                senderTracking.location ?? undefined
+                            }
+                            currentDistanceMeters={
+                                senderTracking.nearestStation?.distanceMeters
+                            }
+                            trackingStatus={senderTracking.status}
+                            trackingError={senderTracking.errorMessage}
+                            lastLocationUpdatedAt={
+                                senderTracking.location?.updatedAt
+                            }
+                            estimatedTimeMinutes={
+                                senderTracking.location?.estimatedTimeMinutes
+                            }
+                            trackingStatusMessage={getSenderTrackingMessage(
+                                data.status,
+                            )}
+                            partyTitle="전달자 정보"
+                            party={data.shipperInfo}
+                            partyEmptyMessage="아직 전달자가 매칭되지 않았습니다."
+                            onReview={() =>
+                                navigate(`/delivery/feedback/${deliveryId}`)
+                            }
+                            onPartyMessageClick={() =>
+                                navigate(`/delivery/chat/${deliveryId}`)
+                            }
+                            variant="figma"
+                        />
+                    </div>
+                )}
 
                 {canCancel || canComplete ? (
-                    <div className="shrink-0 border-t border-gray-100 bg-white pt-3">
+                    <div className="shrink-0 bg-white pt-3">
                         {actionError ? (
                             <p
                                 className="mb-2 text-center text-xs font-medium text-rose-600"
@@ -321,7 +347,7 @@ export default function DeliveryStatusPage() {
                                     setCancelError("");
                                     setIsCancelOpen(true);
                                 }}
-                                className="w-full rounded-xl border border-rose-200 bg-white py-3.5 font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+                                className="w-full rounded-[10px]  bg-[#FF3D3D] py-3.5 font-semibold text-white transition-colors hover:bg-[#DB2525]"
                             >
                                 전달 요청 취소
                             </button>
@@ -335,7 +361,7 @@ export default function DeliveryStatusPage() {
                                         setIsReportOpen(true);
                                     }}
                                     disabled={isReportSubmitted}
-                                    className="rounded-xl border border-rose-200 bg-white px-2 py-3.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50 disabled:border-gray-200 disabled:text-gray-400"
+                                    className="rounded-[10px] border border-rose-200 bg-white px-2 py-3.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50 disabled:border-gray-200 disabled:text-gray-400"
                                 >
                                     {isReportSubmitted
                                         ? "미도착 신고 접수됨"
@@ -345,11 +371,11 @@ export default function DeliveryStatusPage() {
                                     type="button"
                                     onClick={handleComplete}
                                     disabled={isCompleting}
-                                    className="rounded-xl bg-purple-600 px-2 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                                    className="rounded-[10px] bg-gray-100 px-2 py-3.5 text-sm font-semibold text-gray-900 shadow-[0_4px_15px_rgba(0,0,0,0.05)] transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
                                 >
                                     {isCompleting
                                         ? "완료 처리 중..."
-                                        : "전달 완료 승인"}
+                                        : "완료 확인"}
                                 </button>
                             </div>
                         ) : null}
