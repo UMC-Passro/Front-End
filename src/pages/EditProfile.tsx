@@ -426,7 +426,7 @@ export default function EditProfile() {
         <main className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="프로필 설정"
-                onBack={() => navigate(-1)}
+                onBack={() => navigate("/mypage")}
                 className="shrink-0"
             />
 

@@ -75,7 +75,14 @@ export default function ChatListPage() {
             />
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pt-5">
-                {data !== null && chatRooms.length === 0 ? (
+                {isLoading && data === null ? (
+                    <p
+                        className="py-16 text-center text-sm font-medium text-gray-400"
+                        role="status"
+                    >
+                        채팅 목록을 불러오는 중입니다.
+                    </p>
+                ) : data !== null && chatRooms.length === 0 ? (
                     <p className="py-16 text-center text-sm font-medium text-gray-400">
                         아직 시작된 채팅이 없습니다.
                     </p>

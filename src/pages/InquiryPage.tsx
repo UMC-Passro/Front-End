@@ -106,7 +106,7 @@ export default function InquiryPage() {
             >
                 <PageHeader
                     title="문의하기"
-                    onBack={() => navigate(-1)}
+                    onBack={() => navigate("/mypage")}
                     className="shrink-0"
                 />
 

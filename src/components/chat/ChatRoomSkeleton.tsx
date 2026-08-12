@@ -33,6 +33,12 @@ export default function ChatRoomSkeleton() {
             </div>
 
             <div className="min-h-0 flex-1 space-y-4 overflow-hidden px-4 py-6">
+                <p
+                    className="pb-1 text-center text-sm font-medium text-gray-400"
+                    role="status"
+                >
+                    채팅을 불러오는 중입니다.
+                </p>
                 <div className="flex justify-start">
                     <SkeletonBlock className="h-12 w-[58%] rounded-3xl" />
                 </div>
@@ -54,9 +60,6 @@ export default function ChatRoomSkeleton() {
                 </div>
             </div>
 
-            <span className="sr-only" role="status">
-                채팅을 불러오는 중입니다.
-            </span>
         </div>
     );
 }

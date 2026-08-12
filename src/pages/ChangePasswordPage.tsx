@@ -65,7 +65,7 @@ export default function ChangePasswordPage() {
         <main className="page-container flex flex-col overflow-hidden">
             <PageHeader
                 title="비밀번호 변경"
-                onBack={() => navigate(-1)}
+                onBack={() => navigate("/mypage/edit")}
                 className="shrink-0"
             />
 
@@ -180,7 +180,7 @@ export default function ChangePasswordPage() {
             <FeedbackModal
                 title="비밀번호 변경 완료"
                 message={isSuccess ? "비밀번호가 변경되었습니다." : ""}
-                onClose={() => navigate(-1)}
+                onClose={() => navigate("/mypage/edit")}
             />
         </main>
     );
