@@ -7,6 +7,7 @@ export { senderDeliveryApi } from "./delivery/senderDeliveryApi";
 export { fileApi } from "./fileApi";
 export { inquiryApi } from "./inquiryApi";
 export { locationApi } from "./locationApi";
+export { marketApi } from "./marketApi";
 export { notificationApi } from "./notificationApi";
 export { shipperDeliveryApi } from "./delivery/shipperDeliveryApi";
 export { pointApi } from "./pointApi";

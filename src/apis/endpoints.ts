@@ -76,4 +76,8 @@ export const API_ENDPOINTS = {
         detail: (notificationId: number) =>
             `/notifications/${notificationId}`,
     },
+    market: {
+        root: "/market",
+        purchase: (marketId: number) => `/market/${marketId}/purchase`,
+    },
 } as const;
