@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { chatApi } from "../../apis";
+import { CHAT_READ_EVENT } from "../../utils/chatEvents";
 
 function MarketIcon() {
     return (
@@ -32,6 +35,46 @@ function MarketIcon() {
 }
 
 export default function Navbar() {
+    const [unreadChatCount, setUnreadChatCount] = useState(0);
+
+    const loadUnreadChatCount = useCallback(async () => {
+        try {
+            const rooms = await chatApi.getRooms();
+            setUnreadChatCount(
+                rooms.reduce(
+                    (total, room) => total + Math.max(0, room.unreadCount),
+                    0,
+                ),
+            );
+        } catch {
+            // 일시적인 조회 실패 시 기존 배지 값을 유지한다.
+        }
+    }, []);
+
+    useEffect(() => {
+        let isStopped = false;
+        let timerId: number;
+
+        const pollUnreadCount = async () => {
+            await loadUnreadChatCount();
+
+            if (!isStopped) {
+                timerId = window.setTimeout(pollUnreadCount, 3_000);
+            }
+        };
+
+        void pollUnreadCount();
+        window.addEventListener("focus", loadUnreadChatCount);
+        window.addEventListener(CHAT_READ_EVENT, loadUnreadChatCount);
+
+        return () => {
+            isStopped = true;
+            window.clearTimeout(timerId);
+            window.removeEventListener("focus", loadUnreadChatCount);
+            window.removeEventListener(CHAT_READ_EVENT, loadUnreadChatCount);
+        };
+    }, [loadUnreadChatCount]);
+
     const navList = [
         {
             id: 1,
@@ -70,16 +113,28 @@ export default function Navbar() {
                 >
                     {({ isActive }) => (
                         nav.imgUrl ? (
-                            <img
-                                src={nav.imgUrl}
-                                alt={nav.title}
-                                width="100"
-                                height="100"
-                                className={`h-8 w-8 object-contain transition-opacity hover:opacity-80 ${isActive
-                                        ? "opacity-100"
-                                        : "opacity-35 group-hover:opacity-60"
-                                    }`}
-                            />
+                            <span className="relative block">
+                                <img
+                                    src={nav.imgUrl}
+                                    alt={nav.title}
+                                    width="100"
+                                    height="100"
+                                    className={`h-8 w-8 object-contain transition-opacity hover:opacity-80 ${isActive
+                                            ? "opacity-100"
+                                            : "opacity-35 group-hover:opacity-60"
+                                        }`}
+                                />
+                                {nav.id === 3 && unreadChatCount > 0 ? (
+                                    <span
+                                        className="absolute -right-2 -top-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-errorRed px-1 text-[10px] font-bold leading-none text-white"
+                                        aria-label={`읽지 않은 채팅 ${unreadChatCount}개`}
+                                    >
+                                        {unreadChatCount > 99
+                                            ? "99+"
+                                            : unreadChatCount}
+                                    </span>
+                                ) : null}
+                            </span>
                         ) : (
                             <span
                                 className={`block transition-opacity ${isActive

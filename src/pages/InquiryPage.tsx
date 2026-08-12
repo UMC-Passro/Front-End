@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
 import { inquiryApi } from "../apis";
@@ -99,7 +100,7 @@ export default function InquiryPage() {
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
             <div
                 className={`flex min-h-0 flex-1 flex-col ${
-                    isConfirmOpen ? "pointer-events-none blur-sm" : ""
+                    isConfirmOpen ? "pointer-events-none" : ""
                 }`}
                 aria-hidden={isConfirmOpen}
             >
@@ -186,15 +187,20 @@ export default function InquiryPage() {
                 </form>
             </div>
 
-            {isConfirmOpen ? (
+            {isConfirmOpen
+                ? createPortal(
                 <div
-                    className="fixed inset-y-0 left-1/2 z-[60] flex w-full max-w-[402px] -translate-x-1/2 items-center justify-center bg-black/40 px-8"
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-8 backdrop-blur-sm"
                     role="dialog"
                     aria-modal="true"
-                    onClick={() => setIsConfirmOpen(false)}
+                    onClick={
+                        isSubmitting
+                            ? undefined
+                            : () => setIsConfirmOpen(false)
+                    }
                 >
                     <div
-                        className="w-full rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
+                        className="w-full max-w-[338px] rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
                         onClick={(event) => event.stopPropagation()}
                     >
                         <p className="text-[18px] font-semibold leading-[25px] text-gray-900">
@@ -222,8 +228,10 @@ export default function InquiryPage() {
                             </button>
                         </div>
                     </div>
-                </div>
-            ) : null}
+                </div>,
+                document.body,
+            )
+                : null}
         </main>
     );
 }

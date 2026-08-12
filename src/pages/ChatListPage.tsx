@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo } from "react";
 import { chatApi } from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
 import type { ChatRoom } from "../data/chatRooms";
+import ChatAvatar from "../components/chat/ChatAvatar";
+import { formatChatRoomDateTime } from "../utils/chatDateTime";
 
 export default function ChatListPage() {
     const navigate = useNavigate();
@@ -50,13 +52,12 @@ export default function ChatListPage() {
                     {
                         id: datum.deliveryId.toString(),
                         participantName: datum.partner.nickname,
+                        participantPicture: datum.partner.picture,
                         itemName: datum.itemName ?? "전달 물품",
                         route: "",
                         status: "",
                         lastMessage,
-                        updatedAt: formatChatRoomTimestamp(
-                            datum.lastMessageAt,
-                        ),
+                        updatedAt: formatChatRoomDateTime(datum.lastMessageAt),
                         unreadCount: datum.unreadCount,
                         messages: [],
                     },
@@ -90,12 +91,10 @@ export default function ChatListPage() {
                                     className="flex w-full items-center gap-4 py-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
                                     aria-label={`${room.participantName}님과의 채팅 열기`}
                                 >
-                                    <span
-                                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-purple-100 text-base font-bold text-purple-600"
-                                        aria-hidden="true"
-                                    >
-                                        {room.participantName.charAt(0)}
-                                    </span>
+                                    <ChatAvatar
+                                        name={room.participantName}
+                                        picture={room.participantPicture}
+                                    />
 
                                     <span className="min-w-0 flex-1">
                                         <span className="flex items-center gap-2">
@@ -135,45 +134,5 @@ export default function ChatListPage() {
                 )}
             </div>
         </main>
-    );
-}
-
-function formatChatRoomTimestamp(value: string | null) {
-    if (!value) {
-        return "";
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-        return "";
-    }
-
-    const now = new Date();
-    if (isSameDate(date, now)) {
-        return new Intl.DateTimeFormat("ko-KR", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        }).format(date);
-    }
-
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    if (isSameDate(date, yesterday)) {
-        return "어제";
-    }
-
-    if (date.getFullYear() === now.getFullYear()) {
-        return `${date.getMonth() + 1}월 ${date.getDate()}일`;
-    }
-
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function isSameDate(left: Date, right: Date) {
-    return (
-        left.getFullYear() === right.getFullYear() &&
-        left.getMonth() === right.getMonth() &&
-        left.getDate() === right.getDate()
     );
 }
