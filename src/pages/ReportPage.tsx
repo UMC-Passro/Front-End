@@ -26,6 +26,10 @@ export default function ReportPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [isReasonOpen, setIsReasonOpen] = useState(false);
+    const selectedReasonLabel =
+        reason !== "" ? REPORT_TYPE[reason].label : "신고 유형을 선택해주세요";
+
     const isValid =
         state !== null &&
         reason !== "" &&
@@ -77,23 +81,59 @@ export default function ReportPage() {
                     신고유형
                 </span>
                 <div className="relative">
-                    <select
-                        id="reportType"
-                        value={reason}
-                        onChange={(event) =>
-                            setReason(event.target.value as ReportTypeKey | "")
-                        }
-                        className="w-full bg-gray-50 rounded-[10px] px-5 py-[15px] text-gray-800"
+                    <button
+                        type="button"
+                        onClick={() => setIsReasonOpen((prev) => !prev)}
+                        className="flex w-full items-center justify-between rounded-[10px] bg-gray-50 px-5 py-[15px] text-left"
                     >
-                        <option value="" disabled>
-                            신고 유형을 선택해주세요
-                        </option>
-                        {Object.entries(REPORT_TYPE).map(([key, value]) => (
-                            <option key={key} value={key}>
-                                {value.label}
-                            </option>
-                        ))}
-                    </select>
+                        <span
+                            className={`text-[15px] font-medium ${
+                                reason ? "text-gray-800" : "text-gray-400"
+                            }`}
+                        >
+                            {selectedReasonLabel}
+                        </span>
+
+                        <svg
+                            width="14"
+                            height="8"
+                            viewBox="0 0 14 8"
+                            fill="none"
+                        >
+                            <path
+                                d="M1 1L7 7L13 1"
+                                stroke="#8E91A1"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </button>
+                    {isReasonOpen ? (
+                        <div className="absolute left-0 right-0 top-[58px] z-20 overflow-hidden rounded-[10px] border border-gray-100 bg-white shadow-lg">
+                            {Object.entries(REPORT_TYPE).map(([key, value]) => {
+                                const isSelected = reason === key;
+
+                                return (
+                                    <button
+                                        key={key}
+                                        type="button"
+                                        onClick={() => {
+                                            setReason(key as ReportTypeKey);
+                                            setIsReasonOpen(false);
+                                        }}
+                                        className={`flex w-full items-center justify-between px-5 py-3.5 text-left text-[15px] transition-colors ${
+                                            isSelected
+                                                ? "bg-purple-50 font-semibold text-purple-600"
+                                                : "text-gray-700 hover:bg-gray-50"
+                                        }`}
+                                    >
+                                        <span>{value.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    ) : null}
                 </div>
             </div>
             <div className="mt-7 flex flex-col gap-3.5">
