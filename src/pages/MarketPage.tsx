@@ -56,12 +56,12 @@ function ProductItem({
     onPurchase: (product: MarketProduct) => void;
 }) {
     return (
-        <article className="flex min-h-[70px] items-center gap-2.5 overflow-hidden p-[5px]">
+        <article className="flex flex-1 min-h-[70px] items-center gap-2.5 overflow-hidden">
             {product.imageUrl ? (
                 <img
                     src={imgproxied(product.imageUrl, 100)}
                     alt={product.name}
-                    className="h-[60px] w-[60px] shrink-0 object-cover"
+                    className="h-[60px] w-[60px] shrink-0 object-cover rounded-[10px]"
                 />
             ) : (
                 <div
@@ -71,14 +71,11 @@ function ProductItem({
                 />
             )}
 
-            <div className="flex min-w-0 flex-1 self-stretch flex-col justify-between py-0.5">
-                <p className="text-[13px] font-medium leading-[15px] text-purple-500">
-                    {product.category}
-                </p>
-                <h2 className="truncate text-base font-bold leading-4 text-gray-800">
+            <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+                <h2 className="truncate text-base font-bold text-[14px] text-gray-800">
                     {product.name}
                 </h2>
-                <p className="text-sm font-bold leading-[14px] text-purple-500">
+                <p className="text-[12px] font-semibold leading-[14px] text-gray-500">
                     {pointFormatter.format(product.price)}P
                 </p>
             </div>
@@ -87,7 +84,7 @@ function ProductItem({
                 type="button"
                 onClick={() => onPurchase(product)}
                 disabled={isPurchasing}
-                className="shrink-0 rounded-[10px] bg-purple-500 px-2.5 py-2 text-sm font-medium leading-4 text-gray-50 disabled:cursor-wait disabled:opacity-60"
+                className="shrink-0 rounded-[10px] bg-purple-100 px-2.5 py-2 text-sm font-bold leading-4 text-purple-700 disabled:cursor-wait disabled:opacity-60"
                 aria-label={`${product.name} 교환하기`}
             >
                 {isPurchasing ? "처리 중" : "교환하기"}
@@ -173,18 +170,18 @@ export default function MarketPage() {
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pb-6 pt-3.5">
                 <section
-                    className="flex h-[74px] items-center rounded-[10px] bg-purple-100 px-5 py-[15px]"
+                    className="flex h-[80px] items-center rounded-[10px] bg-purple-100 px-5 py-[15px]"
                     aria-labelledby="market-point-title"
                 >
                     <div className="flex w-full items-center justify-between">
                         <div className="leading-[22px] text-gray-800">
                             <p
                                 id="market-point-title"
-                                className="text-sm font-medium"
+                                className="text-[14px] font-medium text-gray-600"
                             >
                                 보유 포인트
                             </p>
-                            <p className="text-base font-bold">
+                            <p className="text-[22px] font-bold text-purple-700">
                                 {pointRequest.isLoading
                                     ? "불러오는 중"
                                     : `${pointFormatter.format(currentPoint)}P`}
@@ -193,7 +190,7 @@ export default function MarketPage() {
                         <button
                             type="button"
                             onClick={() => navigate("/mypage/point")}
-                            className="rounded-lg bg-purple-200 px-2.5 py-1 text-xs font-bold leading-[22px] text-purple-600"
+                            className="rounded-lg bg-purple-600 px-2.5 py-1 text-xs font-bold leading-[22px] text-white"
                         >
                             포인트 내역
                         </button>
@@ -213,7 +210,7 @@ export default function MarketPage() {
                 ) : null}
 
                 <nav
-                    className="mt-3.5 flex items-center justify-between"
+                    className="mt-[32px] flex items-center gap-x-[6px]"
                     aria-label="상품 카테고리"
                 >
                     {CATEGORIES.map((category) => {
@@ -224,9 +221,9 @@ export default function MarketPage() {
                                 key={category}
                                 type="button"
                                 onClick={() => setSelectedCategory(category)}
-                                className={`rounded-[10px] px-[18px] py-1 text-xs font-bold leading-[22px] transition-colors ${isSelected
-                                    ? "bg-purple-500 text-gray-100"
-                                    : "bg-white text-gray-500"
+                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${isSelected
+                                    ? "bg-gray-900 text-white box-border"
+                                    : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
                                     }`}
                                 aria-pressed={isSelected}
                             >
@@ -236,7 +233,11 @@ export default function MarketPage() {
                     })}
                 </nav>
 
-                <section className="mt-3 flex flex-col gap-[8px]" aria-label="마켓 상품">
+                <div className="mt-[22px] font-bold text-[16px] text-gray-800">
+                    추천상품
+                </div>
+
+                <section className="mt-[14px] flex flex-col gap-[8px]" aria-label="마켓 상품">
                     {marketRequest.isLoading ? (
                         <div
                             className="mt-2 h-[280px] animate-pulse rounded-[10px] bg-gray-50"
@@ -261,15 +262,7 @@ export default function MarketPage() {
                         </div>
                     ) : products.length > 0 ? (
                         products.map((product, index) => (
-                            <div key={product.id}>
-                                {index > 0 ? (
-                                    <img
-                                        src={dividerImage}
-                                        alt=""
-                                        className="mx-auto h-px w-[calc(100%-20px)] mb-[8px]"
-                                        aria-hidden="true"
-                                    />
-                                ) : null}
+                            <div className="w-full flex p-[14px] bg-[#F8F9FD] rounded-[10px]" key={product.id}>
                                 <ProductItem
                                     product={product}
                                     isPurchasing={
