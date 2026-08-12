@@ -121,7 +121,25 @@ export function HistoryStatsPage() {
     return (
         <div className="page-container">
             <PageHeader title="활동 내역" onBack={() => navigate("/mypage")} />
-            <div className="mt-8 flex items-center justify-between gap-3">
+            {deliveryRequest.error && !deliveryRequest.data ? (
+                <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 px-6 text-center">
+                    <p className="text-sm font-medium text-red-500" role="alert">
+                        {deliveryRequest.error.message ||
+                            "활동 내역을 불러오지 못했습니다."}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            void deliveryRequest.execute().catch(() => undefined)
+                        }
+                        className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white"
+                    >
+                        다시 시도
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <div className="mt-8 flex items-center justify-between gap-3">
                 <DeliveryFilterButton
                     selected={selected}
                     onSelect={setSelected}
@@ -155,8 +173,10 @@ export function HistoryStatsPage() {
                         <span>만 표시</span>
                     </span>
                 </button>
-            </div>
-            <DeliveryList items={filteredItems} />
+                    </div>
+                    <DeliveryList items={filteredItems} />
+                </>
+            )}
         </div>
     );
 }

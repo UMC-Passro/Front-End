@@ -52,10 +52,35 @@ export default function PointPage() {
     return (
         <div className="page-container">
             <PageHeader title="포인트" onBack={() => navigate("/mypage")} />
-            <TotalPoint total={totalPoint} isLoading={isPointLoading} />
-            <PointFilterButton selected={selected} onSelect={setSelected} />
-            <div className="my-5 font-bold text-gray-800">적립 내역</div>
-            <PointList items={filteredItems} />
+            {pointRequest.error && !pointRequest.data ? (
+                <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 px-6 text-center">
+                    <p className="text-sm font-medium text-red-500" role="alert">
+                        {pointRequest.error.message ||
+                            "포인트 내역을 불러오지 못했습니다."}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            void pointRequest.execute().catch(() => undefined)
+                        }
+                        className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white"
+                    >
+                        다시 시도
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <TotalPoint total={totalPoint} isLoading={isPointLoading} />
+                    <PointFilterButton
+                        selected={selected}
+                        onSelect={setSelected}
+                    />
+                    <div className="my-5 font-bold text-gray-800">
+                        적립 내역
+                    </div>
+                    <PointList items={filteredItems} />
+                </>
+            )}
         </div>
     );
 }
