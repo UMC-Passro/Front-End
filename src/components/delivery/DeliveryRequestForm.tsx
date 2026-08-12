@@ -177,16 +177,23 @@ function TextField({
     value,
     onChange,
     error,
+    language,
 }: {
     placeholder: string;
     value: string;
     onChange: (value: string) => void;
     error?: string;
+    language?: string;
 }) {
     return (
         <div className="flex flex-col gap-1">
             <input
                 type="text"
+                inputMode="text"
+                lang={language}
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
@@ -600,6 +607,7 @@ function DeliveryRequestFormContent({
                                 placeholder="메모를 입력해주세요"
                                 value={memo}
                                 onChange={setMemo}
+                                language="ko"
                             />
                         </div>
                     </div>
