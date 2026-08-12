@@ -7,6 +7,7 @@ type HomeHeaderProps = {
     headline: string;
     role: UserRole;
     avatarUrl?: string | null;
+    isNicknameLoading?: boolean;
     unreadCount?: number;
     isNotificationOpen?: boolean;
     onNotificationToggle?: () => void;
@@ -21,6 +22,7 @@ export function HomeHeader({
     headline,
     role,
     avatarUrl,
+    isNicknameLoading = false,
     unreadCount = 0,
     isNotificationOpen = false,
     onNotificationToggle,
@@ -32,8 +34,13 @@ export function HomeHeader({
     return (
         <div>
             <div className="flex items-center justify-between gap-4">
-                <p className="text-[21px] font-bold leading-[30px] tracking-normal text-gray-900">
-                    안녕하세요, {name}님!
+                <p
+                    className="text-[21px] font-bold leading-[30px] tracking-normal text-gray-900"
+                    aria-live="polite"
+                >
+                    안녕하세요,{" "}
+                    {isNicknameLoading ? null : name}
+                    님!
                     <br />
                     {headline}
                 </p>

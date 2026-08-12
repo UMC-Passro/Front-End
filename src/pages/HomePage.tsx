@@ -148,8 +148,11 @@ export default function HomePage() {
     const displayName =
         profileRequest.data?.nickname ||
         currentUser?.nickname ||
-        currentUser?.name ||
         "패스로 사용자";
+    const isNicknameLoading =
+        !profileRequest.data?.nickname &&
+        !currentUser?.nickname &&
+        !profileRequest.error;
     const loadSenderDeliveries = useCallback(
         () => senderDeliveryApi.getDeliveryList(),
         [],
@@ -246,6 +249,7 @@ export default function HomePage() {
                 role={userRole}
                 content={content}
                 avatarUrl={profileRequest.data?.picture}
+                isNicknameLoading={isNicknameLoading}
                 isRoleChanging={
                     activeRequest.isLoading || isCheckingStudent
                 }
