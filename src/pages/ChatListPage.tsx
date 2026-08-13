@@ -81,7 +81,6 @@ export default function ChatListPage() {
                         className="py-16 text-center text-sm font-medium text-gray-400"
                         role="status"
                     >
-                        채팅 목록을 불러오는 중입니다.
                     </p>
                 ) : data !== null && chatRooms.length === 0 ? (
                     <div className="w-full h-full flex justify-center items-center">

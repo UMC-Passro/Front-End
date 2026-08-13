@@ -171,9 +171,9 @@ export default function MarketPage() {
                             >
                                 보유 포인트
                             </p>
-                            <p className="text-[22px] font-bold text-purple-700">
+                            <p className="text-[22px] h-[22px] font-bold text-purple-700">
                                 {pointRequest.isLoading
-                                    ? "불러오는 중"
+                                    ? ""
                                     : `${pointFormatter.format(currentPoint)}P`}
                             </p>
                         </div>
@@ -211,11 +211,10 @@ export default function MarketPage() {
                                 key={category}
                                 type="button"
                                 onClick={() => setSelectedCategory(category)}
-                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${
-                                    isSelected
-                                        ? "bg-gray-900 text-white box-border"
-                                        : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
-                                }`}
+                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${isSelected
+                                    ? "bg-gray-900 text-white box-border"
+                                    : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
+                                    }`}
                                 aria-pressed={isSelected}
                             >
                                 {category}
