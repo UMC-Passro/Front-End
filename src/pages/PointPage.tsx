@@ -51,7 +51,7 @@ export default function PointPage() {
 
     return (
         <div className="page-container">
-            <PageHeader title="포인트" onBack={() => navigate("/mypage")} />
+            <PageHeader title="포인트" onBack={() => navigate(-1)} />
             {pointRequest.error && !pointRequest.data ? (
                 <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 px-6 text-center">
                     <p className="text-sm font-medium text-red-500" role="alert">

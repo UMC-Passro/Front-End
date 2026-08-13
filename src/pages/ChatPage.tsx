@@ -91,8 +91,8 @@ export default function ChatPage() {
         )
             ? "sender"
             : shipperDeliveries.some((delivery) => delivery.id === deliveryId)
-              ? "shipper"
-              : null;
+                ? "shipper"
+                : null;
 
         return { messages, roomInfo, deliveryRole };
     }, [chatRoomId]);
@@ -133,7 +133,7 @@ export default function ChatPage() {
                     (message) =>
                         !message.isRead &&
                         message.senderNickname !==
-                            data.roomInfo.partnerNickname,
+                        data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -264,7 +264,7 @@ export default function ChatPage() {
             <div className="flex h-full flex-col bg-white">
                 <PageHeader
                     title="채팅"
-                    onBack={() => navigate("/delivery/chat")}
+                    onBack={() => navigate(-1)}
                     className="shrink-0 px-4 pt-3"
                 />
                 <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
@@ -314,7 +314,7 @@ export default function ChatPage() {
                             <span>{roomInfo.partnerNickname}</span>
                         </span>
                     }
-                    onBack={() => navigate("/delivery/chat")}
+                    onBack={() => navigate(-1)}
                     className="mb-3"
                     rightAction={
                         <button
@@ -392,9 +392,8 @@ export default function ChatPage() {
                                     />
                                 ) : null}
                                 <div
-                                    className={`flex w-full items-end gap-2 ${
-                                        isMine ? "justify-end" : "justify-start"
-                                    }`}
+                                    className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
+                                        }`}
                                 >
                                     {isMine && timestamp ? (
                                         <time
@@ -406,16 +405,14 @@ export default function ChatPage() {
                                     ) : null}
 
                                     <div
-                                        className={`flex max-w-[75%] flex-col ${
-                                            isMine ? "items-end" : "items-start"
-                                        }`}
+                                        className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
+                                            }`}
                                     >
                                         <div
-                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${
-                                                isMine
-                                                    ? "bg-[#6366F1] text-white"
-                                                    : "bg-[#EFEFEF] text-gray-800"
-                                            }`}
+                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
+                                                ? "bg-[#6366F1] text-white"
+                                                : "bg-[#EFEFEF] text-gray-800"
+                                                }`}
                                         >
                                             {message.content}
                                         </div>

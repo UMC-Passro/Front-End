@@ -108,7 +108,7 @@ export default function DeliveryTrackingPage() {
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
                     title="전달 추적"
-                    onBack={() => navigate("/home")}
+                    onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
                 <div
@@ -127,7 +127,7 @@ export default function DeliveryTrackingPage() {
             <div className="page-container flex h-full min-h-0 flex-col overflow-hidden">
                 <PageHeader
                     title="전달 추적"
-                    onBack={() => navigate("/home")}
+                    onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
                 <div className="flex flex-1 items-center justify-center">
@@ -164,7 +164,7 @@ export default function DeliveryTrackingPage() {
         <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="전달 추적"
-                onBack={() => navigate("/home")}
+                onBack={() => navigate(-1)}
                 className="shrink-0"
             />
 
