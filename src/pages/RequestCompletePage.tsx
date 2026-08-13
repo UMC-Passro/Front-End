@@ -12,7 +12,7 @@ export default function RequestCompletePage() {
     }, [navigate]);
 
     return (
-        <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden">
+        <div className="page-container flex h-[calc(100vh - 64px)] min-h-0 flex-col overflow-hidden">
             <div className="scrollbar-hidden flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 pb-6 pt-12">
                 {/* 로고 이미지 */}
                 <img
