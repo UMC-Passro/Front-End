@@ -1,5 +1,4 @@
 import blockIcon from "../../assets/icons/block.svg";
-import reportIcon from "../../assets/icons/report.svg";
 import noAlarmIcon from "../../assets/icons/noAlarm.svg";
 import exitIcon from "../../assets/icons/exit.svg";
 
@@ -7,9 +6,24 @@ interface ChatModalProps {
     onClose: () => void;
     onReport: () => void;
     onExit: () => void;
+    chatMessageId: number;
 }
 
-export default function ChatModal({ onClose, onReport, onExit }: ChatModalProps) {
+import { useNavigate } from "react-router-dom";
+import { ReportIcon } from "../../assets/icons/report";
+
+export default function ChatModal({ onClose, onExit, chatMessageId }: ChatModalProps) {
+    const navigate = useNavigate();
+    const handleReport = () => {
+        onClose();
+        navigate("/report", {
+            state: {
+                targetType: "CHAT_MESSAGE",
+                chatMessageId,
+            },
+        });
+    };
+
     return (
         <div
             onClick={onClose}
@@ -25,11 +39,10 @@ export default function ChatModal({ onClose, onReport, onExit }: ChatModalProps)
                         <span className="flex text-gray-900">차단하기</span>
                     </div>
                     <button
-                        type="button"
-                        onClick={onReport}
-                        className="flex gap-4 border-b border-gray-100 px-6 py-4 text-left"
+                        onClick={handleReport}
+                        className="flex gap-4 px-6 py-4 border-b border-gray-100"
                     >
-                        <img src={reportIcon} alt="" />
+                        <ReportIcon />
                         <span className="flex text-gray-900">신고하기</span>
                     </button>
                     <div className="flex gap-4 px-6 py-4 border-b border-gray-100">

@@ -20,13 +20,7 @@ type MarketProduct = MarketItem & {
     imageUrl: string | null;
 };
 
-const CATEGORIES: MarketFilter[] = [
-    "전체",
-    "음식",
-    "카페",
-    "편의점",
-    "기타",
-];
+const CATEGORIES: MarketFilter[] = ["전체", "음식", "카페", "편의점", "기타"];
 
 const pointFormatter = new Intl.NumberFormat("ko-KR");
 
@@ -140,9 +134,7 @@ export default function MarketPage() {
             setPurchasedPoint(result.remainingPoint);
             setSelectedProduct(null);
             setFeedbackTitle("교환 완료");
-            setFeedbackMessage(
-                `${result.item.name} 교환이 완료되었습니다.`,
-            );
+            setFeedbackMessage(`${result.item.name} 교환이 완료되었습니다.`);
         } catch (error) {
             setSelectedProduct(null);
             setFeedbackTitle("교환 실패");
@@ -156,8 +148,7 @@ export default function MarketPage() {
         }
     };
 
-    const currentPoint =
-        purchasedPoint ?? pointRequest.data?.currentPoint ?? 0;
+    const currentPoint = purchasedPoint ?? pointRequest.data?.currentPoint ?? 0;
     const products = marketRequest.data ?? [];
 
     return (
@@ -220,10 +211,11 @@ export default function MarketPage() {
                                 key={category}
                                 type="button"
                                 onClick={() => setSelectedCategory(category)}
-                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${isSelected
-                                    ? "bg-gray-900 text-white box-border"
-                                    : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
-                                    }`}
+                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${
+                                    isSelected
+                                        ? "bg-gray-900 text-white box-border"
+                                        : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
+                                }`}
                                 aria-pressed={isSelected}
                             >
                                 {category}
@@ -236,15 +228,23 @@ export default function MarketPage() {
                     추천상품
                 </div>
 
-                <section className="mt-[14px] flex flex-col gap-[8px]" aria-label="마켓 상품">
+                <section
+                    className="mt-[14px] flex flex-col gap-[8px]"
+                    aria-label="마켓 상품"
+                >
                     {marketRequest.isLoading ? (
-                        <div
-                            className="mt-2 h-[280px] animate-pulse rounded-[10px] bg-gray-50"
-                            aria-label="마켓 상품을 불러오는 중"
-                        />
+                        <div className="flex flex-col gap-2">
+                            {Array.from({ length: 4 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="h-[98px] w-full animate-pulse rounded-[10px] bg-gray-50"
+                                    aria-hidden="true"
+                                />
+                            ))}
+                        </div>
                     ) : marketRequest.error ? (
                         <div className="py-10 text-center" role="alert">
-                            <p className="text-sm font-medium text-red-500">
+                            <p className="text-sm font-medium text-errorRed">
                                 마켓 상품을 불러오지 못했습니다.
                             </p>
                             <button
@@ -254,14 +254,17 @@ export default function MarketPage() {
                                         .execute(selectedCategory)
                                         .catch(() => undefined)
                                 }
-                                className="mt-2 text-xs font-bold text-red-500 underline"
+                                className="mt-2 text-xs font-bold text-errorRed underline"
                             >
                                 다시 시도
                             </button>
                         </div>
                     ) : products.length > 0 ? (
                         products.map((product, index) => (
-                            <div className="w-full flex p-[14px] bg-[#F8F9FD] rounded-[10px]" key={product.id}>
+                            <div
+                                className="w-full flex p-[14px] bg-gray-50 rounded-[10px]"
+                                key={product.id}
+                            >
                                 <ProductItem
                                     product={product}
                                     isPurchasing={
@@ -296,7 +299,9 @@ export default function MarketPage() {
                     setFeedbackMessage("");
                 }}
                 actionLabel={selectedProduct ? "교환하기" : undefined}
-                onAction={selectedProduct ? () => void handlePurchase() : undefined}
+                onAction={
+                    selectedProduct ? () => void handlePurchase() : undefined
+                }
                 isActionDisabled={isPurchasing}
             />
         </main>

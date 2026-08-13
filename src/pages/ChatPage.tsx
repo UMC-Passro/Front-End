@@ -20,10 +20,8 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
-import ChatReportModal from "../components/chat/ChatReportModal";
 import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
 import ChatAvatar from "../components/chat/ChatAvatar";
-import type { ReportReason } from "../apis/reportApi";
 import { notifyChatRead } from "../utils/chatEvents";
 import { formatChatTime, parseChatDateTime } from "../utils/chatDateTime";
 
@@ -264,42 +262,6 @@ export default function ChatPage() {
                 caughtError instanceof ApiError
                     ? caughtError.message
                     : "나가지 못했습니다. 다시 시도해주세요.",
-            );
-        } finally {
-            setIsReporting(false);
-        }
-    };
-
-    const handleReportSubmit = async (
-        reason: ReportReason,
-        detail: string,
-    ) => {
-        const deliveryId = Number(chatRoomId);
-
-        if (
-            isReporting ||
-            !Number.isInteger(deliveryId) ||
-            deliveryId <= 0
-        ) {
-            return;
-        }
-
-        setIsReporting(true);
-        setReportError("");
-
-        try {
-            await reportApi.createDeliveryReport({
-                targetType: "DELIVERY",
-                reason,
-                detail,
-                deliveryId,
-            });
-            setIsReportOpen(false);
-        } catch (caughtError) {
-            setReportError(
-                caughtError instanceof ApiError
-                    ? caughtError.message
-                    : "신고를 접수하지 못했습니다. 다시 시도해주세요.",
             );
         } finally {
             setIsReporting(false);
@@ -572,23 +534,14 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
-            {isOpen ? (
+            {isOpen && (
                 <ChatModal
                     onClose={() => setIsopen(false)}
                     onExit={handleExitSubmit}
                     onReport={handleOpenReport}
+                    chatMessageId={Number(chatRoomId)}
                 />
-            ) : null}
-            {isReportOpen ? (
-                <ChatReportModal
-                    isSubmitting={isReporting}
-                    errorMessage={reportError}
-                    onClose={() => setIsReportOpen(false)}
-                    onSubmit={(reason, detail) =>
-                        void handleReportSubmit(reason, detail)
-                    }
-                />
-            ) : null}
+            )}
         </div>
     );
 }

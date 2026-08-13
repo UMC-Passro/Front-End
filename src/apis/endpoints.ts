@@ -11,7 +11,7 @@ export const API_ENDPOINTS = {
         findPassword: "/auth/find/password",
         availableNickname: "/auth/nickname/check",
         availableMail: "/auth/mail/check",
-        editPassword: "/mypage/edit/password"
+        editPassword: "/mypage/edit/password",
     },
     subway: {
         search: "/subway/search",
@@ -42,6 +42,10 @@ export const API_ENDPOINTS = {
         imageUploadUrl: "/file/image/upload-url",
         imageDownloadUrl: "/file/image/download-url",
     },
+    report: {
+        root: "/reports",
+        getReportList: "/reports/me",
+    },
     review: {
         root: "/reviews",
         average: (userId: number) => `/reviews/average/${userId}`,
@@ -59,7 +63,7 @@ export const API_ENDPOINTS = {
         sendPasswordEditMail: "/mypage/edit/password/mail",
         editPassword: "/mypage/edit/password",
         points: "/account/points",
-        checkStudent: "/mypage/student-certification"
+        checkStudent: "/mypage/student-certification",
     },
     chat: {
         messages: (deliveryId: number) => `/chat/${deliveryId}/messages`,
@@ -74,11 +78,7 @@ export const API_ENDPOINTS = {
         unreadCount: "/notifications/unread-count",
         read: (notificationId: number) =>
             `/notifications/${notificationId}/read`,
-        detail: (notificationId: number) =>
-            `/notifications/${notificationId}`,
-    },
-    report: {
-        root: "/reports",
+        detail: (notificationId: number) => `/notifications/${notificationId}`,
     },
     market: {
         root: "/market",
