@@ -74,4 +74,11 @@ export const chatApi = {
             url: API_ENDPOINTS.chat.rooms,
         });
     },
+
+    exitRoom(deliveryId: number){
+        return apiRequest<null>({
+            method: "DELETE",
+            url: API_ENDPOINTS.chat.exit(deliveryId)
+        });
+    }
 };

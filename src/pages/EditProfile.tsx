@@ -114,9 +114,8 @@ function StationFieldButton({
         >
             <span className="flex min-w-0 items-baseline gap-1">
                 <span
-                    className={`truncate text-[15px] ${
-                        station ? "font-medium text-gray-800" : "text-gray-500"
-                    }`}
+                    className={`truncate text-[15px] ${station ? "font-medium text-gray-800" : "text-gray-500"
+                        }`}
                 >
                     {station?.name ?? placeholder}
                 </span>
@@ -166,11 +165,10 @@ function EditableProfileField({
                 readOnly={readOnly}
                 onChange={(event) => onChange?.(event.target.value)}
                 onBlur={onBlur}
-                className={`${editableFieldClassName} ${
-                    readOnly
-                        ? "cursor-default bg-gray-200 text-gray-500"
-                        : "bg-gray-50 text-gray-800"
-                }`}
+                className={`${editableFieldClassName} ${readOnly
+                    ? "cursor-default bg-gray-200 text-gray-500"
+                    : "bg-gray-50 text-gray-800"
+                    }`}
             />
         </label>
     );
@@ -426,7 +424,7 @@ export default function EditProfile() {
         <main className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="프로필 설정"
-                onBack={() => navigate("/mypage")}
+                onBack={() => navigate(-1)}
                 className="shrink-0"
             />
 
@@ -468,9 +466,9 @@ export default function EditProfile() {
                                         picturePreview ??
                                         (profileRequest.data?.picture
                                             ? imgproxied(
-                                                  profileRequest.data?.picture,
-                                                  110,
-                                              )
+                                                profileRequest.data?.picture,
+                                                110,
+                                            )
                                             : "")
                                     }
                                     alt="프로필"
@@ -506,11 +504,10 @@ export default function EditProfile() {
 
                     {pictureMessage ? (
                         <p
-                            className={`mt-3 text-xs ${
-                                pictureHasError
-                                    ? "text-red-500"
-                                    : "text-purple-600"
-                            }`}
+                            className={`mt-3 text-xs ${pictureHasError
+                                ? "text-red-500"
+                                : "text-purple-600"
+                                }`}
                             role={pictureHasError ? "alert" : "status"}
                         >
                             {pictureMessage}
@@ -637,11 +634,10 @@ export default function EditProfile() {
 
                         {routeMessage ? (
                             <p
-                                className={`px-1 text-xs ${
-                                    routeHasError
-                                        ? "text-red-500"
-                                        : "text-purple-600"
-                                }`}
+                                className={`px-1 text-xs ${routeHasError
+                                    ? "text-red-500"
+                                    : "text-purple-600"
+                                    }`}
                                 role={routeHasError ? "alert" : "status"}
                             >
                                 {routeMessage}
@@ -693,9 +689,8 @@ export default function EditProfile() {
             <div className="shrink-0 pt-3">
                 {saveMessage ? (
                     <p
-                        className={`mb-2 text-center text-xs ${
-                            saveHasError ? "text-red-500" : "text-purple-600"
-                        }`}
+                        className={`mb-2 text-center text-xs ${saveHasError ? "text-red-500" : "text-purple-600"
+                            }`}
                         role={saveHasError ? "alert" : "status"}
                     >
                         {saveMessage}
@@ -747,8 +742,8 @@ export default function EditProfile() {
                         stationField === "origin"
                             ? "출발역 선택"
                             : stationField === "destination"
-                              ? "도착역 선택"
-                              : "경유역 선택"
+                                ? "도착역 선택"
+                                : "경유역 선택"
                     }
                     onClose={() => setStationField(null)}
                     onSelect={handleStationSelect}

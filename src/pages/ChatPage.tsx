@@ -20,12 +20,36 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
-import ChatReportModal from "../components/chat/ChatReportModal";
 import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
 import ChatAvatar from "../components/chat/ChatAvatar";
-import type { ReportReason } from "../apis/reportApi";
 import { notifyChatRead } from "../utils/chatEvents";
-import { formatChatTime } from "../utils/chatDateTime";
+import { formatChatTime, parseChatDateTime } from "../utils/chatDateTime";
+
+const CHAT_DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Seoul",
+});
+
+const CHAT_DATE_KEY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Seoul",
+});
+
+function getChatDateKey(createdAt: string) {
+    const date = parseChatDateTime(createdAt);
+    return Number.isNaN(date.getTime())
+        ? ""
+        : CHAT_DATE_KEY_FORMATTER.format(date);
+}
+
+function formatChatDate(createdAt: string) {
+    const date = parseChatDateTime(createdAt);
+    return Number.isNaN(date.getTime()) ? "" : CHAT_DATE_FORMATTER.format(date);
+}
 
 export default function ChatPage() {
     const navigate = useNavigate();
@@ -91,8 +115,8 @@ export default function ChatPage() {
         )
             ? "sender"
             : shipperDeliveries.some((delivery) => delivery.id === deliveryId)
-              ? "shipper"
-              : null;
+                ? "shipper"
+                : null;
 
         return { messages, roomInfo, deliveryRole };
     }, [chatRoomId]);
@@ -132,8 +156,7 @@ export default function ChatPage() {
                 const oldestUnreadMessageIndex = messagesRef.current.findIndex(
                     (message) =>
                         !message.isRead &&
-                        message.senderNickname !==
-                            data.roomInfo.partnerNickname,
+                        message.senderNickname !== data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -148,8 +171,7 @@ export default function ChatPage() {
                     if (
                         nextMessages.some(
                             (message) =>
-                                message.senderNickname ===
-                                data.roomInfo.partnerNickname,
+                                message.senderNickname === data.roomInfo.partnerNickname,
                         )
                     ) {
                         notifyChatRead();
@@ -195,14 +217,15 @@ export default function ChatPage() {
 
         setIsSending(true);
         setSendError("");
+        setDraft("");
 
         try {
             const sentMessage = await chatApi.sendMessage(deliveryId, {
                 content,
             });
             mergeMessages([sentMessage]);
-            setDraft("");
         } catch (caughtError) {
+            setDraft((currentDraft) => currentDraft || content);
             setSendError(
                 caughtError instanceof ApiError
                     ? caughtError.message
@@ -211,6 +234,8 @@ export default function ChatPage() {
         } finally {
             setIsSending(false);
         }
+
+        event.preventDefault();
     };
 
     const handleOpenReport = () => {
@@ -219,36 +244,22 @@ export default function ChatPage() {
         setIsReportOpen(true);
     };
 
-    const handleReportSubmit = async (
-        reason: ReportReason,
-        detail: string,
-    ) => {
+    const handleExitSubmit = async () => {
         const deliveryId = Number(chatRoomId);
 
-        if (
-            isReporting ||
-            !Number.isInteger(deliveryId) ||
-            deliveryId <= 0
-        ) {
+        if (!Number.isInteger(deliveryId) || deliveryId <= 0) {
             return;
         }
 
-        setIsReporting(true);
-        setReportError("");
-
+        setIsopen(false);
         try {
-            await reportApi.createDeliveryReport({
-                targetType: "DELIVERY",
-                reason,
-                detail,
-                deliveryId,
-            });
-            setIsReportOpen(false);
+            await chatApi.exitRoom(deliveryId);
+            navigate("/delivery/chat");
         } catch (caughtError) {
             setReportError(
                 caughtError instanceof ApiError
                     ? caughtError.message
-                    : "신고를 접수하지 못했습니다. 다시 시도해주세요.",
+                    : "나가지 못했습니다. 다시 시도해주세요.",
             );
         } finally {
             setIsReporting(false);
@@ -264,7 +275,7 @@ export default function ChatPage() {
             <div className="flex h-full flex-col bg-white">
                 <PageHeader
                     title="채팅"
-                    onBack={() => navigate("/delivery/chat")}
+                    onBack={() => navigate(-1)}
                     className="shrink-0 px-4 pt-3"
                 />
                 <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
@@ -314,7 +325,7 @@ export default function ChatPage() {
                             <span>{roomInfo.partnerNickname}</span>
                         </span>
                     }
-                    onBack={() => navigate("/delivery/chat")}
+                    onBack={() => navigate(-1)}
                     className="mb-3"
                     rightAction={
                         <button
@@ -368,73 +379,98 @@ export default function ChatPage() {
                 </button>
             </div>
 
-            <div className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto bg-white px-4 py-6">
+            <div className="scrollbar-hidden min-h-0 flex-1 space-y-[10px] overflow-y-auto bg-white px-4 py-6">
                 {messages.length === 0 ? (
                     <p className="py-12 text-center text-sm text-gray-400">
                         아직 주고받은 메시지가 없습니다.
                     </p>
                 ) : (
-                    messages.map((message) => {
-                        const isMine =
-                            message.senderNickname !== roomInfo.partnerNickname;
+                    messages.map((message, index) => {
+                        const isMine = message.senderNickname !== roomInfo.partnerNickname;
                         const timestamp = formatChatTime(message.createdAt);
+                        const currentDateKey = getChatDateKey(message.createdAt);
+                        const previousDateKey =
+                            index > 0 ? getChatDateKey(messages[index - 1].createdAt) : "";
+                        const shouldShowDateDivider =
+                            Boolean(currentDateKey) && currentDateKey !== previousDateKey;
 
                         return (
-                            <div
-                                key={message.id}
-                                className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                            >
-                                {!isMine ? (
-                                    <ChatAvatar
-                                        name={roomInfo.partnerNickname}
-                                        picture={roomInfo.partnerPicture}
-                                        className="mr-2 mt-1 h-8 w-8 text-xs"
-                                    />
-                                ) : null}
-                                <div
-                                    className={`flex w-full items-end gap-2 ${
-                                        isMine ? "justify-end" : "justify-start"
-                                    }`}
-                                >
-                                    {isMine && timestamp ? (
+                            <div key={message.id}>
+                                {shouldShowDateDivider ? (
+                                    <div className="flex items-center gap-3 py-5">
+                                        <span
+                                            className="h-px flex-1 bg-gray-100"
+                                            aria-hidden="true"
+                                        />
                                         <time
                                             dateTime={message.createdAt}
-                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                            className="shrink-0 text-xs font-medium text-gray-400"
                                         >
-                                            {timestamp}
+                                            {formatChatDate(message.createdAt)}
                                         </time>
-                                    ) : null}
+                                        <span
+                                            className="h-px flex-1 bg-gray-100"
+                                            aria-hidden="true"
+                                        />
+                                    </div>
+                                ) : null}
 
+                                <div
+                                    className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                                >
+                                    {!isMine ? (
+                                        <ChatAvatar
+                                            name={roomInfo.partnerNickname}
+                                            picture={roomInfo.partnerPicture}
+                                            className="mr-2 mt-1 h-8 w-8 text-xs"
+                                        />
+                                    ) : null}
                                     <div
-                                        className={`flex max-w-[75%] flex-col ${
-                                            isMine ? "items-end" : "items-start"
-                                        }`}
-                                    >
-                                        <div
-                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${
-                                                isMine
-                                                    ? "bg-[#6366F1] text-white"
-                                                    : "bg-[#EFEFEF] text-gray-800"
+                                        className={`flex w-full items-end gap-[5px] ${isMine ? "justify-end" : "justify-start"
                                             }`}
-                                        >
-                                            {message.content}
+                                    >
+                                        <div className="flex flex-col mb gap-y-[2px]">
+                                            {isMine && !message.isRead ? (
+                                                <span className="text-right text-[12px] font-medium text-gray-400">
+                                                    읽지 않음
+                                                </span>
+                                            ) : null}
+
+                                            {isMine && timestamp ? (
+                                                <div className="flex">
+                                                    <time
+                                                        dateTime={message.createdAt}
+                                                        className="shrink-0 whitespace-nowrap text-[12px] font-medium text-gray-400"
+                                                    >
+                                                        {timestamp}
+                                                    </time>
+                                                </div>
+                                            ) : null}
                                         </div>
 
-                                        {isMine && !message.isRead ? (
-                                            <span className="mr-[8px] mt-[2px] px-1 text-[12px] font-normal text-gray-400">
-                                                읽지 않음
-                                            </span>
+                                        <div
+                                            className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
+                                                }`}
+                                        >
+                                            <div
+                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${isMine
+                                                        ? "bg-[#6366F1] text-white"
+                                                        : "bg-[#EFEFEF] text-gray-800"
+                                                    }`}
+                                            >
+                                                {message.content}
+                                            </div>
+                                        </div>
+
+                                        {!isMine && timestamp ? (
+                                            <time
+                                                dateTime={message.createdAt}
+                                                className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                            >
+                                                {timestamp}
+                                            </time>
                                         ) : null}
                                     </div>
-
-                                    {!isMine && timestamp ? (
-                                        <time
-                                            dateTime={message.createdAt}
-                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
-                                        >
-                                            {timestamp}
-                                        </time>
-                                    ) : null}
                                 </div>
                             </div>
                         );
@@ -445,9 +481,7 @@ export default function ChatPage() {
 
             <div className="w-full shrink-0 border-gray-100 bg-white px-4 py-4">
                 {sendError ? (
-                    <p className="mb-2 px-2 text-xs text-red-500">
-                        {sendError}
-                    </p>
+                    <p className="mb-2 px-2 text-xs text-red-500">{sendError}</p>
                 ) : null}
                 <form
                     onSubmit={handleSendMessage}
@@ -463,8 +497,7 @@ export default function ChatPage() {
                                 setSendError("");
                             }
                         }}
-                        disabled={isSending}
-                        className="flex-1 bg-transparent text-[15px] text-gray-800 placeholder-gray-400 focus:outline-none"
+                        className="flex-1 bg-transparent font-medium text-[15px] text-gray-800 placeholder-gray-400 focus:outline-none"
                     />
                     <button
                         type="submit"
@@ -489,22 +522,14 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
-            {isOpen ? (
+            {isOpen && (
                 <ChatModal
                     onClose={() => setIsopen(false)}
+                    onExit={handleExitSubmit}
                     onReport={handleOpenReport}
+                    chatMessageId={Number(chatRoomId)}
                 />
-            ) : null}
-            {isReportOpen ? (
-                <ChatReportModal
-                    isSubmitting={isReporting}
-                    errorMessage={reportError}
-                    onClose={() => setIsReportOpen(false)}
-                    onSubmit={(reason, detail) =>
-                        void handleReportSubmit(reason, detail)
-                    }
-                />
-            ) : null}
+            )}
         </div>
     );
 }

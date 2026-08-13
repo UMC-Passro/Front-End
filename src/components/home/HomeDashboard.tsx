@@ -166,9 +166,9 @@ export function HomeDashboard({
     };
 
     return (
-        <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
+        <section className="page-container page-container-bottom-button h-dvh flex flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col h-full transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
+                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
                     }`}
                 aria-hidden={isConsentOpen}
             >
@@ -186,9 +186,7 @@ export function HomeDashboard({
                         notificationPanel={
                             <AlarmPopup
                                 alarms={alarms}
-                                onClearAll={() =>
-                                    void handleClearAllAlarms()
-                                }
+                                onClearAll={() => void handleClearAllAlarms()}
                                 onSelect={(alarm) =>
                                     void handleAlarmSelect(alarm)
                                 }
@@ -202,12 +200,12 @@ export function HomeDashboard({
                     />
                 </div>
 
-                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                    <section className="mt-12">
+                <div className="scrollbar-hidden flex-1 min-h-0 overflow-y-auto mt-6 overscroll-contain pb-14">
+                    <section className="mt-6">
                         <SectionTitle accent>진행중인 전달</SectionTitle>
                         {isLoading ? (
                             <div
-                                className="mt-3 h-[76px] animate-pulse rounded-lg bg-purple-50"
+                                className="mt-3 h-[60px] animate-pulse rounded-lg bg-purple-50"
                                 aria-label="전달 목록을 불러오는 중"
                             />
                         ) : errorMessage ? (
@@ -249,7 +247,7 @@ export function HomeDashboard({
                         <section className="mt-10">
                             <SectionTitle>활동 내역</SectionTitle>
                             {isLoading ? (
-                                <div className="mt-3.5 flex flex-col gap-2.5">
+                                <div className="mt-3.5 flex flex-col gap-2.5 h-[60px]">
                                     {[0, 1].map((item) => (
                                         <div
                                             key={item}
@@ -277,7 +275,7 @@ export function HomeDashboard({
                 <button
                     type="button"
                     onClick={() => setIsConsentOpen(true)}
-                    className="absolute bottom-5 left-5 right-5 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
+                    className="fixed bottom-20 left-1/2 z-10 w-[calc(100%-40px)] max-w-[360px] -translate-x-1/2 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
                 >
                     {content.actionLabel}
                 </button>
