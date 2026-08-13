@@ -421,12 +421,14 @@ export default function ChatPage() {
                                         }`}
                                 >
                                     {isMine && timestamp ? (
-                                        <time
-                                            dateTime={message.createdAt}
-                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
-                                        >
-                                            {timestamp}
-                                        </time>
+                                        <div className="h-[100%] flex">
+                                            <time
+                                                dateTime={message.createdAt}
+                                                className="mt-[27px] shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                            >
+                                                {timestamp}
+                                            </time>
+                                        </div>
                                     ) : null}
 
                                     <div
