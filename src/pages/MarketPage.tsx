@@ -164,7 +164,6 @@ export default function MarketPage() {
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden bg-white px-[21px]">
             <PageHeader
                 title="마켓"
-                onBack={() => navigate(-1)}
                 className="shrink-0"
             />
 
