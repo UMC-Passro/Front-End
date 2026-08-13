@@ -475,16 +475,25 @@ export default function ChatPage() {
                                         className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
                                             }`}
                                     >
-                                        {isMine && timestamp ? (
-                                            <div className="flex h-full">
-                                                <time
-                                                    dateTime={message.createdAt}
-                                                    className="mt-[27px] shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
-                                                >
-                                                    {timestamp}
-                                                </time>
-                                            </div>
-                                        ) : null}
+                                        <div className="flex flex-col mb-[4px]">
+
+                                            {isMine && message.isRead ? (
+                                                <span className="text-right text-[12px] font-normal text-gray-400">
+                                                    읽음
+                                                </span>
+                                            ) : null}
+
+                                            {isMine && timestamp ? (
+                                                <div className="flex">
+                                                    <time
+                                                        dateTime={message.createdAt}
+                                                        className="shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                                    >
+                                                        {timestamp}
+                                                    </time>
+                                                </div>
+                                            ) : null}
+                                        </div>
 
                                         <div
                                             className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
@@ -498,12 +507,6 @@ export default function ChatPage() {
                                             >
                                                 {message.content}
                                             </div>
-
-                                            {isMine && !message.isRead ? (
-                                                <span className="mr-[8px] mt-[2px] px-1 text-[12px] font-normal text-gray-400">
-                                                    읽지 않음
-                                                </span>
-                                            ) : null}
                                         </div>
 
                                         {!isMine && timestamp ? (
