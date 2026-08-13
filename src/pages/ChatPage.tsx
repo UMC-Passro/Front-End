@@ -489,22 +489,12 @@ export default function ChatPage() {
                     </button>
                 </form>
             </div>
-            {isOpen ? (
+            {isOpen && (
                 <ChatModal
                     onClose={() => setIsopen(false)}
-                    onReport={handleOpenReport}
+                    chatMessageId={Number(chatRoomId)}
                 />
-            ) : null}
-            {isReportOpen ? (
-                <ChatReportModal
-                    isSubmitting={isReporting}
-                    errorMessage={reportError}
-                    onClose={() => setIsReportOpen(false)}
-                    onSubmit={(reason, detail) =>
-                        void handleReportSubmit(reason, detail)
-                    }
-                />
-            ) : null}
+            )}
         </div>
     );
 }

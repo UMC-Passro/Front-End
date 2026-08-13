@@ -5,6 +5,7 @@ import { DeliveryInfo } from "../components/delivery/DeliveryInfo";
 import { DeliveryRoute } from "../components/delivery/DeliveryRoute";
 import { shipperDeliveryApi } from "../apis";
 import { useApiRequest } from "../hooks/useApiRequest";
+import { ReportIcon } from "../assets/icons/report";
 
 export default function DeliveryMatchingPage() {
     const navigate = useNavigate();
@@ -97,7 +98,27 @@ export default function DeliveryMatchingPage() {
 
     return (
         <div className="page-container page-container-bottom-button relative flex flex-col">
-            <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
+            <PageHeader
+                title="매칭 요청"
+                onBack={() => navigate(-1)}
+                rightAction={
+                    <button
+                        type="button"
+                        onClick={() =>
+                            navigate("/report", {
+                                state: {
+                                    targetType: "DELIVERY",
+                                    deliveryId,
+                                },
+                            })
+                        }
+                    >
+                        <button className="text-gray-500">
+                            <ReportIcon />
+                        </button>
+                    </button>
+                }
+            />
             <DeliveryRoute
                 departure={delivery.originPlace.subwayStationName}
                 destination={delivery.destPlace.subwayStationName}
