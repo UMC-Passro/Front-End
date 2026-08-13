@@ -223,7 +223,6 @@ function ProfilePageContent({
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="마이페이지"
-                onBack={onBack}
                 className="shrink-0"
             />
 
