@@ -166,10 +166,11 @@ export function HomeDashboard({
     };
 
     return (
-        <section className="page-container page-container-bottom-button relative flex flex-col overflow-hidden pt-5">
+        <section className="page-container page-container-bottom-button h-dvh flex flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col h-full transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
-                    }`}
+                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${
+                    isConsentOpen ? "pointer-events-none blur-sm" : ""
+                }`}
                 aria-hidden={isConsentOpen}
             >
                 <div className="shrink-0">
@@ -186,9 +187,7 @@ export function HomeDashboard({
                         notificationPanel={
                             <AlarmPopup
                                 alarms={alarms}
-                                onClearAll={() =>
-                                    void handleClearAllAlarms()
-                                }
+                                onClearAll={() => void handleClearAllAlarms()}
                                 onSelect={(alarm) =>
                                     void handleAlarmSelect(alarm)
                                 }
@@ -202,8 +201,8 @@ export function HomeDashboard({
                     />
                 </div>
 
-                <div className="scrollbar-hidden flex-1 overflow-y-auto pb-6">
-                    <section className="mt-12">
+                <div className="scrollbar-hidden flex-1 min-h-0 overflow-y-auto mt-6 overscroll-contain pb-14">
+                    <section className="mt-6">
                         <SectionTitle accent>진행중인 전달</SectionTitle>
                         {isLoading ? (
                             <div
@@ -277,7 +276,7 @@ export function HomeDashboard({
                 <button
                     type="button"
                     onClick={() => setIsConsentOpen(true)}
-                    className="absolute bottom-5 left-5 right-5 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
+                    className="fixed bottom-20 left-1/2 z-10 w-[calc(100%-40px)] max-w-[360px] -translate-x-1/2 rounded-lg bg-purple-500 py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-purple-600"
                 >
                     {content.actionLabel}
                 </button>
