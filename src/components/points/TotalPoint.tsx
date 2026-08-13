@@ -11,11 +11,11 @@ export const TotalPoint = ({ total, isLoading = false }: TotalPointProps) => {
                 </div>
                 {isLoading ? (
                     <div
-                        className="h-7 w-28 animate-pulse rounded bg-white/30"
+                        className="h-7 w-28 animate-pulse rounded bg-white/30 h-[32px]"
                         aria-label="보유 포인트를 불러오는 중"
                     />
                 ) : (
-                    <div className="font-bold text-2xl text-white">
+                    <div className="font-bold text-2xl text-white h-[32px]">
                         {(total ?? 0).toLocaleString()}P
                     </div>
                 )}

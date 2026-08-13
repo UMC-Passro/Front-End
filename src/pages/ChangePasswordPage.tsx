@@ -65,7 +65,7 @@ export default function ChangePasswordPage() {
         <main className="page-container flex flex-col overflow-hidden">
             <PageHeader
                 title="비밀번호 변경"
-                onBack={() => navigate("/mypage/edit")}
+                onBack={() => navigate(-1)}
                 className="shrink-0"
             />
 
@@ -115,11 +115,10 @@ export default function ChangePasswordPage() {
                                 autoComplete="new-password"
                             />
                             <p
-                                className={`pl-1 text-[11px] font-medium leading-[18px] min-[390px]:whitespace-nowrap min-[390px]:text-[12px] ${
-                                    isNewPasswordValid
+                                className={`pl-1 text-[11px] font-medium leading-[18px] min-[390px]:whitespace-nowrap min-[390px]:text-[12px] ${isNewPasswordValid
                                         ? "text-[#24A148]"
                                         : "text-[#E5484D]"
-                                }`}
+                                    }`}
                                 aria-live="polite"
                             >
                                 6~20자 영문 대문자, 소문자, 숫자, 특수문자 중

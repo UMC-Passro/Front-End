@@ -168,9 +168,8 @@ export function HomeDashboard({
     return (
         <section className="page-container page-container-bottom-button h-dvh flex flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${
-                    isConsentOpen ? "pointer-events-none blur-sm" : ""
-                }`}
+                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
+                    }`}
                 aria-hidden={isConsentOpen}
             >
                 <div className="shrink-0">
@@ -206,7 +205,7 @@ export function HomeDashboard({
                         <SectionTitle accent>진행중인 전달</SectionTitle>
                         {isLoading ? (
                             <div
-                                className="mt-3 h-[76px] animate-pulse rounded-lg bg-purple-50"
+                                className="mt-3 h-[60px] animate-pulse rounded-lg bg-purple-50"
                                 aria-label="전달 목록을 불러오는 중"
                             />
                         ) : errorMessage ? (
@@ -248,7 +247,7 @@ export function HomeDashboard({
                         <section className="mt-10">
                             <SectionTitle>활동 내역</SectionTitle>
                             {isLoading ? (
-                                <div className="mt-3.5 flex flex-col gap-2.5">
+                                <div className="mt-3.5 flex flex-col gap-2.5 h-[60px]">
                                     {[0, 1].map((item) => (
                                         <div
                                             key={item}

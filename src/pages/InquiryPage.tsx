@@ -10,13 +10,13 @@ const inquiryOptions: Array<{
     value: GeneralInquiryCategory;
     label: string;
 }> = [
-    { value: "ACCOUNT", label: "계정 및 회원 정보" },
-    { value: "PAYMENT", label: "결제 및 포인트" },
-    { value: "DELIVERY", label: "전달 서비스" },
-    { value: "SERVICE", label: "서비스 이용" },
-    { value: "BUG", label: "오류 및 버그 신고" },
-    { value: "ETC", label: "기타" },
-];
+        { value: "ACCOUNT", label: "계정 및 회원 정보" },
+        { value: "PAYMENT", label: "결제 및 포인트" },
+        { value: "DELIVERY", label: "전달 서비스" },
+        { value: "SERVICE", label: "서비스 이용" },
+        { value: "BUG", label: "오류 및 버그 신고" },
+        { value: "ETC", label: "기타" },
+    ];
 
 const MIN_CONTENT_LENGTH = 10;
 
@@ -99,14 +99,13 @@ export default function InquiryPage() {
     return (
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
             <div
-                className={`flex min-h-0 flex-1 flex-col ${
-                    isConfirmOpen ? "pointer-events-none" : ""
-                }`}
+                className={`flex min-h-0 flex-1 flex-col ${isConfirmOpen ? "pointer-events-none" : ""
+                    }`}
                 aria-hidden={isConfirmOpen}
             >
                 <PageHeader
                     title="문의하기"
-                    onBack={() => navigate("/mypage")}
+                    onBack={() => navigate(-1)}
                     className="shrink-0"
                 />
 
@@ -189,48 +188,48 @@ export default function InquiryPage() {
 
             {isConfirmOpen
                 ? createPortal(
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-8 backdrop-blur-sm"
-                    role="dialog"
-                    aria-modal="true"
-                    onClick={
-                        isSubmitting
-                            ? undefined
-                            : () => setIsConfirmOpen(false)
-                    }
-                >
                     <div
-                        className="w-full max-w-[338px] rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
-                        onClick={(event) => event.stopPropagation()}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-8 backdrop-blur-sm"
+                        role="dialog"
+                        aria-modal="true"
+                        onClick={
+                            isSubmitting
+                                ? undefined
+                                : () => setIsConfirmOpen(false)
+                        }
                     >
-                        <p className="text-[18px] font-semibold leading-[25px] text-gray-900">
-                            제출하시겠습니까?
-                        </p>
-                        <p className="mt-2 text-[14px] font-medium leading-[22px] text-[#70727E]">
-                            작성하신 문의를 제출합니다.
-                        </p>
-                        <div className="mt-5 flex gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setIsConfirmOpen(false)}
-                                disabled={isSubmitting}
-                                className="flex flex-1 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-bold text-gray-700 transition hover:bg-gray-200 focus:outline-none disabled:opacity-60"
-                            >
-                                아니오
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleFinalSubmit}
-                                disabled={isSubmitting}
-                                className="flex flex-1 items-center justify-center rounded-lg bg-purple-500 py-3.5 font-bold text-white transition hover:bg-purple-600 focus:outline-none disabled:opacity-60"
-                            >
-                                {isSubmitting ? "등록 중..." : "예"}
-                            </button>
+                        <div
+                            className="w-full max-w-[338px] rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <p className="text-[18px] font-semibold leading-[25px] text-gray-900">
+                                제출하시겠습니까?
+                            </p>
+                            <p className="mt-2 text-[14px] font-medium leading-[22px] text-[#70727E]">
+                                작성하신 문의를 제출합니다.
+                            </p>
+                            <div className="mt-5 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsConfirmOpen(false)}
+                                    disabled={isSubmitting}
+                                    className="flex flex-1 items-center justify-center rounded-lg bg-gray-100 py-3.5 font-bold text-gray-700 transition hover:bg-gray-200 focus:outline-none disabled:opacity-60"
+                                >
+                                    아니오
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleFinalSubmit}
+                                    disabled={isSubmitting}
+                                    className="flex flex-1 items-center justify-center rounded-lg bg-purple-500 py-3.5 font-bold text-white transition hover:bg-purple-600 focus:outline-none disabled:opacity-60"
+                                >
+                                    {isSubmitting ? "등록 중..." : "예"}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>,
-                document.body,
-            )
+                    </div>,
+                    document.body,
+                )
                 : null}
         </main>
     );
