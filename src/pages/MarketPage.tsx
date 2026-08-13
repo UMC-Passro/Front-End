@@ -153,12 +153,8 @@ export default function MarketPage() {
 
     return (
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden bg-white px-[21px]">
-            <PageHeader
-                title="마켓"
-                className="shrink-0"
-            />
-
-            <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pb-6 pt-3.5">
+            <PageHeader title="마켓" className="shrink-0" />
+            <div className="flex flex-col flex-1 min-h-0 pb-6 pt-3.5">
                 <section
                     className="flex h-[80px] items-center rounded-[10px] bg-purple-100 px-5 py-[15px]"
                     aria-labelledby="market-point-title"
@@ -171,9 +167,9 @@ export default function MarketPage() {
                             >
                                 보유 포인트
                             </p>
-                            <p className="text-[22px] h-[22px] font-bold text-purple-700">
+                            <p className="text-[22px] font-bold text-purple-700">
                                 {pointRequest.isLoading
-                                    ? ""
+                                    ? "불러오는 중"
                                     : `${pointFormatter.format(currentPoint)}P`}
                             </p>
                         </div>
@@ -211,10 +207,11 @@ export default function MarketPage() {
                                 key={category}
                                 type="button"
                                 onClick={() => setSelectedCategory(category)}
-                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${isSelected
-                                    ? "bg-gray-900 text-white box-border"
-                                    : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
-                                    }`}
+                                className={`rounded-[10px] px-[12px] py-[4px] text-xs font-bold leading-[22px] transition-colors ${
+                                    isSelected
+                                        ? "bg-gray-900 text-white box-border"
+                                        : "bg-white text-gray-800 border-gray-200 border-[1px] box-border"
+                                }`}
                                 aria-pressed={isSelected}
                             >
                                 {category}
@@ -228,7 +225,7 @@ export default function MarketPage() {
                 </div>
 
                 <section
-                    className="mt-[14px] flex flex-col gap-[8px]"
+                    className="mt-[14px] flex flex-col gap-[8px] scrollbar-hidden min-h-0 flex-1 overflow-y-auto"
                     aria-label="마켓 상품"
                 >
                     {marketRequest.isLoading ? (

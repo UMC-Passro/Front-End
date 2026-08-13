@@ -50,11 +50,14 @@ export default function PointPage() {
         pointRequest.data === null && pointRequest.error === null;
 
     return (
-        <div className="page-container">
+        <div className="page-container flex flex-col h-full min-h-0 overflow-hidden">
             <PageHeader title="포인트" onBack={() => navigate(-1)} />
             {pointRequest.error && !pointRequest.data ? (
                 <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 px-6 text-center">
-                    <p className="text-sm font-medium text-red-500" role="alert">
+                    <p
+                        className="text-sm font-medium text-red-500"
+                        role="alert"
+                    >
                         {pointRequest.error.message ||
                             "포인트 내역을 불러오지 못했습니다."}
                     </p>
@@ -78,7 +81,9 @@ export default function PointPage() {
                     <div className="my-5 font-bold text-gray-800">
                         적립 내역
                     </div>
-                    <PointList items={filteredItems} />
+                    <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                        <PointList items={filteredItems} />
+                    </div>
                 </>
             )}
         </div>

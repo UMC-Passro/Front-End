@@ -46,7 +46,7 @@ export const DeliveryList = ({ items }: DeliveryListProps) => {
     };
 
     return (
-        <div className="mt-6 flex w-full flex-col gap-3.5">
+        <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto overscroll-contain mt-6 flex w-full flex-col gap-3.5 pb-16">
             {items.map((delivery) => {
                 const statusLabel = getStatusLabel(delivery.status);
                 return (

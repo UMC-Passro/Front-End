@@ -518,7 +518,7 @@ function DeliveryRequestFormContent({
     };
 
     return (
-        <div className="relative flex page-container page-container-bottom-button flex-col bg-white">
+        <div className="relative flex page-container page-container-bottom-button flex-col h-dvh min-h-0 bg-white overflow-hidden overscroll-none">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
                     isOverlayOpen ? "pointer-events-none blur-sm" : ""
@@ -533,7 +533,7 @@ function DeliveryRequestFormContent({
 
                 <fieldset
                     disabled={createdDeliveryId !== null}
-                    className="scrollbar-hidden m-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto border-0 pb-6 pt-4"
+                    className="scrollbar-hidden m-0 min-w-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain border-0 pb-16 pt-4"
                 >
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-[10px]">
@@ -630,7 +630,7 @@ function DeliveryRequestFormContent({
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        className="absolute bottom-5 left-5 right-5 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
+                        className="fixed bottom-20 left-1/2 z-10 w-[calc(100%-40px)] max-w-[360px] -translate-x-1/2 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
                         {isSubmitting
                             ? "결제 정보 확인 중..."

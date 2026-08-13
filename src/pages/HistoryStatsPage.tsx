@@ -119,18 +119,27 @@ export function HistoryStatsPage() {
     }, [deliveryItems, role, currentFilter]);
 
     return (
-        <div className="page-container">
-            <PageHeader title="활동 내역" onBack={() => navigate("/mypage")} />
+        <div className="page-container flex h-dvh min-h-0 flex-col overflow-hidden overscroll-none">
+            <PageHeader
+                title="활동 내역"
+                onBack={() => navigate("/mypage")}
+                className="shrink-0"
+            />
             {deliveryRequest.error && !deliveryRequest.data ? (
                 <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 px-6 text-center">
-                    <p className="text-sm font-medium text-red-500" role="alert">
+                    <p
+                        className="text-sm font-medium text-red-500"
+                        role="alert"
+                    >
                         {deliveryRequest.error.message ||
                             "활동 내역을 불러오지 못했습니다."}
                     </p>
                     <button
                         type="button"
                         onClick={() =>
-                            void deliveryRequest.execute().catch(() => undefined)
+                            void deliveryRequest
+                                .execute()
+                                .catch(() => undefined)
                         }
                         className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white"
                     >
@@ -140,39 +149,41 @@ export function HistoryStatsPage() {
             ) : (
                 <>
                     <div className="mt-8 flex items-center justify-between gap-3">
-                <DeliveryFilterButton
-                    selected={selected}
-                    onSelect={setSelected}
-                />
-                <button
-                    type="button"
-                    role="switch"
-                    aria-checked={isShipper}
-                    aria-label={`${isShipper ? "전달" : "요청"} 내역만 표시 중`}
-                    onClick={() => setRole(isShipper ? "sender" : "shipper")}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full px-2 py-2 text-[11px] font-semibold text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
-                >
-                    <span
-                        className={`relative h-[22px] w-[42px] rounded-full transition-colors ${
-                            isShipper ? "bg-purple-600" : "bg-gray-400"
-                        }`}
-                        aria-hidden="true"
-                    >
-                        <span
-                            className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-transform ${
-                                isShipper
-                                    ? "translate-x-[-18px]"
-                                    : "translate-x-[0px]"
-                            }`}
+                        <DeliveryFilterButton
+                            selected={selected}
+                            onSelect={setSelected}
                         />
-                    </span>
-                    <span>
-                        <span
-                            className={`${isShipper ? "text-purple-800" : "text-[#AE9841]"}`}
-                        >{`${isShipper ? "전달" : "요청"}`}</span>
-                        <span>만 표시</span>
-                    </span>
-                </button>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={isShipper}
+                            aria-label={`${isShipper ? "전달" : "요청"} 내역만 표시 중`}
+                            onClick={() =>
+                                setRole(isShipper ? "sender" : "shipper")
+                            }
+                            className="flex shrink-0 items-center gap-1.5 rounded-full px-2 py-2 text-[11px] font-semibold text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                        >
+                            <span
+                                className={`relative h-[22px] w-[42px] rounded-full transition-colors ${
+                                    isShipper ? "bg-purple-600" : "bg-gray-400"
+                                }`}
+                                aria-hidden="true"
+                            >
+                                <span
+                                    className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-transform ${
+                                        isShipper
+                                            ? "translate-x-[-18px]"
+                                            : "translate-x-[0px]"
+                                    }`}
+                                />
+                            </span>
+                            <span>
+                                <span
+                                    className={`${isShipper ? "text-purple-800" : "text-[#AE9841]"}`}
+                                >{`${isShipper ? "전달" : "요청"}`}</span>
+                                <span>만 표시</span>
+                            </span>
+                        </button>
                     </div>
                     <DeliveryList items={filteredItems} />
                 </>
