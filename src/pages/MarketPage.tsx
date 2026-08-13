@@ -234,10 +234,15 @@ export default function MarketPage() {
                     aria-label="마켓 상품"
                 >
                     {marketRequest.isLoading ? (
-                        <div
-                            className="h-[98px] animate-pulse rounded-[10px] bg-gray-50"
-                            aria-label="마켓 상품을 불러오는 중"
-                        />
+                        <div className="flex flex-col gap-2">
+                            {Array.from({ length: 4 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="h-[98px] w-full animate-pulse rounded-[10px] bg-gray-50"
+                                    aria-hidden="true"
+                                />
+                            ))}
+                        </div>
                     ) : marketRequest.error ? (
                         <div className="py-10 text-center" role="alert">
                             <p className="text-sm font-medium text-errorRed">
