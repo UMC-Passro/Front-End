@@ -25,7 +25,33 @@ import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
 import ChatAvatar from "../components/chat/ChatAvatar";
 import type { ReportReason } from "../apis/reportApi";
 import { notifyChatRead } from "../utils/chatEvents";
-import { formatChatTime } from "../utils/chatDateTime";
+import { formatChatTime, parseChatDateTime } from "../utils/chatDateTime";
+
+const CHAT_DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Seoul",
+});
+
+const CHAT_DATE_KEY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Seoul",
+});
+
+function getChatDateKey(createdAt: string) {
+    const date = parseChatDateTime(createdAt);
+    return Number.isNaN(date.getTime())
+        ? ""
+        : CHAT_DATE_KEY_FORMATTER.format(date);
+}
+
+function formatChatDate(createdAt: string) {
+    const date = parseChatDateTime(createdAt);
+    return Number.isNaN(date.getTime()) ? "" : CHAT_DATE_FORMATTER.format(date);
+}
 
 export default function ChatPage() {
     const navigate = useNavigate();
@@ -399,66 +425,96 @@ export default function ChatPage() {
                         아직 주고받은 메시지가 없습니다.
                     </p>
                 ) : (
-                    messages.map((message) => {
+                    messages.map((message, index) => {
                         const isMine =
                             message.senderNickname !== roomInfo.partnerNickname;
                         const timestamp = formatChatTime(message.createdAt);
+                        const currentDateKey = getChatDateKey(
+                            message.createdAt,
+                        );
+                        const previousDateKey =
+                            index > 0
+                                ? getChatDateKey(messages[index - 1].createdAt)
+                                : "";
+                        const shouldShowDateDivider =
+                            Boolean(currentDateKey) &&
+                            currentDateKey !== previousDateKey;
 
                         return (
-                            <div
-                                key={message.id}
-                                className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                            >
-                                {!isMine ? (
-                                    <ChatAvatar
-                                        name={roomInfo.partnerNickname}
-                                        picture={roomInfo.partnerPicture}
-                                        className="mr-2 mt-1 h-8 w-8 text-xs"
-                                    />
+                            <div key={message.id}>
+                                {shouldShowDateDivider ? (
+                                    <div className="flex items-center gap-3 py-5">
+                                        <span
+                                            className="h-px flex-1 bg-gray-100"
+                                            aria-hidden="true"
+                                        />
+                                        <time
+                                            dateTime={message.createdAt}
+                                            className="shrink-0 text-xs font-medium text-gray-400"
+                                        >
+                                            {formatChatDate(message.createdAt)}
+                                        </time>
+                                        <span
+                                            className="h-px flex-1 bg-gray-100"
+                                            aria-hidden="true"
+                                        />
+                                    </div>
                                 ) : null}
+
                                 <div
-                                    className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
-                                        }`}
+                                    className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                                 >
-                                    {isMine && timestamp ? (
-                                        <div className="h-[100%] flex">
+                                    {!isMine ? (
+                                        <ChatAvatar
+                                            name={roomInfo.partnerNickname}
+                                            picture={roomInfo.partnerPicture}
+                                            className="mr-2 mt-1 h-8 w-8 text-xs"
+                                        />
+                                    ) : null}
+                                    <div
+                                        className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
+                                            }`}
+                                    >
+                                        {isMine && timestamp ? (
+                                            <div className="flex h-full">
+                                                <time
+                                                    dateTime={message.createdAt}
+                                                    className="mt-[27px] shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                                >
+                                                    {timestamp}
+                                                </time>
+                                            </div>
+                                        ) : null}
+
+                                        <div
+                                            className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
+                                                }`}
+                                        >
+                                            <div
+                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
+                                                    ? "bg-[#6366F1] text-white"
+                                                    : "bg-[#EFEFEF] text-gray-800"
+                                                    }`}
+                                            >
+                                                {message.content}
+                                            </div>
+
+                                            {isMine && !message.isRead ? (
+                                                <span className="mr-[8px] mt-[2px] px-1 text-[12px] font-normal text-gray-400">
+                                                    읽지 않음
+                                                </span>
+                                            ) : null}
+                                        </div>
+
+                                        {!isMine && timestamp ? (
                                             <time
                                                 dateTime={message.createdAt}
-                                                className="mt-[27px] shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                                className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
                                             >
                                                 {timestamp}
                                             </time>
-                                        </div>
-                                    ) : null}
-
-                                    <div
-                                        className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
-                                            }`}
-                                    >
-                                        <div
-                                            className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
-                                                ? "bg-[#6366F1] text-white"
-                                                : "bg-[#EFEFEF] text-gray-800"
-                                                }`}
-                                        >
-                                            {message.content}
-                                        </div>
-
-                                        {isMine && !message.isRead ? (
-                                            <span className="mr-[8px] mt-[2px] px-1 text-[12px] font-normal text-gray-400">
-                                                읽지 않음
-                                            </span>
                                         ) : null}
                                     </div>
-
-                                    {!isMine && timestamp ? (
-                                        <time
-                                            dateTime={message.createdAt}
-                                            className="mb-1 shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
-                                        >
-                                            {timestamp}
-                                        </time>
-                                    ) : null}
                                 </div>
                             </div>
                         );
