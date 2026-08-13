@@ -78,9 +78,6 @@ export const API_ENDPOINTS = {
             `/notifications/${notificationId}/read`,
         detail: (notificationId: number) => `/notifications/${notificationId}`,
     },
-    report: {
-        root: "/reports",
-    },
     market: {
         root: "/market",
         purchase: (marketId: number) => `/market/${marketId}/purchase`,
