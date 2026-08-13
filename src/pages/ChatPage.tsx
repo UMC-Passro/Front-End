@@ -115,8 +115,8 @@ export default function ChatPage() {
         )
             ? "sender"
             : shipperDeliveries.some((delivery) => delivery.id === deliveryId)
-                ? "shipper"
-                : null;
+              ? "shipper"
+              : null;
 
         return { messages, roomInfo, deliveryRole };
     }, [chatRoomId]);
@@ -156,7 +156,8 @@ export default function ChatPage() {
                 const oldestUnreadMessageIndex = messagesRef.current.findIndex(
                     (message) =>
                         !message.isRead &&
-                        message.senderNickname !== data.roomInfo.partnerNickname,
+                        message.senderNickname !==
+                            data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -171,7 +172,8 @@ export default function ChatPage() {
                     if (
                         nextMessages.some(
                             (message) =>
-                                message.senderNickname === data.roomInfo.partnerNickname,
+                                message.senderNickname ===
+                                data.roomInfo.partnerNickname,
                         )
                     ) {
                         notifyChatRead();
@@ -379,20 +381,26 @@ export default function ChatPage() {
                 </button>
             </div>
 
-            <div className="scrollbar-hidden min-h-0 flex-1 space-y-[10px] overflow-y-auto bg-white px-4 py-6">
+            <div className="scrollbar-hidden min-h-0 flex-1 space-y-[10px] overflow-y-auto bg-white px-4">
                 {messages.length === 0 ? (
                     <p className="py-12 text-center text-sm text-gray-400">
                         아직 주고받은 메시지가 없습니다.
                     </p>
                 ) : (
                     messages.map((message, index) => {
-                        const isMine = message.senderNickname !== roomInfo.partnerNickname;
+                        const isMine =
+                            message.senderNickname !== roomInfo.partnerNickname;
                         const timestamp = formatChatTime(message.createdAt);
-                        const currentDateKey = getChatDateKey(message.createdAt);
+                        const currentDateKey = getChatDateKey(
+                            message.createdAt,
+                        );
                         const previousDateKey =
-                            index > 0 ? getChatDateKey(messages[index - 1].createdAt) : "";
+                            index > 0
+                                ? getChatDateKey(messages[index - 1].createdAt)
+                                : "";
                         const shouldShowDateDivider =
-                            Boolean(currentDateKey) && currentDateKey !== previousDateKey;
+                            Boolean(currentDateKey) &&
+                            currentDateKey !== previousDateKey;
 
                         return (
                             <div key={message.id}>
@@ -426,8 +434,11 @@ export default function ChatPage() {
                                         />
                                     ) : null}
                                     <div
-                                        className={`flex w-full items-end gap-[5px] ${isMine ? "justify-end" : "justify-start"
-                                            }`}
+                                        className={`flex w-full items-end gap-[5px] ${
+                                            isMine
+                                                ? "justify-end"
+                                                : "justify-start"
+                                        }`}
                                     >
                                         <div className="flex flex-col mb gap-y-[2px]">
                                             {isMine && !message.isRead ? (
@@ -439,7 +450,9 @@ export default function ChatPage() {
                                             {isMine && timestamp ? (
                                                 <div className="flex">
                                                     <time
-                                                        dateTime={message.createdAt}
+                                                        dateTime={
+                                                            message.createdAt
+                                                        }
                                                         className="shrink-0 whitespace-nowrap text-[12px] font-medium text-gray-400"
                                                     >
                                                         {timestamp}
@@ -449,14 +462,18 @@ export default function ChatPage() {
                                         </div>
 
                                         <div
-                                            className={`flex max-w-[75%] flex-col ${isMine ? "items-end" : "items-start"
-                                                }`}
+                                            className={`flex max-w-[75%] flex-col ${
+                                                isMine
+                                                    ? "items-end"
+                                                    : "items-start"
+                                            }`}
                                         >
                                             <div
-                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${isMine
+                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${
+                                                    isMine
                                                         ? "bg-[#6366F1] text-white"
                                                         : "bg-[#EFEFEF] text-gray-800"
-                                                    }`}
+                                                }`}
                                             >
                                                 {message.content}
                                             </div>
@@ -481,7 +498,9 @@ export default function ChatPage() {
 
             <div className="w-full shrink-0 border-gray-100 bg-white px-4 py-4">
                 {sendError ? (
-                    <p className="mb-2 px-2 text-xs text-red-500">{sendError}</p>
+                    <p className="mb-2 px-2 text-xs text-red-500">
+                        {sendError}
+                    </p>
                 ) : null}
                 <form
                     onSubmit={handleSendMessage}
