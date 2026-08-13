@@ -97,20 +97,36 @@ export default function AlarmPopup({
                                     type="button"
                                     onClick={() => onSelect(alarm)}
                                     className="flex w-full flex-col gap-[6px] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                                    aria-label={`${alarm.title} 알림 확인`}
+                                    aria-label={`${alarm.read ? "읽은" : "읽지 않은"} 알림: ${alarm.title}`}
                                 >
                                     <div className="flex w-full items-center justify-between gap-3">
-                                        <h3 className="min-w-0 truncate text-[13px] font-semibold leading-[14px] text-gray-800">
+                                        <h3
+                                            className={`min-w-0 truncate text-[13px] leading-[14px] transition-colors ${
+                                                alarm.read
+                                                    ? "font-medium text-gray-500"
+                                                    : "font-bold text-gray-900"
+                                            }`}
+                                        >
                                             {alarm.title}
                                         </h3>
                                         <time
                                             dateTime={alarm.createdAt}
-                                            className="shrink-0 text-[10px] font-medium leading-[14px] text-gray-500"
+                                            className={`shrink-0 text-[10px] font-medium leading-[14px] transition-colors ${
+                                                alarm.read
+                                                    ? "text-gray-400"
+                                                    : "text-gray-600"
+                                            }`}
                                         >
                                             {formatAlarmTime(alarm.createdAt)}
                                         </time>
                                     </div>
-                                    <p className="break-words text-xs font-medium leading-[14px] text-gray-500">
+                                    <p
+                                        className={`break-words text-xs leading-[14px] transition-colors ${
+                                            alarm.read
+                                                ? "font-normal text-gray-400"
+                                                : "font-semibold text-gray-700"
+                                        }`}
+                                    >
                                         {alarm.content}
                                     </p>
                                 </button>

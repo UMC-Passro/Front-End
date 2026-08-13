@@ -7,6 +7,7 @@ export type ChatMessage = {
 export type ChatRoom = {
     id: string;
     participantName: string;
+    participantPicture?: string | null;
     itemName: string;
     route: string;
     status: string;

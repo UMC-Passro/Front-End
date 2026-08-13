@@ -12,6 +12,7 @@ export { notificationApi } from "./notificationApi";
 export { shipperDeliveryApi } from "./delivery/shipperDeliveryApi";
 export { pointApi } from "./pointApi";
 export { reviewApi } from "./reviewApi";
+export { reportApi } from "./reportApi";
 export { subwayApi } from "./subwayApi";
 
 export type { RouteApiContract } from "./routeApi";

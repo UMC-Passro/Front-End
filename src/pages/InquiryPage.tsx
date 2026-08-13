@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/common/PageHeader";
 import { inquiryApi } from "../apis";
@@ -18,6 +19,26 @@ const inquiryOptions: Array<{
 ];
 
 const MIN_CONTENT_LENGTH = 10;
+
+function ChevronDownIcon() {
+    return (
+        <svg
+            width="14"
+            height="8"
+            viewBox="0 0 14 8"
+            fill="none"
+            aria-hidden="true"
+        >
+            <path
+                d="M1 1L7 7L13 1"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
 
 export default function InquiryPage() {
     const navigate = useNavigate();
@@ -79,13 +100,13 @@ export default function InquiryPage() {
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
             <div
                 className={`flex min-h-0 flex-1 flex-col ${
-                    isConfirmOpen ? "pointer-events-none blur-sm" : ""
+                    isConfirmOpen ? "pointer-events-none" : ""
                 }`}
                 aria-hidden={isConfirmOpen}
             >
                 <PageHeader
                     title="문의하기"
-                    onBack={() => navigate(-1)}
+                    onBack={() => navigate("/mypage")}
                     className="shrink-0"
                 />
 
@@ -123,10 +144,10 @@ export default function InquiryPage() {
                                         ))}
                                     </select>
                                     <span
-                                        className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-xl leading-none text-gray-400"
+                                        className="pointer-events-none absolute right-5 top-1/2 flex h-2 w-3.5 -translate-y-1/2 items-center justify-center text-gray-800"
                                         aria-hidden="true"
                                     >
-                                        ⌄
+                                        <ChevronDownIcon />
                                     </span>
                                 </div>
                             </label>
@@ -166,15 +187,20 @@ export default function InquiryPage() {
                 </form>
             </div>
 
-            {isConfirmOpen ? (
+            {isConfirmOpen
+                ? createPortal(
                 <div
-                    className="fixed inset-y-0 left-1/2 z-[60] flex w-full max-w-[402px] -translate-x-1/2 items-center justify-center bg-black/40 px-8"
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-8 backdrop-blur-sm"
                     role="dialog"
                     aria-modal="true"
-                    onClick={() => setIsConfirmOpen(false)}
+                    onClick={
+                        isSubmitting
+                            ? undefined
+                            : () => setIsConfirmOpen(false)
+                    }
                 >
                     <div
-                        className="w-full rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
+                        className="w-full max-w-[338px] rounded-[14px] bg-white px-5 py-6 text-center shadow-lg"
                         onClick={(event) => event.stopPropagation()}
                     >
                         <p className="text-[18px] font-semibold leading-[25px] text-gray-900">
@@ -202,8 +228,10 @@ export default function InquiryPage() {
                             </button>
                         </div>
                     </div>
-                </div>
-            ) : null}
+                </div>,
+                document.body,
+            )
+                : null}
         </main>
     );
 }

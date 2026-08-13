@@ -285,7 +285,7 @@ export default function MarketPage() {
                 title={selectedProduct ? "상품 교환" : feedbackTitle}
                 message={
                     selectedProduct
-                        ? `${selectedProduct.name}을 ${pointFormatter.format(selectedProduct.price)}P로 교환하시겠습니까?`
+                        ? `${selectedProduct.name} 상품을 ${pointFormatter.format(selectedProduct.price)}P로 교환하시겠습니까?`
                         : feedbackMessage
                 }
                 onClose={() => {

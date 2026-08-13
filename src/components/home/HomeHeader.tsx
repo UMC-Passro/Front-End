@@ -7,6 +7,7 @@ type HomeHeaderProps = {
     headline: string;
     role: UserRole;
     avatarUrl?: string | null;
+    isNicknameLoading?: boolean;
     unreadCount?: number;
     isNotificationOpen?: boolean;
     onNotificationToggle?: () => void;
@@ -21,6 +22,7 @@ export function HomeHeader({
     headline,
     role,
     avatarUrl,
+    isNicknameLoading = false,
     unreadCount = 0,
     isNotificationOpen = false,
     onNotificationToggle,
@@ -37,7 +39,14 @@ export function HomeHeader({
                     aria-live="polite"
                 >
                     안녕하세요,{" "}
-                    {name}
+                    {isNicknameLoading ? (
+                        <span
+                            className="inline-block h-[21px] w-20 animate-pulse rounded bg-gray-200 align-[-2px]"
+                            aria-label="닉네임을 불러오는 중"
+                        />
+                    ) : (
+                        name
+                    )}
                     님!
                     <br />
                     {headline}

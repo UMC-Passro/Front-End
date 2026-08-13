@@ -6,7 +6,12 @@ import {
     type FormEvent,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { chatApi, senderDeliveryApi, shipperDeliveryApi } from "../apis";
+import {
+    chatApi,
+    reportApi,
+    senderDeliveryApi,
+    shipperDeliveryApi,
+} from "../apis";
 import type { ChatMessage } from "../apis/chatApi";
 // import { senderDeliveryApi } from "../apis/delivery/senderDeliveryApi";
 // import { shipperDeliveryApi } from "../apis/delivery/shipperDeliveryApi";
@@ -15,20 +20,12 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import { ApiError } from "../types/api";
 import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
-
-function formatMessageTimestamp(createdAt: string) {
-    const createdDate = new Date(createdAt);
-    if (Number.isNaN(createdDate.getTime())) {
-        return "";
-    }
-
-    const time = new Intl.DateTimeFormat("ko-KR", {
-        hour: "numeric",
-        minute: "2-digit",
-    }).format(createdDate);
-
-    return time;
-}
+import ChatReportModal from "../components/chat/ChatReportModal";
+import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
+import ChatAvatar from "../components/chat/ChatAvatar";
+import type { ReportReason } from "../apis/reportApi";
+import { notifyChatRead } from "../utils/chatEvents";
+import { formatChatTime } from "../utils/chatDateTime";
 
 export default function ChatPage() {
     const navigate = useNavigate();
@@ -41,6 +38,9 @@ export default function ChatPage() {
     const [isSending, setIsSending] = useState(false);
     const [sendError, setSendError] = useState("");
     const [isOpen, setIsopen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
+    const [reportError, setReportError] = useState("");
 
     const mergeMessages = useCallback((nextMessages: ChatMessage[]) => {
         if (nextMessages.length === 0) {
@@ -83,6 +83,8 @@ export default function ChatPage() {
                 senderDeliveryApi.getDeliveryList().catch(() => []),
                 shipperDeliveryApi.getDeliveryList().catch(() => []),
             ]);
+
+        notifyChatRead();
 
         const deliveryRole = senderDeliveries.some(
             (delivery) => delivery.deliveryId === deliveryId,
@@ -143,6 +145,15 @@ export default function ChatPage() {
                 );
 
                 if (!isStopped) {
+                    if (
+                        nextMessages.some(
+                            (message) =>
+                                message.senderNickname ===
+                                data.roomInfo.partnerNickname,
+                        )
+                    ) {
+                        notifyChatRead();
+                    }
                     mergeMessages(nextMessages);
                 }
             } catch {
@@ -202,12 +213,50 @@ export default function ChatPage() {
         }
     };
 
+    const handleOpenReport = () => {
+        setIsopen(false);
+        setReportError("");
+        setIsReportOpen(true);
+    };
+
+    const handleReportSubmit = async (
+        reason: ReportReason,
+        detail: string,
+    ) => {
+        const deliveryId = Number(chatRoomId);
+
+        if (
+            isReporting ||
+            !Number.isInteger(deliveryId) ||
+            deliveryId <= 0
+        ) {
+            return;
+        }
+
+        setIsReporting(true);
+        setReportError("");
+
+        try {
+            await reportApi.createDeliveryReport({
+                targetType: "DELIVERY",
+                reason,
+                detail,
+                deliveryId,
+            });
+            setIsReportOpen(false);
+        } catch (caughtError) {
+            setReportError(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "신고를 접수하지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
     if (isLoading || (!data && !error)) {
-        return (
-            <div className="flex h-full items-center justify-center bg-white text-sm text-gray-500">
-                채팅을 불러오는 중입니다...
-            </div>
-        );
+        return <ChatRoomSkeleton />;
     }
 
     if (error || !data) {
@@ -255,7 +304,16 @@ export default function ChatPage() {
             {/* 상단바 영역 */}
             <div className="z-40 w-full shrink-0 border-b border-gray-100 bg-white px-4 pb-4 pt-3">
                 <PageHeader
-                    title={roomInfo.partnerNickname}
+                    title={
+                        <span className="flex items-center gap-2.5">
+                            <ChatAvatar
+                                name={roomInfo.partnerNickname}
+                                picture={roomInfo.partnerPicture}
+                                className="h-8 w-8 text-sm"
+                            />
+                            <span>{roomInfo.partnerNickname}</span>
+                        </span>
+                    }
                     onBack={() => navigate("/delivery/chat")}
                     className="mb-3"
                     rightAction={
@@ -319,15 +377,20 @@ export default function ChatPage() {
                     messages.map((message) => {
                         const isMine =
                             message.senderNickname !== roomInfo.partnerNickname;
-                        const timestamp = formatMessageTimestamp(
-                            message.createdAt,
-                        );
+                        const timestamp = formatChatTime(message.createdAt);
 
                         return (
                             <div
                                 key={message.id}
                                 className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                             >
+                                {!isMine ? (
+                                    <ChatAvatar
+                                        name={roomInfo.partnerNickname}
+                                        picture={roomInfo.partnerPicture}
+                                        className="mr-2 mt-1 h-8 w-8 text-xs"
+                                    />
+                                ) : null}
                                 <div
                                     className={`flex w-full items-end gap-2 ${
                                         isMine ? "justify-end" : "justify-start"

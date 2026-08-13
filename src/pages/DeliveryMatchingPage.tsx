@@ -57,11 +57,37 @@ export default function DeliveryMatchingPage() {
     };
 
     if (detailRequest.isLoading) {
-        return <div>전달 정보를 불러오는 중...</div>;
+        return (
+            <div className="page-container flex h-full flex-col">
+                <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
+                <p className="flex flex-1 items-center justify-center text-sm font-medium text-gray-400">
+                    전달 정보를 불러오는 중입니다.
+                </p>
+            </div>
+        );
     }
 
     if (detailRequest.error) {
-        return <div>전달 정보를 불러오는 중 오류가 발생했습니다.</div>;
+        return (
+            <div className="page-container flex h-full flex-col">
+                <PageHeader title="매칭 요청" onBack={() => navigate(-1)} />
+                <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+                    <p className="text-sm font-medium text-red-500" role="alert">
+                        {detailRequest.error.message ||
+                            "전달 정보를 불러오지 못했습니다."}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            void detailRequest.execute().catch(() => undefined)
+                        }
+                        className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white"
+                    >
+                        다시 시도
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     const delivery = detailRequest.data;

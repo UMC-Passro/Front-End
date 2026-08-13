@@ -199,7 +199,7 @@ export default function DeliveryTrackingPage() {
         <div className="page-container relative flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="전달 추적"
-                onBack={() => navigate(-1)}
+                onBack={() => navigate("/home")}
                 className="shrink-0"
                 rightAction={
                     <button
