@@ -6,6 +6,8 @@ import { useApiRequest } from "../hooks/useApiRequest";
 import type { ChatRoom } from "../data/chatRooms";
 import ChatAvatar from "../components/chat/ChatAvatar";
 import { formatChatRoomDateTime } from "../utils/chatDateTime";
+import noChatImage from "../assets/images/chat/no-chat.svg";
+
 
 export default function ChatListPage() {
     const navigate = useNavigate();
@@ -82,9 +84,16 @@ export default function ChatListPage() {
                         채팅 목록을 불러오는 중입니다.
                     </p>
                 ) : data !== null && chatRooms.length === 0 ? (
-                    <p className="py-16 text-center text-sm font-medium text-gray-400">
-                        아직 시작된 채팅이 없습니다.
-                    </p>
+                    <div className="w-full h-full flex justify-center items-center">
+                        <div>
+                            <div className="w-full flex justify-center flex-row">
+                                <img src={noChatImage} alt="" />
+                            </div>
+                            <p className="mt-[33px] text-center text-sm font-medium text-gray-400">
+                                아직 시작된 채팅이 없어요!
+                            </p>
+                        </div>
+                    </div>
                 ) : (
                     <ul className="divide-y divide-gray-100">
                         {chatRooms.map((room) => (
