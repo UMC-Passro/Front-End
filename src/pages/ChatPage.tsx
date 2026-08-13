@@ -219,6 +219,31 @@ export default function ChatPage() {
         setIsReportOpen(true);
     };
 
+    const handleExitSubmit = async () => {
+        const deliveryId = Number(chatRoomId);
+
+        if (
+            !Number.isInteger(deliveryId) ||
+            deliveryId <= 0
+        ) {
+            return;
+        }
+
+        setIsopen(false);
+        try {
+            await chatApi.exitRoom(deliveryId);
+            navigate("/delivery/chat");
+        } catch (caughtError) {
+            setReportError(
+                caughtError instanceof ApiError
+                    ? caughtError.message
+                    : "나가지 못했습니다. 다시 시도해주세요.",
+            );
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
     const handleReportSubmit = async (
         reason: ReportReason,
         detail: string,
@@ -489,6 +514,7 @@ export default function ChatPage() {
             {isOpen ? (
                 <ChatModal
                     onClose={() => setIsopen(false)}
+                    onExit={handleExitSubmit}
                     onReport={handleOpenReport}
                 />
             ) : null}

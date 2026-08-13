@@ -1,14 +1,15 @@
 import blockIcon from "../../assets/icons/block.svg";
 import reportIcon from "../../assets/icons/report.svg";
 import noAlarmIcon from "../../assets/icons/noAlarm.svg";
-import existIcon from "../../assets/icons/exist.svg";
+import exitIcon from "../../assets/icons/exit.svg";
 
 interface ChatModalProps {
     onClose: () => void;
     onReport: () => void;
+    onExit: () => void;
 }
 
-export default function ChatModal({ onClose, onReport }: ChatModalProps) {
+export default function ChatModal({ onClose, onReport, onExit }: ChatModalProps) {
     return (
         <div
             onClick={onClose}
@@ -35,12 +36,14 @@ export default function ChatModal({ onClose, onReport }: ChatModalProps) {
                         <img src={noAlarmIcon} />
                         <span className="flex text-gray-900">알림끄기</span>
                     </div>
-                    <div className="flex gap-4 px-6 py-4">
-                        <img src={existIcon} />
-                        <span className="flex text-errorRed">
-                            채팅방 나가기
-                        </span>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={onExit}
+                        className="flex gap-4 border-b border-gray-100 px-6 py-4 text-left"
+                    >
+                        <img src={exitIcon} alt="" />
+                        <span className="flex text-errorRed">나가기</span>
+                    </button>
                 </div>
                 <button
                     onClick={onClose}
