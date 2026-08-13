@@ -156,8 +156,7 @@ export default function ChatPage() {
                 const oldestUnreadMessageIndex = messagesRef.current.findIndex(
                     (message) =>
                         !message.isRead &&
-                        message.senderNickname !==
-                        data.roomInfo.partnerNickname,
+                        message.senderNickname !== data.roomInfo.partnerNickname,
                 );
                 const pollingAfterId =
                     oldestUnreadMessageIndex >= 0
@@ -172,8 +171,7 @@ export default function ChatPage() {
                     if (
                         nextMessages.some(
                             (message) =>
-                                message.senderNickname ===
-                                data.roomInfo.partnerNickname,
+                                message.senderNickname === data.roomInfo.partnerNickname,
                         )
                     ) {
                         notifyChatRead();
@@ -219,14 +217,15 @@ export default function ChatPage() {
 
         setIsSending(true);
         setSendError("");
+        setDraft("");
 
         try {
             const sentMessage = await chatApi.sendMessage(deliveryId, {
                 content,
             });
             mergeMessages([sentMessage]);
-            setDraft("");
         } catch (caughtError) {
+            setDraft((currentDraft) => currentDraft || content);
             setSendError(
                 caughtError instanceof ApiError
                     ? caughtError.message
@@ -235,6 +234,8 @@ export default function ChatPage() {
         } finally {
             setIsSending(false);
         }
+
+        event.preventDefault();
     };
 
     const handleOpenReport = () => {
@@ -246,10 +247,7 @@ export default function ChatPage() {
     const handleExitSubmit = async () => {
         const deliveryId = Number(chatRoomId);
 
-        if (
-            !Number.isInteger(deliveryId) ||
-            deliveryId <= 0
-        ) {
+        if (!Number.isInteger(deliveryId) || deliveryId <= 0) {
             return;
         }
 
@@ -381,26 +379,20 @@ export default function ChatPage() {
                 </button>
             </div>
 
-            <div className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto bg-white px-4 py-6">
+            <div className="scrollbar-hidden min-h-0 flex-1 space-y-[10px] overflow-y-auto bg-white px-4 py-6">
                 {messages.length === 0 ? (
                     <p className="py-12 text-center text-sm text-gray-400">
                         아직 주고받은 메시지가 없습니다.
                     </p>
                 ) : (
                     messages.map((message, index) => {
-                        const isMine =
-                            message.senderNickname !== roomInfo.partnerNickname;
+                        const isMine = message.senderNickname !== roomInfo.partnerNickname;
                         const timestamp = formatChatTime(message.createdAt);
-                        const currentDateKey = getChatDateKey(
-                            message.createdAt,
-                        );
+                        const currentDateKey = getChatDateKey(message.createdAt);
                         const previousDateKey =
-                            index > 0
-                                ? getChatDateKey(messages[index - 1].createdAt)
-                                : "";
+                            index > 0 ? getChatDateKey(messages[index - 1].createdAt) : "";
                         const shouldShowDateDivider =
-                            Boolean(currentDateKey) &&
-                            currentDateKey !== previousDateKey;
+                            Boolean(currentDateKey) && currentDateKey !== previousDateKey;
 
                         return (
                             <div key={message.id}>
@@ -434,14 +426,13 @@ export default function ChatPage() {
                                         />
                                     ) : null}
                                     <div
-                                        className={`flex w-full items-end gap-2 ${isMine ? "justify-end" : "justify-start"
+                                        className={`flex w-full items-end gap-[5px] ${isMine ? "justify-end" : "justify-start"
                                             }`}
                                     >
-                                        <div className="flex flex-col mb-[4px]">
-
-                                            {isMine && message.isRead ? (
-                                                <span className="text-right text-[12px] font-normal text-gray-400">
-                                                    읽음
+                                        <div className="flex flex-col mb gap-y-[2px]">
+                                            {isMine && !message.isRead ? (
+                                                <span className="text-right text-[12px] font-medium text-gray-400">
+                                                    읽지 않음
                                                 </span>
                                             ) : null}
 
@@ -449,7 +440,7 @@ export default function ChatPage() {
                                                 <div className="flex">
                                                     <time
                                                         dateTime={message.createdAt}
-                                                        className="shrink-0 whitespace-nowrap text-[11px] font-normal text-gray-400"
+                                                        className="shrink-0 whitespace-nowrap text-[12px] font-medium text-gray-400"
                                                     >
                                                         {timestamp}
                                                     </time>
@@ -462,9 +453,9 @@ export default function ChatPage() {
                                                 }`}
                                         >
                                             <div
-                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed shadow-sm ${isMine
-                                                    ? "bg-[#6366F1] text-white"
-                                                    : "bg-[#EFEFEF] text-gray-800"
+                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${isMine
+                                                        ? "bg-[#6366F1] text-white"
+                                                        : "bg-[#EFEFEF] text-gray-800"
                                                     }`}
                                             >
                                                 {message.content}
@@ -490,9 +481,7 @@ export default function ChatPage() {
 
             <div className="w-full shrink-0 border-gray-100 bg-white px-4 py-4">
                 {sendError ? (
-                    <p className="mb-2 px-2 text-xs text-red-500">
-                        {sendError}
-                    </p>
+                    <p className="mb-2 px-2 text-xs text-red-500">{sendError}</p>
                 ) : null}
                 <form
                     onSubmit={handleSendMessage}
@@ -508,8 +497,7 @@ export default function ChatPage() {
                                 setSendError("");
                             }
                         }}
-                        disabled={isSending}
-                        className="flex-1 bg-transparent text-[15px] text-gray-800 placeholder-gray-400 focus:outline-none"
+                        className="flex-1 bg-transparent font-medium text-[15px] text-gray-800 placeholder-gray-400 focus:outline-none"
                     />
                     <button
                         type="submit"

@@ -10,7 +10,7 @@ type CalendarDate = {
 export function parseChatDateTime(value: string) {
     const normalizedValue = TIME_ZONE_SUFFIX_PATTERN.test(value)
         ? value
-        : `${value}Z`;
+        : `${value}`;
 
     return new Date(normalizedValue);
 }
