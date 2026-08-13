@@ -70,7 +70,6 @@ export default function ChatListPage() {
         <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
             <PageHeader
                 title="채팅"
-                onBack={() => navigate("/home")}
                 className="shrink-0"
             />
 
