@@ -31,4 +31,14 @@ export const tokenStorage = {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
     },
+
+    clearTokensIfRefreshTokenMatches(refreshToken: string) {
+        if (localStorage.getItem(REFRESH_TOKEN_KEY) !== refreshToken) {
+            return false;
+        }
+
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        return true;
+    },
 };

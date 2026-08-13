@@ -43,23 +43,57 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
 
 let tokenReissueRequest: Promise<TokenResponse> | null = null;
 
+async function requestNewTokens(refreshToken: string) {
+    const response = await axios.post<ApiResponse<TokenResponse>>(
+        `${API_BASE_URL}${API_ENDPOINTS.auth.reissue}`,
+        { refreshToken },
+        {
+            timeout: getTimeout(),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        },
+    );
+    const tokens = unwrapResponse(response.data);
+    tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
+    return tokens;
+}
+
+async function reissueWithCrossTabLock(
+    expiredRefreshToken: string,
+): Promise<TokenResponse> {
+    const reissueOrReuse = async () => {
+        const currentRefreshToken = tokenStorage.getRefreshToken();
+        const currentAccessToken = tokenStorage.getAccessToken();
+
+        // A different tab may have rotated the refresh token while this tab
+        // waited for the lock. Reuse the tokens it already stored.
+        if (
+            currentRefreshToken &&
+            currentAccessToken &&
+            currentRefreshToken !== expiredRefreshToken
+        ) {
+            return {
+                accessToken: currentAccessToken,
+                refreshToken: currentRefreshToken,
+            };
+        }
+
+        return requestNewTokens(expiredRefreshToken);
+    };
+
+    if (typeof navigator !== "undefined" && "locks" in navigator) {
+        return navigator.locks.request("passro-token-reissue", reissueOrReuse);
+    }
+
+    return reissueOrReuse();
+}
+
 function reissueTokens(refreshToken: string): Promise<TokenResponse> {
     if (!tokenReissueRequest) {
-        tokenReissueRequest = axios
-            .post<ApiResponse<TokenResponse>>(
-                `${API_BASE_URL}${API_ENDPOINTS.auth.reissue}`,
-                { refreshToken },
-                {
-                    timeout: getTimeout(),
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                },
-            )
-            .then((response) => unwrapResponse(response.data))
-            .finally(() => {
-                tokenReissueRequest = null;
-            });
+        tokenReissueRequest = reissueWithCrossTabLock(refreshToken).finally(() => {
+            tokenReissueRequest = null;
+        });
     }
 
     return tokenReissueRequest;
@@ -101,15 +135,43 @@ apiClient.interceptors.response.use(
 
         try {
             const tokens = await reissueTokens(refreshToken);
-            tokenStorage.setTokens(tokens.accessToken, tokens.refreshToken);
             originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
             return apiClient.request(originalRequest);
-        } catch {
-            tokenStorage.clearTokens();
+        } catch (reissueError) {
+            const currentRefreshToken = tokenStorage.getRefreshToken();
+            const currentAccessToken = tokenStorage.getAccessToken();
+
+            // Another browser tab may have completed reissue while this request
+            // was in flight. In that case, retry with the newer shared tokens.
+            if (
+                currentRefreshToken &&
+                currentAccessToken &&
+                currentRefreshToken !== refreshToken
+            ) {
+                originalRequest.headers.Authorization =
+                    `Bearer ${currentAccessToken}`;
+                return apiClient.request(originalRequest);
+            }
+
+            // A temporary network/server failure must not destroy a valid session.
+            // Clear only when the server explicitly rejects this refresh token,
+            // and only if it is still the token currently stored.
+            if (isRefreshTokenRejected(reissueError)) {
+                tokenStorage.clearTokensIfRefreshTokenMatches(refreshToken);
+            }
+
             return Promise.reject(error);
         }
     },
 );
+
+function isRefreshTokenRejected(error: unknown) {
+    if (!(error instanceof AxiosError)) {
+        return false;
+    }
+
+    return error.response?.status === 400 || error.response?.status === 401;
+}
 
 function isApiErrorBody(value: unknown): value is ApiErrorBody {
     return typeof value === "object" && value !== null;
