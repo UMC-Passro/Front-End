@@ -69,10 +69,10 @@ export default function ChatListPage() {
     );
 
     return (
-        <main className="page-container flex h-full min-h-0 flex-col overflow-hidden">
+        <main className="page-container flex h-full min-h-0 flex-col overflow-hidden px-0">
             <PageHeader
                 title="채팅"
-                className="shrink-0"
+                className="shrink-0 px-4"
             />
 
             <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto pt-5">
@@ -102,7 +102,7 @@ export default function ChatListPage() {
                                     onClick={() =>
                                         navigate(`/delivery/chat/${room.id}`)
                                     }
-                                    className="flex w-full items-center gap-4 py-5 text-left transition-colors hover:bg-gray-50 focus:outline-none"
+                                    className="flex w-full items-center gap-4 px-4 py-5 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus:outline-none"
                                     aria-label={`${room.participantName}님과의 채팅 열기`}
                                 >
                                     <ChatAvatar

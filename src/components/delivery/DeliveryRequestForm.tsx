@@ -518,7 +518,7 @@ function DeliveryRequestFormContent({
     };
 
     return (
-        <div className="relative flex page-container page-container-bottom-button flex-col h-dvh min-h-0 bg-white overflow-hidden overscroll-none">
+        <div className="page-container relative flex h-full min-h-0 flex-col bg-white">
             <div
                 className={`flex min-h-0 flex-1 flex-col transition duration-100 ${
                     isOverlayOpen ? "pointer-events-none blur-sm" : ""
@@ -613,7 +613,7 @@ function DeliveryRequestFormContent({
                     </div>
                 </fieldset>
 
-                <div className="flex">
+                <div className="flex shrink-0 flex-col pb-2 pt-2">
                     {createdDeliveryId !== null ? (
                         <p className="mb-2 text-center text-xs font-medium text-purple-600">
                             전달 요청이 생성되었습니다. 결제를 완료해주세요.
@@ -630,7 +630,7 @@ function DeliveryRequestFormContent({
                     <button
                         type="button"
                         onClick={handleMatchingRequest}
-                        className="fixed bottom-20 left-1/2 z-10 w-[calc(100%-40px)] max-w-[360px] -translate-x-1/2 py-3.5 items-center justify-center rounded-lg bg-purple-500 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
+                        className="flex w-full items-center justify-center rounded-lg bg-purple-500 py-3.5 font-bold leading-[22px] text-white transition hover:bg-purple-600 focus:outline-none"
                     >
                         {isSubmitting
                             ? "결제 정보 확인 중..."

@@ -7,6 +7,7 @@ export interface ChatMessage {
     senderId: number;
     senderNickname: string;
     content: string;
+    imageKey: string | null;
     isRead: boolean;
     createdAt: string;
 }

@@ -22,6 +22,7 @@ import { getDeliveryStatusLabel } from "../utils/deliveryStatus";
 import ChatModal from "../components/chat/ChatModal";
 import ChatRoomSkeleton from "../components/chat/ChatRoomSkeleton";
 import ChatAvatar from "../components/chat/ChatAvatar";
+import ChatMessageImage from "../components/chat/ChatMessageImage";
 import { notifyChatRead } from "../utils/chatEvents";
 import { formatChatTime, parseChatDateTime } from "../utils/chatDateTime";
 
@@ -55,6 +56,7 @@ export default function ChatPage() {
     const navigate = useNavigate();
     const { chatRoomId } = useParams<{ chatRoomId: string }>();
     const messageEndRef = useRef<HTMLDivElement>(null);
+    const messageInputRef = useRef<HTMLInputElement>(null);
     const latestMessageIdRef = useRef<number | undefined>(undefined);
     const messagesRef = useRef<ChatMessage[]>([]);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -205,6 +207,8 @@ export default function ChatPage() {
 
     const handleSendMessage = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        messageInputRef.current?.focus({ preventScroll: true });
 
         const content = draft.trim();
         const deliveryId = Number(chatRoomId);
@@ -390,6 +394,7 @@ export default function ChatPage() {
                     messages.map((message, index) => {
                         const isMine =
                             message.senderNickname !== roomInfo.partnerNickname;
+                        const hasContent = Boolean(message.content.trim());
                         const timestamp = formatChatTime(message.createdAt);
                         const currentDateKey = getChatDateKey(
                             message.createdAt,
@@ -462,21 +467,29 @@ export default function ChatPage() {
                                         </div>
 
                                         <div
-                                            className={`flex max-w-[75%] flex-col ${
+                                            className={`flex max-w-[75%] flex-col gap-1.5 ${
                                                 isMine
                                                     ? "items-end"
                                                     : "items-start"
                                             }`}
                                         >
-                                            <div
-                                                className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${
-                                                    isMine
-                                                        ? "bg-[#6366F1] text-white"
-                                                        : "bg-[#EFEFEF] text-gray-800"
-                                                }`}
-                                            >
-                                                {message.content}
-                                            </div>
+                                            {message.imageKey ? (
+                                                <ChatMessageImage
+                                                    imageKey={message.imageKey}
+                                                    alt={`${message.senderNickname}님이 보낸 이미지`}
+                                                />
+                                            ) : null}
+                                            {hasContent ? (
+                                                <div
+                                                    className={`rounded-3xl px-4 py-3 text-[15px] font-semibold leading-relaxed ${
+                                                        isMine
+                                                            ? "bg-[#6366F1] text-white"
+                                                            : "bg-[#EFEFEF] text-gray-800"
+                                                    }`}
+                                                >
+                                                    {message.content}
+                                                </div>
+                                            ) : null}
                                         </div>
 
                                         {!isMine && timestamp ? (
@@ -507,6 +520,7 @@ export default function ChatPage() {
                     className="flex items-center rounded-[24px] bg-[#F7F7F9] px-4 py-2"
                 >
                     <input
+                        ref={messageInputRef}
                         type="text"
                         placeholder="채팅을 입력하세요"
                         value={draft}
@@ -521,6 +535,7 @@ export default function ChatPage() {
                     <button
                         type="submit"
                         disabled={!draft.trim() || isSending}
+                        onPointerDown={(event) => event.preventDefault()}
                         className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#6366F1] text-white disabled:bg-[#C2C2C9]"
                         aria-label="메시지 전송"
                     >

@@ -103,7 +103,7 @@ export default function Navbar() {
     ];
 
     return (
-        <nav className="relative z-50 flex w-full items-center justify-center gap-10 bg-white p-1 shadow-[0_-10px_32px_-8px_rgba(0,0,0,0.08)]">
+        <nav className="relative z-50 flex w-full shrink-0 items-center justify-center gap-10 bg-white p-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] shadow-[0_-10px_32px_-8px_rgba(0,0,0,0.08)]">
             {navList.map((nav) => (
                 <NavLink
                     key={nav.id}

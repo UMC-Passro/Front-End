@@ -11,6 +11,7 @@ import { ApiError } from "../types/api";
 import type { BackendDeliveryState } from "../types/backend";
 import { shipperDeliveryApi } from "../apis";
 import { ReportIcon } from "../assets/icons/report";
+import { DeliveryImageUploader } from "../components/delivery/DeliveryImageUploader";
 
 function getShipperTrackingMessage(status: BackendDeliveryState) {
     switch (status) {
@@ -40,6 +41,9 @@ export default function DeliveryTrackingPage() {
     }>();
     const deliveryId = Number(deliveryIdParam);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [isUploadingActionImage, setIsUploadingActionImage] =
+        useState(false);
+    const [actionImageKeys, setActionImageKeys] = useState<string[]>([]);
     const [actionError, setActionError] = useState<string | null>(null);
     const loadTrackingData = useCallback(async () => {
         if (!Number.isSafeInteger(deliveryId) || deliveryId <= 0) {
@@ -73,7 +77,7 @@ export default function DeliveryTrackingPage() {
     }, [execute]);
 
     const handleStatusAction = async () => {
-        if (!data || isUpdatingStatus) {
+        if (!data || isUpdatingStatus || isUploadingActionImage) {
             return;
         }
 
@@ -86,13 +90,21 @@ export default function DeliveryTrackingPage() {
         setActionError(null);
 
         try {
+            const request = actionImageKeys[0]
+                ? { imageKey: actionImageKeys[0] }
+                : undefined;
+
             if (status === "MATCHED") {
-                await shipperDeliveryApi.acquire(deliveryId);
+                await shipperDeliveryApi.acquire(deliveryId, request);
             } else {
-                await shipperDeliveryApi.requestConfirmation(deliveryId);
+                await shipperDeliveryApi.requestConfirmation(
+                    deliveryId,
+                    request,
+                );
             }
 
             await execute();
+            setActionImageKeys([]);
         } catch (caughtError) {
             setActionError(
                 caughtError instanceof Error
@@ -295,6 +307,22 @@ export default function DeliveryTrackingPage() {
                 </div>
             ) : canUpdateStatus ? (
                 <div className="shrink-0 bg-white pt-3">
+                    <div className="mb-3">
+                        <p className="mb-2 text-sm font-semibold text-gray-700">
+                            {detail.deliveryState === "MATCHED"
+                                ? "물품 인수 사진"
+                                : "물품 전달 사진"}
+                            <span className="ml-1 font-normal text-gray-400">
+                                (선택)
+                            </span>
+                        </p>
+                        <DeliveryImageUploader
+                            key={`${deliveryId}-${detail.deliveryState}`}
+                            maxImages={1}
+                            onChange={setActionImageKeys}
+                            onUploadingChange={setIsUploadingActionImage}
+                        />
+                    </div>
                     {actionError ? (
                         <p
                             className="mb-2 text-center text-xs font-medium text-rose-600"
@@ -306,10 +334,14 @@ export default function DeliveryTrackingPage() {
                     <button
                         type="button"
                         onClick={handleStatusAction}
-                        disabled={isUpdatingStatus}
+                        disabled={
+                            isUpdatingStatus || isUploadingActionImage
+                        }
                         className="w-full rounded-[10px] bg-gray-100 py-3.5 font-semibold text-gray-900 shadow-[0_4px_15px_rgba(0,0,0,0.05)] transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
                     >
-                        {isUpdatingStatus
+                        {isUploadingActionImage
+                            ? "사진 업로드 중..."
+                            : isUpdatingStatus
                             ? "처리 중..."
                             : getActionLabel(detail.deliveryState)}
                     </button>
