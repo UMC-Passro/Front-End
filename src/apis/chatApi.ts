@@ -8,6 +8,7 @@ export interface ChatMessage {
     senderNickname: string;
     content: string;
     imageKey: string | null;
+    systemMessage: boolean;
     isRead: boolean;
     createdAt: string;
 }

@@ -428,23 +428,39 @@ export default function ChatPage() {
                                     </div>
                                 ) : null}
 
-                                <div
-                                    className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                                >
-                                    {!isMine ? (
+                                {message.systemMessage ? (
+                                    <div className="flex w-full flex-col items-start gap-2">
+                                        {message.imageKey ? (
+                                            <ChatMessageImage
+                                                imageKey={message.imageKey}
+                                                alt="시스템 메시지 이미지"
+                                                borderRadiusClassName="rounded-[30px]"
+                                            />
+                                        ) : null}
+                                        {hasContent ? (
+                                            <p className="w-full rounded-[30px] border border-gray-100 bg-white px-4 py-2 text-left text-[12px] font-medium leading-4 text-gray-500">
+                                                {message.content}
+                                            </p>
+                                        ) : null}
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                                    >
+                                        {!isMine ? (
                                         <ChatAvatar
                                             name={roomInfo.partnerNickname}
                                             picture={roomInfo.partnerPicture}
                                             className="mr-2 mt-1 h-8 w-8 text-xs"
                                         />
-                                    ) : null}
-                                    <div
-                                        className={`flex w-full items-end gap-[5px] ${
-                                            isMine
-                                                ? "justify-end"
-                                                : "justify-start"
-                                        }`}
-                                    >
+                                        ) : null}
+                                        <div
+                                            className={`flex w-full items-end gap-[5px] ${
+                                                isMine
+                                                    ? "justify-end"
+                                                    : "justify-start"
+                                            }`}
+                                        >
                                         <div className="flex flex-col mb gap-y-[2px]">
                                             {isMine && !message.isRead ? (
                                                 <span className="text-right text-[12px] font-medium text-gray-400">
@@ -500,8 +516,9 @@ export default function ChatPage() {
                                                 {timestamp}
                                             </time>
                                         ) : null}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         );
                     })
