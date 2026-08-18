@@ -64,11 +64,10 @@ export function HomeHeader({
                             <img
                                 src={avatarUrl || "/Logo.png"}
                                 alt=""
-                                className={`h-full w-full ${
-                                    avatarUrl
+                                className={`h-full w-full ${avatarUrl
                                         ? "object-cover"
                                         : "object-contain p-1"
-                                }`}
+                                    }`}
                             />
                         </span>
                         {unreadCount > 0 ? (
@@ -77,6 +76,7 @@ export function HomeHeader({
                             </span>
                         ) : null}
                     </button>
+                    <div className="h-2"></div>
                     {isNotificationOpen ? notificationPanel : null}
                 </div>
             </div>
