@@ -227,6 +227,13 @@ export default function EditProfile() {
             name: profileRequest.data.destinationPlace.stationName,
             region: profileRequest.data.destinationPlace.routeName,
         });
+        setWayPoints(
+            profileRequest.data.wayPoints.map((wayPoint) => ({
+                id: wayPoint.id,
+                name: wayPoint.stationName,
+                region: wayPoint.routeName,
+            })),
+        );
     }, [profileRequest.data]);
 
     useEffect(() => {

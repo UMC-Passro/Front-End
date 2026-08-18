@@ -220,6 +220,7 @@ export default function BasicSignupForm({
         <PasswordFields
           password={formData.password}
           passwordCheck={formData.passwordCheck}
+          showValidation={showValidation}
           onPasswordChange={(value) => updateField("password", value)}
           onPasswordCheckChange={(value) => updateField("passwordCheck", value)}
         />

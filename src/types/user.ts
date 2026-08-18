@@ -63,6 +63,7 @@ export type Profile = {
     createdAt: string;
     startPlace: ProfilePlace;
     destinationPlace: ProfilePlace;
+    wayPoints: ProfilePlace[];
 };
 
 export type EditProfile = {

@@ -36,6 +36,11 @@ export default function EmailField({
     const isVerified = status === "verified";
     const validationMessage =
         errorMessage || getEmailValidationMessage(value, isVerified);
+    const validationColorClass = isVerified
+        ? "text-[#24A148]"
+        : showValidation || Boolean(errorMessage)
+            ? "text-[#E5484D]"
+            : "text-gray-500";
     const requestButtonClass = status === "idle"
         ? "rounded-lg bg-purple-600 px-3 py-4 text-[15px] text-white transition-colors hover:bg-[#918DFF]"
         : BASIC_ACTION_BUTTON_CLASS;
@@ -114,12 +119,8 @@ export default function EmailField({
                     isVerified ? "이메일 인증이 완료되었습니다" : validationMessage
                 }
                 fallback="이메일 검증 메시지"
-                colorClass={isVerified ? "text-[#24A148]" : "text-[#E5484D]"}
-                visible={
-                    isVerified ||
-                    ((showValidation || Boolean(errorMessage)) &&
-                        Boolean(validationMessage))
-                }
+                colorClass={validationColorClass}
+                visible={Boolean(validationMessage) || isVerified}
             />
         </section>
     );

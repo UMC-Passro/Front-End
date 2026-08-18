@@ -20,6 +20,11 @@ export default function NicknameField({
   onCheck,
 }: NicknameFieldProps) {
   const validation = getNicknameValidation(value, status);
+  const validationColorClass = status === "available"
+    ? "text-[#24A148]"
+    : showValidation || status === "duplicate"
+      ? "text-[#E5484D]"
+      : "text-gray-500";
 
   return (
     <section className="flex flex-col gap-[10px]">
@@ -42,8 +47,8 @@ export default function NicknameField({
       <ValidationMessage
         message={validation.message}
         fallback=""
-        colorClass={validation.color}
-        visible={showValidation || status !== "idle"}
+        colorClass={validationColorClass}
+        visible
       />
     </section>
   );

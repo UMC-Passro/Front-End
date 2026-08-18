@@ -6,6 +6,7 @@ import { BASIC_FIELD_CLASS } from "./constants";
 type PasswordFieldsProps = {
   password: string;
   passwordCheck: string;
+  showValidation: boolean;
   onPasswordChange: (value: string) => void;
   onPasswordCheckChange: (value: string) => void;
 };
@@ -13,6 +14,7 @@ type PasswordFieldsProps = {
 export default function PasswordFields({
   password,
   passwordCheck,
+  showValidation,
   onPasswordChange,
   onPasswordCheckChange,
 }: PasswordFieldsProps) {
@@ -35,9 +37,12 @@ export default function PasswordFields({
           className={BASIC_FIELD_CLASS}
         />
         <p
-          className={`pl-1 text-[11px] font-medium leading-[18px] min-[390px]:whitespace-nowrap min-[390px]:text-[12px] ${
-            isPasswordValid ? "text-[#24A148]" : "text-[#E5484D]"
-          }`}
+          className={`pl-1 text-[11px] font-medium leading-[18px] min-[390px]:whitespace-nowrap min-[390px]:text-[12px] ${isPasswordValid
+              ? "text-[#24A148]"
+              : showValidation
+                ? "text-[#E5484D]"
+                : "text-gray-500"
+            }`}
           aria-live="polite"
         >
           6~20자 영문 대문자, 소문자, 숫자, 특수문자 중 2가지 이상 조합
@@ -60,12 +65,15 @@ export default function PasswordFields({
           message={
             isPasswordCheckValid
               ? "비밀번호가 일치합니다"
-              : "비밀번호가 일치하는지 확인해주세요"
+              : "비밀번호가 일치하지 않습니다."
           }
           fallback=""
           colorClass={
-            isPasswordCheckValid ? "text-[#24A148]" : "text-[#E5484D]"
+            isPasswordCheckValid
+              ? "text-[#24A148]"
+              : "text-[#E5484D]"
           }
+          visible={isPasswordCheckValid || showValidation}
         />
       </section>
     </>
