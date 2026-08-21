@@ -44,15 +44,13 @@ export function DeliveryTrackingProgress({
     return (
         <div className="relative mx-[5px] grid grid-cols-[60px_1fr_60px] items-start">
             <span
-                className={`absolute left-[44px] right-[calc(50%+14px)] top-2 h-0.5 ${
-                    currentStep >= 1 ? "bg-gray-800" : "bg-gray-200"
-                }`}
+                className={`absolute left-[44px] right-[calc(50%+14px)] top-2 h-0.5 ${currentStep >= 1 ? "bg-gray-800" : "bg-gray-200"
+                    }`}
                 aria-hidden="true"
             />
             <span
-                className={`absolute left-[calc(50%+14px)] right-[44px] top-2 h-0.5 ${
-                    currentStep >= 2 ? "bg-gray-800" : "bg-gray-200"
-                }`}
+                className={`absolute left-[calc(50%+14px)] right-[44px] top-2 h-0.5 ${currentStep >= 2 ? "bg-gray-800" : "bg-gray-200"
+                    }`}
                 aria-hidden="true"
             />
             {steps.map((label, index) => {
@@ -65,13 +63,12 @@ export function DeliveryTrackingProgress({
                         className="relative flex flex-col items-center gap-2"
                     >
                         <span
-                            className={`relative z-10 flex h-[17px] w-[17px] items-center justify-center rounded-full ${
-                                isActive
-                                    ? "bg-purple-100"
-                                    : isReached
-                                      ? "bg-gray-800"
-                                      : "bg-gray-200"
-                            }`}
+                            className={`relative z-10 flex h-[17px] w-[17px] items-center justify-center rounded-full ${isActive
+                                ? "bg-purple-100"
+                                : isReached
+                                    ? "bg-gray-800"
+                                    : "bg-gray-200"
+                                }`}
                             aria-hidden="true"
                         >
                             {isActive ? (
@@ -79,9 +76,8 @@ export function DeliveryTrackingProgress({
                             ) : null}
                         </span>
                         <span
-                            className={`relative z-10 whitespace-nowrap bg-white px-1 text-[13px] font-medium leading-[22px] ${
-                                isActive ? "text-purple-600" : "text-gray-600"
-                            }`}
+                            className={`relative z-10 whitespace-nowrap bg-white px-1 text-[13px] font-medium leading-[22px] ${isActive ? "text-purple-600" : "text-gray-600"
+                                }`}
                         >
                             {label}
                         </span>
@@ -99,6 +95,10 @@ function getCompactTimeLabel(timeLabel: string) {
         timeLabel === "완료 시각 정보 없음"
     ) {
         return "경로 확인 중";
+    } else if (
+        timeLabel === "완료된 배송"
+    ) {
+        return "";
     }
 
     return `약 ${timeLabel.replace(/\s*(경과|소요)$/u, "")}`;
@@ -119,17 +119,15 @@ function InformationCard({
 }: InformationCardProps) {
     return (
         <div
-            className={`rounded-2xl border px-4 py-4 ${
-                accent
-                    ? "border-purple-200 bg-purple-50"
-                    : "border-gray-100 bg-white"
-            }`}
+            className={`rounded-2xl border px-4 py-4 ${accent
+                ? "border-purple-200 bg-purple-50"
+                : "border-gray-100 bg-white"
+                }`}
         >
             <p className="text-[11px] font-bold text-gray-500">{label}</p>
             <p
-                className={`mt-1.5 break-keep text-sm font-bold leading-snug ${
-                    accent ? "text-purple-800" : "text-gray-900"
-                }`}
+                className={`mt-1.5 break-keep text-sm font-bold leading-snug ${accent ? "text-purple-800" : "text-gray-900"
+                    }`}
                 title={value}
             >
                 {value}
@@ -184,58 +182,58 @@ export function DeliveryTrackingOverview({
     const currentStationLabel = isCompleted
         ? destinationPlace.subwayStationName
         : isConfirmationPending
-          ? "위치 조회 불가"
-          : routeProgress.currentStation
-            ? routeProgress.currentStation.stationName
-            : "위치 정보 없음";
+            ? "위치 조회 불가"
+            : routeProgress.currentStation
+                ? routeProgress.currentStation.stationName
+                : "위치 정보 없음";
     const currentStationDescription = isCompleted
         ? destinationPlace.subwayRouteName
         : isConfirmationPending
-          ? "DELIVERING 상태에서만 위치 API 제공"
-          : routeProgress.currentStation
-            ? [
-                  routeProgress.currentStation.routeName,
-                  locationUpdatedLabel ? `${locationUpdatedLabel} 갱신` : null,
-              ]
-                  .filter(Boolean)
-                  .join(" · ")
-            : undefined;
+            ? "DELIVERING 상태에서만 위치 API 제공"
+            : routeProgress.currentStation
+                ? [
+                    routeProgress.currentStation.routeName,
+                    locationUpdatedLabel ? `${locationUpdatedLabel} 갱신` : null,
+                ]
+                    .filter(Boolean)
+                    .join(" · ")
+                : undefined;
     const nextStationLabel = isCompleted
         ? "전달 완료"
         : isConfirmationPending
-          ? "이동 완료 · 승인 대기"
-          : routeProgress.nextStation
-            ? routeProgress.nextStation.stationName
-            : routeProgress.currentStation
-              ? "도착역"
-              : "추적 시작 전";
+            ? "이동 완료 · 승인 대기"
+            : routeProgress.nextStation
+                ? routeProgress.nextStation.stationName
+                : routeProgress.currentStation
+                    ? "도착역"
+                    : "추적 시작 전";
     const nextStationDescription = routeProgress.nextStation?.routeName;
     const timeLabel = isCompleted
-        ? (formatTrackingDateTime(completedAt) ?? "완료 시각 정보 없음")
+        ? ("완료된 배송")
         : showsElapsedTime
-          ? elapsedMinutes == null
-              ? "아직 시작되지 않음"
-              : elapsedMinutes < 1
-                ? deliveryHandedOffAt
-                    ? "1분 미만 소요"
-                    : "1분 미만 경과"
-                : elapsedMinutes >= 60
-                  ? `${Math.floor(elapsedMinutes / 60)}시간 ${elapsedMinutes % 60}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
-                  : `${elapsedMinutes}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
-          : estimatedTimeMinutes != null
-            ? `${estimatedTimeMinutes}분`
-            : "정보 없음";
+            ? elapsedMinutes == null
+                ? "아직 시작되지 않음"
+                : elapsedMinutes < 1
+                    ? deliveryHandedOffAt
+                        ? "1분 미만 소요"
+                        : "1분 미만 경과"
+                    : elapsedMinutes >= 60
+                        ? `${Math.floor(elapsedMinutes / 60)}시간 ${elapsedMinutes % 60}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
+                        : `${elapsedMinutes}분 ${deliveryHandedOffAt ? "소요" : "경과"}`
+            : estimatedTimeMinutes != null
+                ? `${estimatedTimeMinutes}분`
+                : "정보 없음";
     const timeDescription = isCompleted
         ? undefined
         : showsElapsedTime
-          ? deliveryStartedAt
-              ? deliveryHandedOffAt
-                  ? "물품 인수부터 전달 완료 요청까지"
-                  : `${formatTrackingTime(deliveryStartedAt) ?? "처리 시각 미상"} 전달 시작`
-              : "물품 인수 후 자동으로 계산됩니다"
-          : estimatedTimeMinutes != null
-            ? "현재 역에서 도착역까지 예상 소요 시간"
-            : "전달자 위치가 갱신되면 표시됩니다";
+            ? deliveryStartedAt
+                ? deliveryHandedOffAt
+                    ? "물품 인수부터 전달 완료 요청까지"
+                    : `${formatTrackingTime(deliveryStartedAt) ?? "처리 시각 미상"} 전달 시작`
+                : "물품 인수 후 자동으로 계산됩니다"
+            : estimatedTimeMinutes != null
+                ? "현재 역에서 도착역까지 예상 소요 시간"
+                : "전달자 위치가 갱신되면 표시됩니다";
 
     if (variant === "figma") {
         return (
@@ -279,11 +277,10 @@ export function DeliveryTrackingOverview({
 
     return (
         <section
-            className={`mt-5 overflow-hidden rounded-3xl px-5 py-5 text-white shadow-sm ${
-                isCompleted
-                    ? "bg-gradient-to-br from-emerald-600 to-teal-700"
-                    : "bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-600"
-            }`}
+            className={`mt-5 overflow-hidden rounded-3xl px-5 py-5 text-white shadow-sm ${isCompleted
+                ? "bg-gradient-to-br from-emerald-600 to-teal-700"
+                : "bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-600"
+                }`}
         >
             <div className="flex flex-col gap-5">
                 <div className="min-w-0">
@@ -342,8 +339,8 @@ export function DeliveryTrackingOverview({
                         isCompleted
                             ? "완료 시각"
                             : showsElapsedTime
-                              ? "전달 경과 시간"
-                              : "도착 예상 시간"
+                                ? "전달 경과 시간"
+                                : "도착 예상 시간"
                     }
                     value={timeLabel}
                     description={timeDescription}
@@ -361,8 +358,8 @@ export function DeliveryTrackingOverview({
                         {routeProgress.totalStationCount > 0
                             ? `${routeProgress.completedStationCount}/${routeProgress.totalStationCount}역 · `
                             : isCompleted
-                              ? "이동 완료 · "
-                              : "경로 확인 중 · "}
+                                ? "이동 완료 · "
+                                : "경로 확인 중 · "}
                         {routeProgress.percentage}%
                     </span>
                 </div>
