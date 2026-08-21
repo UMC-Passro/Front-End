@@ -166,10 +166,11 @@ export function HomeDashboard({
     };
 
     return (
-        <section className="page-container page-container-bottom-button flex h-full min-h-0 flex-col overflow-hidden pt-5">
+        <section className="page-container flex h-full min-h-0 flex-col overflow-hidden pt-5">
             <div
-                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${isConsentOpen ? "pointer-events-none blur-sm" : ""
-                    }`}
+                className={`flex flex-col min-h-0 flex-1 transition duration-200  ${
+                    isConsentOpen ? "pointer-events-none blur-sm" : ""
+                }`}
                 aria-hidden={isConsentOpen}
             >
                 <div className="shrink-0">
@@ -200,7 +201,7 @@ export function HomeDashboard({
                     />
                 </div>
 
-                <div className="scrollbar-hidden flex-1 min-h-0 overflow-y-auto mt-6 overscroll-contain pb-14">
+                <div className="scrollbar-hidden flex-1 min-h-0 overflow-y-auto mt-6 overscroll-contain pb-16">
                     <section className="mt-6">
                         <SectionTitle accent>진행중인 전달</SectionTitle>
                         {isLoading ? (
